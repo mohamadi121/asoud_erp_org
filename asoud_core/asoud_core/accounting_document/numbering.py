@@ -9,8 +9,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
 from datetime import date, datetime
-from enum import StrEnum
 from typing import Iterable
+
+try:
+    from enum import StrEnum
+except ImportError:  # Python 3.10 compatibility
+    from enum import Enum
+
+    class StrEnum(str, Enum):
+        def __str__(self) -> str:
+            return self.value
 
 
 class NumberingError(ValueError):

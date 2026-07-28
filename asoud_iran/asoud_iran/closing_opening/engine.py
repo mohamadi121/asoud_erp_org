@@ -15,8 +15,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal
-from enum import StrEnum
 from typing import Iterable
+
+try:
+    from enum import StrEnum
+except ImportError:  # Python 3.10 compatibility
+    from enum import Enum
+
+    class StrEnum(str, Enum):
+        def __str__(self) -> str:
+            return self.value
 
 
 ZERO = Decimal("0")
