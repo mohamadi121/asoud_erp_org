@@ -1,0 +1,139 @@
+name: asoud-erp-production
+
+# Production overlay. Use with:
+# docker compose -f compose.yaml -f compose.production.yaml --env-file .env.production up -d
+services:
+  db:
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+      - --binlog-format=ROW
+      - --log-bin=mariadb-bin
+      - --expire-logs-days=7
+    security_opt: [no-new-privileges:true]
+
+  redis-cache:
+    command:
+      - redis-server
+      - --save
+      - ""
+      - --appendonly
+      - "no"
+      - --requirepass
+      - ${REDIS_PASSWORD:?Set REDIS_PASSWORD}
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" ping"]
+    security_opt: [no-new-privileges:true]
+
+  redis-queue:
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --requirepass
+      - ${REDIS_PASSWORD:?Set REDIS_PASSWORD}
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" ping"]
+    security_opt: [no-new-privileges:true]
+
+  configurator:
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD}
+    command:
+      - >-
+        printf 'frappe\nerpnext\nasoud_core\nasoud_iran\nasoud_hr\n' > sites/apps.txt;
+        bench set-config -g db_host db;
+        bench set-config -gp db_port 3306;
+        bench set-config -g redis_cache "redis://:${REDIS_PASSWORD}@redis-cache:6379";
+        bench set-config -g redis_queue "redis://:${REDIS_PASSWORD}@redis-queue:6379";
+        bench set-config -g redis_socketio "redis://:${REDIS_PASSWORD}@redis-queue:6379";
+        bench set-config -gp socketio_port 9000;
+        if [ -f "sites/${SITE_NAME:-asoud.localhost}/site_config.json" ]; then
+          if ! bench --site "${SITE_NAME:-asoud.localhost}" list-apps | grep -qx asoud_hr; then bench --site "${SITE_NAME:-asoud.localhost}" install-app asoud_hr; fi;
+          bench --site "${SITE_NAME:-asoud.localhost}" migrate;
+        fi;
+    security_opt: [no-new-privileges:true]
+
+  backend:
+    security_opt: [no-new-privileges:true]
+
+  websocket:
+    security_opt: [no-new-privileges:true]
+
+  queue-short:
+    security_opt: [no-new-privileges:true]
+
+  queue-long:
+    security_opt: [no-new-privileges:true]
+
+  scheduler:
+    security_opt: [no-new-privileges:true]
+
+  frontend:
+    security_opt: [no-new-privileges:true]
+
+  reverse-proxy:
+    image: caddy:2.8.4-alpine
+    restart: unless-stopped
+    environment:
+      ASOUD_DOMAIN: ${ASOUD_DOMAIN:?Set ASOUD_DOMAIN}
+      TLS_EMAIL: ${TLS_EMAIL:?Set TLS_EMAIL}
+    ports:
+      - 80:80
+      - 443:443
+      - 443:443/udp
+    volumes:
+      - ./production/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      frontend:
+        condition: service_healthy
+    security_opt: [no-new-privileges:true]
+    networks: [asoud]
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=30d
+      - --web.enable-lifecycle
+    volumes:
+      - ./production/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./production/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus-data:/prometheus
+    security_opt: [no-new-privileges:true]
+    networks: [asoud]
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    restart: unless-stopped
+    privileged: true
+    command: [--docker_only=true, --housekeeping_interval=30s]
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+    networks: [asoud]
+
+  node-exporter:
+    image: prom/node-exporter:v1.8.2
+    restart: unless-stopped
+    command: [--path.rootfs=/host]
+    volumes:
+      - /:/host:ro,rslave
+    security_opt: [no-new-privileges:true]
+    networks: [asoud]
+
+volumes:
+  caddy-data:
+  caddy-config:
+  prometheus-data:

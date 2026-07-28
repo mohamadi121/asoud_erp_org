@@ -1,0 +1,30 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Party Company Profile",
+  "module": "ASOUD Core",
+  "autoname": "field:profile_key",
+  "title_field": "party",
+  "track_changes": 1,
+  "field_order": ["profile_key", "party_type", "party", "company", "enabled", "default_branch", "credit_limit", "payment_terms_template", "price_list", "default_account"],
+  "fields": [
+    {"fieldname": "profile_key", "label": "Profile Key", "fieldtype": "Data", "hidden": 1, "unique": 1, "no_copy": 1},
+    {"fieldname": "party_type", "label": "Party Type", "fieldtype": "Select", "options": "Customer\nSupplier", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "party", "label": "Party", "fieldtype": "Dynamic Link", "options": "party_type", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "enabled", "label": "Enabled", "fieldtype": "Check", "default": "1", "in_list_view": 1},
+    {"fieldname": "default_branch", "label": "Default Branch", "fieldtype": "Link", "options": "ASOUD Branch"},
+    {"fieldname": "credit_limit", "label": "Credit Limit", "fieldtype": "Currency", "non_negative": 1, "depends_on": "eval:doc.party_type=='Customer'"},
+    {"fieldname": "payment_terms_template", "label": "Payment Terms Template", "fieldtype": "Link", "options": "Payment Terms Template"},
+    {"fieldname": "price_list", "label": "Price List", "fieldtype": "Link", "options": "Price List"},
+    {"fieldname": "default_account", "label": "Default Receivable / Payable Account", "fieldtype": "Link", "options": "Account"}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1},
+    {"role": "Accounts Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "Sales Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "Purchase Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "Accounts User", "read": 1},
+    {"role": "Sales User", "read": 1},
+    {"role": "Purchase User", "read": 1}
+  ]
+}

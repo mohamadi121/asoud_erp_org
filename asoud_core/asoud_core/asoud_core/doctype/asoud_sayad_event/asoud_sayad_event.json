@@ -1,0 +1,23 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Sayad Event",
+  "module": "ASOUD Core",
+  "autoname": "hash",
+  "field_order": ["operation", "company", "event_at", "from_state", "to_state", "provider_reference", "request_checksum", "response_checksum", "details_json"],
+  "fields": [
+    {"fieldname": "operation", "label": "Operation", "fieldtype": "Link", "options": "ASOUD Sayad Operation", "reqd": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1},
+    {"fieldname": "event_at", "label": "Event At", "fieldtype": "Datetime", "reqd": 1},
+    {"fieldname": "from_state", "label": "From State", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "to_state", "label": "To State", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "provider_reference", "label": "Provider Reference", "fieldtype": "Data"},
+    {"fieldname": "request_checksum", "label": "Request SHA-256", "fieldtype": "Data"},
+    {"fieldname": "response_checksum", "label": "Response SHA-256", "fieldtype": "Data"},
+    {"fieldname": "details_json", "label": "Details", "fieldtype": "Code", "options": "JSON"}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1},
+    {"role": "Accounts Manager", "read": 1},
+    {"role": "Accounts User", "read": 1}
+  ]
+}

@@ -1,0 +1,42 @@
+# Local archives and generated bundles
+*.zip
+
+# Secrets and environment-specific configuration
+.env
+.env.*
+!.env.example
+!.env.*.example
+site_config.json
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+coverage.xml
+.coverage
+htmlcov/
+
+# Flutter / Dart
+.dart_tool/
+build/
+coverage/
+
+# JavaScript
+node_modules/
+
+# Frappe runtime data
+sites/
+logs/
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.log

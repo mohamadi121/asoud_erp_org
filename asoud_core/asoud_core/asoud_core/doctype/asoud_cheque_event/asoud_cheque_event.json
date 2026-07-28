@@ -1,0 +1,25 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Cheque Event",
+  "module": "ASOUD Core",
+  "autoname": "naming_series:",
+  "track_changes": 1,
+  "field_order": ["naming_series", "cheque", "company", "branch", "event_date", "from_status", "to_status", "reason", "journal_entry", "event_by"],
+  "fields": [
+    {"fieldname": "naming_series", "label": "Series", "fieldtype": "Select", "options": "ASOUD-CHK-EVT-.YYYY.-.#####", "default": "ASOUD-CHK-EVT-.YYYY.-.#####", "hidden": 1},
+    {"fieldname": "cheque", "label": "Cheque", "fieldtype": "Link", "options": "ASOUD Cheque", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1},
+    {"fieldname": "branch", "label": "Branch", "fieldtype": "Link", "options": "ASOUD Branch", "reqd": 1},
+    {"fieldname": "event_date", "label": "Event Date", "fieldtype": "Date", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "from_status", "label": "From Status", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "to_status", "label": "To Status", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "reason", "label": "Reason", "fieldtype": "Small Text", "reqd": 1},
+    {"fieldname": "journal_entry", "label": "Journal Entry", "fieldtype": "Link", "options": "Journal Entry", "read_only": 1},
+    {"fieldname": "event_by", "label": "Event By", "fieldtype": "Link", "options": "User", "read_only": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1},
+    {"role": "Accounts Manager", "read": 1},
+    {"role": "Accounts User", "read": 1}
+  ]
+}

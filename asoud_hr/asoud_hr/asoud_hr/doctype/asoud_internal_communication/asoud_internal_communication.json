@@ -1,0 +1,37 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Internal Communication",
+  "module": "ASOUD HR",
+  "autoname": "naming_series:",
+  "title_field": "subject",
+  "is_submittable": 1,
+  "track_changes": 1,
+  "search_fields": "subject,sender",
+  "field_order": ["naming_series", "communication_type", "company", "branch", "sender", "subject", "body", "priority", "confidentiality", "response_due_on", "status", "thread_parent", "recipients", "approval_section", "asoud_approval_request", "asoud_approval_status"],
+  "fields": [
+    {"fieldname": "naming_series", "label": "Series", "fieldtype": "Select", "options": "HR-COM-.YYYY.-.#####", "default": "HR-COM-.YYYY.-.#####", "reqd": 1},
+    {"fieldname": "communication_type", "label": "Type", "fieldtype": "Select", "options": "Internal Letter\nRequest\nAnnouncement\nReport\nDirective\nSuggestion", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
+    {"fieldname": "branch", "label": "Branch", "fieldtype": "Link", "options": "ASOUD Branch", "in_list_view": 1},
+    {"fieldname": "sender", "label": "Sender", "fieldtype": "Link", "options": "User", "reqd": 1, "read_only": 1, "in_list_view": 1},
+    {"fieldname": "subject", "label": "Subject", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "body", "label": "Body", "fieldtype": "Text Editor", "reqd": 1},
+    {"fieldname": "priority", "label": "Priority", "fieldtype": "Select", "options": "Low\nNormal\nHigh\nUrgent", "default": "Normal", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "confidentiality", "label": "Confidentiality", "fieldtype": "Select", "options": "Normal\nConfidential\nStrictly Confidential", "default": "Normal", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "response_due_on", "label": "Response Due On", "fieldtype": "Datetime"},
+    {"fieldname": "status", "label": "Status", "fieldtype": "Select", "options": "Draft\nSent\nIn Progress\nClosed\nArchived", "default": "Draft", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
+    {"fieldname": "thread_parent", "label": "Thread Parent", "fieldtype": "Link", "options": "ASOUD Internal Communication"},
+    {"fieldname": "recipients", "label": "Recipients", "fieldtype": "Table", "options": "ASOUD Communication Recipient", "reqd": 1},
+    {"fieldname": "approval_section", "label": "Approval", "fieldtype": "Section Break"},
+    {"fieldname": "asoud_approval_request", "label": "Approval Request", "fieldtype": "Link", "options": "ASOUD Approval Request", "read_only": 1, "no_copy": 1},
+    {"fieldname": "asoud_approval_status", "label": "Approval Status", "fieldtype": "Select", "options": "\nPending\nApproved\nRejected\nReturned\nCancelled\nInvalidated", "read_only": 1, "no_copy": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1},
+    {"role": "ASOUD HR Manager", "read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1},
+    {"role": "ASOUD HR User", "read": 1, "write": 1, "create": 1, "submit": 1},
+    {"role": "ASOUD Employee", "read": 1, "write": 1, "create": 1, "submit": 1},
+    {"role": "ASOUD HR Auditor", "read": 1}
+  ]
+}
+

@@ -1,0 +1,75 @@
+name: Phase Seven and Nine Integration
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  controlled-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - name: Checkout infrastructure
+        uses: actions/checkout@v4
+        with:
+          path: workspace/asoud_infra
+      - name: Checkout ASOUD Core
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/asoud_core
+          token: ${{ secrets.ASOUD_REPOS_TOKEN }}
+          path: workspace/asoud_core
+      - name: Checkout ASOUD Iran
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/asoud_iran
+          token: ${{ secrets.ASOUD_REPOS_TOKEN }}
+          path: workspace/asoud_iran
+      - name: Checkout ASOUD PWA
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/asoud_pwa
+          token: ${{ secrets.ASOUD_REPOS_TOKEN }}
+          path: workspace/asoud_pwa
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.29.3
+          cache: true
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e "workspace/asoud_core[dev]"
+          python -m pip install -e "workspace/asoud_iran[dev]"
+      - name: Configure ephemeral environment
+        shell: pwsh
+        working-directory: workspace/asoud_infra
+        run: |
+          Copy-Item .env.example .env
+          $content = Get-Content .env -Raw
+          $content = $content.Replace('change-me-root', [guid]::NewGuid().ToString('N'))
+          $content = $content.Replace('change-me-admin', [guid]::NewGuid().ToString('N'))
+          Set-Content .env $content
+      - name: Bootstrap ERPNext v15
+        shell: pwsh
+        working-directory: workspace/asoud_infra
+        run: ./scripts/bootstrap.ps1
+      - name: Run phase seven and controlled pilot gates
+        shell: pwsh
+        working-directory: workspace/asoud_infra
+        run: ./scripts/phase-nine-pilot.ps1
+      - name: Upload UAT evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-nine-uat
+          path: workspace/asoud_infra/artifacts/phase-nine-uat.json
+      - name: Capture container logs on failure
+        if: failure()
+        working-directory: workspace/asoud_infra
+        run: docker compose logs --no-color --tail 400

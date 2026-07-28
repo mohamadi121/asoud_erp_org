@@ -1,0 +1,31 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Accounting Document",
+  "module": "ASOUD Core",
+  "autoname": "hash",
+  "track_changes": 1,
+  "field_order": ["source_section", "source_doctype", "source_name", "source_key", "company", "branch", "fiscal_year", "posting_date", "posting_time", "number_section", "temporary_number", "final_number", "numbering_status", "numbering_batch", "consolidation", "source_creation"],
+  "fields": [
+    {"fieldname": "source_section", "label": "Source", "fieldtype": "Section Break"},
+    {"fieldname": "source_doctype", "label": "Source Type", "fieldtype": "Link", "options": "DocType", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "source_name", "label": "Source Document", "fieldtype": "Dynamic Link", "options": "source_doctype", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "source_key", "label": "Source Key", "fieldtype": "Data", "reqd": 1, "unique": 1, "read_only": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_standard_filter": 1},
+    {"fieldname": "branch", "label": "Branch", "fieldtype": "Link", "options": "ASOUD Branch", "in_standard_filter": 1},
+    {"fieldname": "fiscal_year", "label": "Fiscal Year", "fieldtype": "Link", "options": "Fiscal Year", "reqd": 1, "in_standard_filter": 1},
+    {"fieldname": "posting_date", "label": "Posting Date", "fieldtype": "Date", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "posting_time", "label": "Posting Time", "fieldtype": "Time"},
+    {"fieldname": "number_section", "label": "Numbering", "fieldtype": "Section Break"},
+    {"fieldname": "temporary_number", "label": "Temporary Number", "fieldtype": "Data", "reqd": 1, "unique": 1, "read_only": 1, "in_list_view": 1},
+    {"fieldname": "final_number", "label": "Final Number", "fieldtype": "Int", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "numbering_status", "label": "Status", "fieldtype": "Select", "options": "Temporary\nFinal\nLocked\nCancelled", "default": "Temporary", "reqd": 1, "read_only": 1},
+    {"fieldname": "numbering_batch", "label": "Numbering Batch", "fieldtype": "Link", "options": "ASOUD Numbering Batch", "read_only": 1},
+    {"fieldname": "consolidation", "label": "Consolidation", "fieldtype": "Link", "options": "ASOUD Document Consolidation", "read_only": 1},
+    {"fieldname": "source_creation", "label": "Source Creation", "fieldtype": "Datetime", "reqd": 1, "read_only": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1},
+    {"role": "Accounts Manager", "read": 1},
+    {"role": "Accounts User", "read": 1}
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD UAT Scenario",
+  "module": "ASOUD Core",
+  "istable": 1,
+  "field_order": ["scenario_code", "scenario_title", "expected_result", "actual_result", "status", "evidence"],
+  "fields": [
+    {"fieldname": "scenario_code", "label": "Scenario Code", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "scenario_title", "label": "Scenario Title", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "expected_result", "label": "Expected Result", "fieldtype": "Small Text", "reqd": 1},
+    {"fieldname": "actual_result", "label": "Actual Result", "fieldtype": "Small Text", "reqd": 1},
+    {"fieldname": "status", "label": "Status", "fieldtype": "Select", "options": "Pass\nFail\nBlocked\nNot Run", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "evidence", "label": "Evidence", "fieldtype": "Small Text", "reqd": 1}
+  ]
+}

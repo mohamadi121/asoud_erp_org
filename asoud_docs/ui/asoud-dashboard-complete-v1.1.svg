@@ -1,0 +1,277 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="3500" viewBox="0 0 2400 3500" role="img" aria-labelledby="title desc">
+  <title id="title">طرح جامع رابط داشبورد آسود ERP</title>
+  <desc id="desc">طرح برداری کامل Flutter Web PWA شامل داشبورد RTL، منوی اصلی، تمام Ribbonهای ماژول‌ها، کشوها، اعلان‌ها، جست‌وجو، انتخاب زمینه و فرم پویا.</desc>
+  <defs>
+    <style>
+      text{font-family:"Vazirmatn","Tahoma","Segoe UI",sans-serif;fill:#12213d}
+      .bg{fill:#f5f7fb}.surface{fill:#fff}.soft{fill:#f7f9fc}.blue-soft{fill:#edf3ff}
+      .stroke{stroke:#dfe5ee;stroke-width:1.5}.divider{stroke:#dfe5ee;stroke-width:1}
+      .navy{fill:#12213d}.primary{fill:#155bd7}.muted{fill:#68758a}.success{fill:#1c9b62}.warning{fill:#d98a10}.danger{fill:#d94b4b}.cyan{fill:#168ca0}
+      .h1{font-size:28px;font-weight:900}.h2{font-size:20px;font-weight:800}.h3{font-size:16px;font-weight:800}
+      .body{font-size:14px}.small{font-size:12px}.tiny{font-size:10px}
+      .card{fill:#fff;stroke:#dfe5ee;stroke-width:1.5}.button{fill:#155bd7}.buttonText{fill:#fff;font-size:13px;font-weight:800}
+      .iconBox{fill:#edf3ff;stroke:#b9cff8;stroke-width:1}.chip{fill:#fff;stroke:#dfe5ee;stroke-width:1}
+      .shadow{filter:url(#shadow)}
+    </style>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#12213d" flood-opacity=".13"/>
+    </filter>
+  </defs>
+
+  <rect width="2400" height="3500" class="bg"/>
+
+  <!-- ARTBOARD 1: COMPLETE DASHBOARD -->
+  <g id="dashboard-artboard">
+    <rect x="40" y="40" width="2320" height="1320" rx="18" class="surface stroke shadow"/>
+    <text x="2310" y="92" text-anchor="end" class="h1">داشبورد مدیریتی آسود ERP — نمای کامل</text>
+    <text x="2310" y="122" text-anchor="end" class="muted body">Flutter Web PWA • RTL • ERPNext/Frappe v15 • نسخه رابط ۱.۱</text>
+
+    <!-- main navigation -->
+    <g id="top-navigation">
+      <rect x="70" y="150" width="2260" height="70" class="surface stroke"/>
+      <rect x="2258" y="166" width="40" height="40" rx="9" class="primary"/>
+      <path d="M2270 186l8-13 8 13-8 13z" fill="none" stroke="#fff" stroke-width="3"/>
+      <text x="2245" y="192" text-anchor="end" class="h2">آسود ERP</text>
+      <text x="2080" y="192" text-anchor="middle" class="primary h3">داشبورد</text>
+      <text x="1950" y="192" text-anchor="middle" class="body">مالی</text>
+      <text x="1815" y="192" text-anchor="middle" class="body">خزانه‌داری</text>
+      <text x="1690" y="192" text-anchor="middle" class="body">فروش</text>
+      <text x="1585" y="192" text-anchor="middle" class="body">خرید</text>
+      <text x="1480" y="192" text-anchor="middle" class="body">انبار</text>
+      <text x="1340" y="192" text-anchor="middle" class="body">منابع انسانی</text>
+      <text x="1200" y="192" text-anchor="middle" class="body">گزارش‌ها</text>
+      <text x="1075" y="192" text-anchor="middle" class="body">تنظیمات</text>
+      <line x1="2035" y1="216" x2="2125" y2="216" stroke="#155bd7" stroke-width="4"/>
+      <rect x="570" y="165" width="260" height="40" rx="8" class="soft stroke"/>
+      <text x="800" y="191" text-anchor="end" class="muted small">جست‌وجوی ماژول یا فرمان...</text>
+      <text x="590" y="191" class="primary h3">⌕</text>
+      <text x="520" y="192" class="h2">🔔</text><text x="465" y="192" class="h2">؟</text>
+      <circle cx="395" cy="185" r="20" class="blue-soft"/><text x="395" y="191" text-anchor="middle" class="body">👤</text>
+      <text x="360" y="180" text-anchor="end" class="small">مدیر سیستم</text><text x="360" y="198" text-anchor="end" class="muted tiny">شرکت آسود — دفتر مرکزی</text>
+      <text x="95" y="192" class="h2">☰</text>
+    </g>
+
+    <!-- active dashboard ribbon -->
+    <g id="dashboard-ribbon">
+      <rect x="70" y="220" width="2260" height="118" class="soft stroke"/>
+      <g transform="translate(2210 238)">
+        <text x="0" y="24" text-anchor="middle" class="h2">⌂</text><text x="0" y="49" text-anchor="middle" class="small">خانه</text>
+        <text x="-80" y="24" text-anchor="middle" class="h2">▣</text><text x="-80" y="49" text-anchor="middle" class="small">کارتابل</text>
+        <text x="-160" y="24" text-anchor="middle" class="h2">☷</text><text x="-160" y="49" text-anchor="middle" class="small">فعالیت‌ها</text>
+        <text x="-80" y="82" text-anchor="middle" class="muted tiny">نمای کلی</text>
+      </g>
+      <line x1="1985" y1="234" x2="1985" y2="323" class="divider"/>
+      <g transform="translate(1915 238)">
+        <text x="0" y="24" text-anchor="middle" class="h2">＋</text><text x="0" y="49" text-anchor="middle" class="small">سند جدید</text>
+        <text x="-100" y="24" text-anchor="middle" class="h2">⇄</text><text x="-100" y="49" text-anchor="middle" class="small">دریافت/پرداخت</text>
+        <text x="-210" y="24" text-anchor="middle" class="h2">▤</text><text x="-210" y="49" text-anchor="middle" class="small">فاکتور</text>
+        <text x="-300" y="24" text-anchor="middle" class="h2">✓</text><text x="-300" y="49" text-anchor="middle" class="small">گزارش کار</text>
+        <text x="-145" y="82" text-anchor="middle" class="muted tiny">ایجاد سریع</text>
+      </g>
+      <line x1="1565" y1="234" x2="1565" y2="323" class="divider"/>
+      <g transform="translate(1490 238)">
+        <text x="0" y="24" text-anchor="middle" class="h2">↻</text><text x="0" y="49" text-anchor="middle" class="small">به‌روزرسانی</text>
+        <text x="-100" y="24" text-anchor="middle" class="h2">⚙</text><text x="-100" y="49" text-anchor="middle" class="small">شخصی‌سازی</text>
+        <text x="-200" y="24" text-anchor="middle" class="h2">⛶</text><text x="-200" y="49" text-anchor="middle" class="small">تمام‌صفحه</text>
+        <text x="-100" y="82" text-anchor="middle" class="muted tiny">نمایش</text>
+      </g>
+      <line x1="1235" y1="234" x2="1235" y2="323" class="divider"/>
+      <rect x="915" y="248" width="285" height="38" rx="7" class="chip"/><text x="1180" y="273" text-anchor="end" class="small">🏢 شرکت آسود دمو</text>
+      <rect x="700" y="248" width="200" height="38" rx="7" class="chip"/><text x="880" y="273" text-anchor="end" class="small">🏬 دفتر مرکزی</text>
+      <rect x="500" y="248" width="185" height="38" rx="7" class="chip"/><text x="665" y="273" text-anchor="end" class="small">📅 سال مالی ۱۴۰۵</text>
+      <text x="850" y="320" text-anchor="middle" class="muted tiny">فیلتر زمینه</text>
+    </g>
+
+    <!-- dashboard content -->
+    <g id="dashboard-content">
+      <text x="2040" y="388" text-anchor="end" class="h2">⌂ داشبورد مدیریتی</text>
+      <text x="2040" y="414" text-anchor="end" class="muted small">شرکت آسود دمو — دفتر مرکزی</text>
+      <text x="360" y="395" class="muted small">آخرین به‌روزرسانی: ۱۴۰۵/۰۵/۰۵، ۰۸:۱۵</text>
+
+      <!-- KPI cards -->
+      <g id="kpi-cards">
+        <g transform="translate(2060 440)"><rect x="0" y="0" width="250" height="118" rx="10" class="card"/><text x="225" y="30" text-anchor="end" class="muted small">فروش امروز</text><text x="225" y="67" text-anchor="end" class="h2">۱۲۵٬۴۰۰٬۰۰۰</text><text x="225" y="92" text-anchor="end" class="success small">↑ ۱۲٫۴٪</text><circle cx="35" cy="35" r="18" class="blue-soft"/><text x="35" y="41" text-anchor="middle">▤</text></g>
+        <g transform="translate(1795 440)"><rect width="250" height="118" rx="10" class="card"/><text x="225" y="30" text-anchor="end" class="muted small">دریافت امروز</text><text x="225" y="67" text-anchor="end" class="h2">۸۴٬۰۰۰٬۰۰۰</text><text x="225" y="92" text-anchor="end" class="success small">↑ ۸٫۲٪</text><circle cx="35" cy="35" r="18" fill="#e8f8f0"/><text x="35" y="41" text-anchor="middle">↙</text></g>
+        <g transform="translate(1530 440)"><rect width="250" height="118" rx="10" class="card"/><text x="225" y="30" text-anchor="end" class="muted small">پرداخت امروز</text><text x="225" y="67" text-anchor="end" class="h2">۳۹٬۵۰۰٬۰۰۰</text><text x="225" y="92" text-anchor="end" class="danger small">↓ ۳٫۱٪</text><circle cx="35" cy="35" r="18" fill="#fff0f0"/><text x="35" y="41" text-anchor="middle">↗</text></g>
+        <g transform="translate(1265 440)"><rect width="250" height="118" rx="10" class="card"/><text x="225" y="30" text-anchor="end" class="muted small">مانده بانک</text><text x="225" y="67" text-anchor="end" class="h2">۲٫۴ میلیارد</text><text x="225" y="92" text-anchor="end" class="muted small">ریال</text><circle cx="35" cy="35" r="18" fill="#f2edff"/><text x="35" y="41" text-anchor="middle">🏦</text></g>
+        <g transform="translate(1000 440)"><rect width="250" height="118" rx="10" class="card"/><text x="225" y="30" text-anchor="end" class="muted small">مانده صندوق</text><text x="225" y="67" text-anchor="end" class="h2">۶۸٬۲۰۰٬۰۰۰</text><text x="225" y="92" text-anchor="end" class="muted small">ریال</text><circle cx="35" cy="35" r="18" fill="#fff7e8"/><text x="35" y="41" text-anchor="middle">▣</text></g>
+        <g transform="translate(735 440)"><rect width="250" height="118" rx="10" class="card"/><text x="225" y="30" text-anchor="end" class="muted small">مانده تنخواه</text><text x="225" y="67" text-anchor="end" class="h2">۱۲٬۸۰۰٬۰۰۰</text><text x="225" y="92" text-anchor="end" class="muted small">ریال</text><circle cx="35" cy="35" r="18" fill="#e8f8fb"/><text x="35" y="41" text-anchor="middle">◫</text></g>
+      </g>
+
+      <!-- charts -->
+      <g id="cash-flow-panel">
+        <rect x="735" y="580" width="1030" height="310" rx="12" class="card"/>
+        <text x="1735" y="615" text-anchor="end" class="h3">جریان نقدی ماهانه</text><text x="1735" y="638" text-anchor="end" class="muted small">دریافت و پرداخت شش ماه اخیر</text>
+        <line x1="780" y1="830" x2="1715" y2="830" class="divider"/><line x1="780" y1="760" x2="1715" y2="760" class="divider"/><line x1="780" y1="690" x2="1715" y2="690" class="divider"/>
+        <polyline points="820,790 980,735 1140,755 1300,680 1460,720 1620,650" fill="none" stroke="#155bd7" stroke-width="4"/>
+        <polyline points="820,815 980,780 1140,800 1300,750 1460,765 1620,715" fill="none" stroke="#e1a72c" stroke-width="4"/>
+        <g class="muted tiny"><text x="820" y="855">اسفند</text><text x="980" y="855">فروردین</text><text x="1140" y="855">اردیبهشت</text><text x="1300" y="855">خرداد</text><text x="1460" y="855">تیر</text><text x="1620" y="855">مرداد</text></g>
+      </g>
+      <g id="income-mix-panel">
+        <rect x="1780" y="580" width="530" height="310" rx="12" class="card"/>
+        <text x="2280" y="615" text-anchor="end" class="h3">ترکیب درآمد</text><text x="2280" y="638" text-anchor="end" class="muted small">از ابتدای ماه تا امروز</text>
+        <circle cx="2045" cy="748" r="85" fill="none" stroke="#e9eef6" stroke-width="32"/>
+        <path d="M2045 663 A85 85 0 1 1 1972 792" fill="none" stroke="#155bd7" stroke-width="32"/>
+        <path d="M1972 792 A85 85 0 0 1 2010 670" fill="none" stroke="#21a36a" stroke-width="32"/>
+        <text x="2045" y="742" text-anchor="middle" class="muted small">کل درآمد</text><text x="2045" y="767" text-anchor="middle" class="h3">۴۲۰ میلیون</text>
+        <text x="2260" y="720" text-anchor="end" class="small">● فروش کالا ۷۲٪</text><text x="2260" y="750" text-anchor="end" class="small success">● خدمات ۲۸٪</text>
+      </g>
+
+      <!-- recent and approvals -->
+      <g id="recent-operations">
+        <rect x="735" y="910" width="1030" height="385" rx="12" class="card"/>
+        <text x="1735" y="948" text-anchor="end" class="h3">آخرین عملیات</text><text x="770" y="948" class="primary small">← مشاهده همه</text>
+        <rect x="755" y="970" width="990" height="40" class="soft"/>
+        <g class="muted small"><text x="1670" y="996" text-anchor="end">نوع عملیات</text><text x="1460" y="996" text-anchor="end">شماره سند</text><text x="1240" y="996" text-anchor="end">تاریخ</text><text x="1030" y="996" text-anchor="end">مبلغ</text><text x="820" y="996" text-anchor="end">وضعیت</text></g>
+        <g class="small">
+          <text x="1670" y="1045" text-anchor="end">فاکتور فروش</text><text x="1460" y="1045" text-anchor="end">SINV-00041</text><text x="1240" y="1045" text-anchor="end">۱۴۰۵/۰۵/۰۵</text><text x="1030" y="1045" text-anchor="end">۱۲۵٬۴۰۰٬۰۰۰</text><text x="820" y="1045" text-anchor="end" class="success">● ثبت‌شده</text>
+          <text x="1670" y="1100" text-anchor="end">دریافت/پرداخت</text><text x="1460" y="1100" text-anchor="end">ACC-PAY-0029</text><text x="1240" y="1100" text-anchor="end">۱۴۰۵/۰۵/۰۵</text><text x="1030" y="1100" text-anchor="end">۸۴٬۰۰۰٬۰۰۰</text><text x="820" y="1100" text-anchor="end" class="warning">● پیش‌نویس</text>
+          <text x="1670" y="1155" text-anchor="end">عملیات انبار</text><text x="1460" y="1155" text-anchor="end">MAT-STE-0017</text><text x="1240" y="1155" text-anchor="end">۱۴۰۵/۰۵/۰۴</text><text x="1030" y="1155" text-anchor="end">—</text><text x="820" y="1155" text-anchor="end" class="success">● ثبت‌شده</text>
+          <text x="1670" y="1210" text-anchor="end">سند حسابداری</text><text x="1460" y="1210" text-anchor="end">ACC-JV-0032</text><text x="1240" y="1210" text-anchor="end">۱۴۰۵/۰۵/۰۴</text><text x="1030" y="1210" text-anchor="end">۳۹٬۵۰۰٬۰۰۰</text><text x="820" y="1210" text-anchor="end" class="warning">● در انتظار تأیید</text>
+        </g>
+      </g>
+      <g id="approval-inbox">
+        <rect x="1780" y="910" width="530" height="385" rx="12" class="card"/>
+        <text x="2280" y="948" text-anchor="end" class="h3">کارتابل من</text><text x="1805" y="948" class="warning small">۳ درخواست</text>
+        <g class="small"><text x="2260" y="1005" text-anchor="end">⏳ فاکتور فروش SINV-00042</text><text x="2260" y="1028" text-anchor="end" class="muted">سارا محمدی • مشاهده ←</text><line x1="1810" y1="1050" x2="2280" y2="1050" class="divider"/>
+          <text x="2260" y="1090" text-anchor="end">⏳ درخواست پرداخت ACC-PAY-0030</text><text x="2260" y="1113" text-anchor="end" class="muted">واحد خرید • مشاهده ←</text><line x1="1810" y1="1135" x2="2280" y2="1135" class="divider"/>
+          <text x="2260" y="1175" text-anchor="end">⏳ سند حسابداری ACC-JV-0033</text><text x="2260" y="1198" text-anchor="end" class="muted">حسابداری • مشاهده ←</text></g>
+      </g>
+    </g>
+
+    <!-- quick access drawer -->
+    <g id="quick-access-drawer" class="shadow">
+      <rect x="80" y="360" width="300" height="900" rx="12" class="surface stroke"/>
+      <text x="350" y="405" text-anchor="end" class="h3">دسترسی سریع</text><text x="110" y="405" class="h2">×</text><line x1="80" y1="425" x2="380" y2="425" class="divider"/>
+      <text x="350" y="458" text-anchor="end" class="muted small">داشبوردها</text>
+      <rect x="95" y="475" width="270" height="48" rx="8" class="blue-soft stroke"/><text x="345" y="505" text-anchor="end" class="primary body">◉ داشبورد مدیریتی</text>
+      <text x="345" y="560" text-anchor="end" class="body">▥ داشبورد مالی</text>
+      <text x="345" y="610" text-anchor="end" class="body">🏢 داشبورد شعب</text>
+      <text x="345" y="660" text-anchor="end" class="body">♟ داشبورد منابع انسانی</text>
+      <line x1="95" y1="690" x2="365" y2="690" class="divider"/>
+      <text x="350" y="730" text-anchor="end" class="muted small">نماهای ذخیره‌شده</text>
+      <text x="345" y="775" text-anchor="end" class="body">☆ گزارش فروش ماهانه</text>
+      <text x="345" y="825" text-anchor="end" class="body">☆ وضعیت دریافت‌ها</text>
+      <text x="345" y="875" text-anchor="end" class="body">☆ تحلیل موجودی انبار</text>
+      <text x="345" y="925" text-anchor="end" class="body">☆ عملکرد پرسنل</text>
+      <rect x="100" y="1185" width="260" height="46" rx="8" class="soft stroke"/><text x="230" y="1214" text-anchor="middle" class="small">⚙ مدیریت نماهای ذخیره‌شده</text>
+    </g>
+
+    <!-- notifications -->
+    <g id="notification-popover" class="shadow">
+      <rect x="405" y="240" width="390" height="300" rx="12" class="surface stroke"/>
+      <text x="765" y="280" text-anchor="end" class="h3">اعلان‌ها</text><text x="435" y="280" class="primary small">خواندن همه</text>
+      <rect x="420" y="302" width="360" height="64" rx="8" class="blue-soft"/><text x="755" y="327" text-anchor="end" class="small">● درخواست تأیید فاکتور فروش</text><text x="755" y="350" text-anchor="end" class="muted tiny">سارا محمدی • ۱۸:۲۱ • مشاهده ←</text>
+      <rect x="420" y="375" width="360" height="64" rx="8" class="surface"/><text x="755" y="400" text-anchor="end" class="small">○ دریافت مبلغ ۲۵٬۰۰۰٬۰۰۰ ریال</text><text x="755" y="423" text-anchor="end" class="muted tiny">شرکت نوین تجارت پارس • ۰۹:۱۵</text>
+      <rect x="420" y="448" width="360" height="64" rx="8" class="surface"/><text x="755" y="473" text-anchor="end" class="small">○ سررسید چک شماره ۱۳۴۵۶</text><text x="755" y="496" text-anchor="end" class="muted tiny">فردا • خزانه‌داری ←</text>
+    </g>
+  </g>
+
+  <!-- ARTBOARD 2: ALL RIBBONS -->
+  <g id="all-module-ribbons">
+    <rect x="40" y="1400" width="2320" height="1040" rx="18" class="surface stroke shadow"/>
+    <text x="2310" y="1452" text-anchor="end" class="h1">فهرست کامل منوها و Ribbonهای زمینه‌ای</text>
+    <text x="2310" y="1482" text-anchor="end" class="muted body">هر فرمان دارای آیکن، عنوان و مقصد عملیاتی مشخص در Flutter PWA است.</text>
+
+    <g transform="translate(80 1520)">
+      <!-- reusable row backgrounds -->
+      <rect width="2240" height="92" rx="10" class="soft stroke"/><rect y="104" width="2240" height="92" rx="10" class="soft stroke"/><rect y="208" width="2240" height="92" rx="10" class="soft stroke"/>
+      <rect y="312" width="2240" height="92" rx="10" class="soft stroke"/><rect y="416" width="2240" height="92" rx="10" class="soft stroke"/><rect y="520" width="2240" height="92" rx="10" class="soft stroke"/>
+      <rect y="624" width="2240" height="92" rx="10" class="soft stroke"/><rect y="728" width="2240" height="92" rx="10" class="soft stroke"/><rect y="832" width="2240" height="92" rx="10" class="soft stroke"/>
+
+      <g class="body">
+        <text x="2185" y="36" text-anchor="end" class="primary h3">داشبورد</text>
+        <text x="2000" y="36" text-anchor="end">⌂ خانه</text><text x="1850" y="36" text-anchor="end">▣ کارتابل</text><text x="1690" y="36" text-anchor="end">☷ فعالیت‌ها</text>
+        <text x="1480" y="36" text-anchor="end">＋ سند جدید</text><text x="1280" y="36" text-anchor="end">⇄ دریافت/پرداخت</text><text x="1070" y="36" text-anchor="end">▤ فاکتور</text><text x="900" y="36" text-anchor="end">✓ گزارش کار</text>
+        <text x="690" y="36" text-anchor="end">↻ به‌روزرسانی</text><text x="490" y="36" text-anchor="end">⚙ شخصی‌سازی</text><text x="280" y="36" text-anchor="end">⛶ تمام‌صفحه</text>
+        <text x="2185" y="140" text-anchor="end" class="primary h3">مالی</text>
+        <text x="2000" y="140" text-anchor="end">＋ سند جدید</text><text x="1810" y="140" text-anchor="end">▤ دفتر روزنامه</text><text x="1610" y="140" text-anchor="end">▥ دفتر کل</text><text x="1430" y="140" text-anchor="end"># شماره‌گذاری</text>
+        <text x="1190" y="140" text-anchor="end">📅 دوره‌ها</text><text x="1015" y="140" text-anchor="end">🔒 قفل دوره</text><text x="820" y="140" text-anchor="end">↪ اختتامیه</text><text x="630" y="140" text-anchor="end">↩ افتتاحیه</text>
+        <text x="2185" y="244" text-anchor="end" class="primary h3">خزانه‌داری</text>
+        <text x="1970" y="244" text-anchor="end">🏦 حساب‌های بانکی</text><text x="1730" y="244" text-anchor="end">▣ صندوق‌ها</text><text x="1540" y="244" text-anchor="end">◫ تنخواه‌ها</text><text x="1350" y="244" text-anchor="end">▤ چک‌ها</text>
+        <text x="1130" y="244" text-anchor="end">✓ مغایرت بانکی</text><text x="900" y="244" text-anchor="end">∑ شمارش نقد</text>
+        <text x="2185" y="348" text-anchor="end" class="primary h3">فروش</text>
+        <text x="2000" y="348" text-anchor="end">▤ فاکتور فروش</text><text x="1780" y="348" text-anchor="end">♟ مشتریان</text><text x="1590" y="348" text-anchor="end">🛒 سفارش‌ها</text>
+        <text x="2185" y="452" text-anchor="end" class="primary h3">خرید</text>
+        <text x="2000" y="452" text-anchor="end">▤ فاکتور خرید</text><text x="1780" y="452" text-anchor="end">♟ تأمین‌کنندگان</text><text x="1530" y="452" text-anchor="end">🛍 سفارش خرید</text>
+        <text x="2185" y="556" text-anchor="end" class="primary h3">انبار</text>
+        <text x="1980" y="556" text-anchor="end">⇄ رسید و حواله</text><text x="1770" y="556" text-anchor="end">▦ انبارها</text><text x="1570" y="556" text-anchor="end">▧ کالا و خدمات</text>
+        <text x="2185" y="660" text-anchor="end" class="primary h3">منابع انسانی</text>
+        <text x="1970" y="660" text-anchor="end">♙ پرسنل</text><text x="1780" y="660" text-anchor="end">⌘ چارت سازمانی</text><text x="1540" y="660" text-anchor="end">▣ سمت‌ها</text>
+        <text x="1340" y="660" text-anchor="end">✓ گزارش روزانه</text><text x="1110" y="660" text-anchor="end">✉ مکاتبات</text><text x="920" y="660" text-anchor="end">☑ اقدامات</text>
+        <text x="2185" y="764" text-anchor="end" class="primary h3">گزارش‌ها</text>
+        <text x="1970" y="764" text-anchor="end">⚖ تراز آزمایشی</text><text x="1740" y="764" text-anchor="end">⌁ سود و زیان</text><text x="1520" y="764" text-anchor="end">◔ وضعیت مالی</text>
+        <text x="2185" y="868" text-anchor="end" class="primary h3">تنظیمات</text>
+        <text x="1950" y="868" text-anchor="end">🏢 شرکت و شعب</text><text x="1720" y="868" text-anchor="end">♟ دسترسی‌ها</text><text x="1510" y="868" text-anchor="end">🛡 انطباق ایران</text>
+        <text x="1280" y="868" text-anchor="end">▣ در انتظار من</text><text x="1060" y="868" text-anchor="end">↗ ارسالی‌ها</text><text x="870" y="868" text-anchor="end">↻ تاریخچه</text><text x="690" y="868" text-anchor="end">⌘ سیاست‌ها</text><text x="500" y="868" text-anchor="end">♟ جانشینی</text>
+      </g>
+      <g class="muted tiny">
+        <text x="2185" y="68" text-anchor="end">نمای کلی • ایجاد سریع • نمایش</text><text x="2185" y="172" text-anchor="end">اسناد حسابداری • دوره مالی</text>
+        <text x="2185" y="276" text-anchor="end">خزانه • کنترل</text><text x="2185" y="380" text-anchor="end">عملیات فروش</text><text x="2185" y="484" text-anchor="end">عملیات خرید</text>
+        <text x="2185" y="588" text-anchor="end">عملیات انبار</text><text x="2185" y="692" text-anchor="end">پرسنل و سازمان • فعالیت سازمانی</text><text x="2185" y="796" text-anchor="end">گزارش‌های مالی</text><text x="2185" y="900" text-anchor="end">تنظیمات • کارتابل و گردش تأیید</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ARTBOARD 3: OVERLAYS AND FORMS -->
+  <g id="overlay-and-form-catalog">
+    <rect x="40" y="2480" width="2320" height="970" rx="18" class="surface stroke shadow"/>
+    <text x="2310" y="2532" text-anchor="end" class="h1">کشوها، پنجره‌ها و فرم‌های عملیاتی</text>
+    <text x="2310" y="2562" text-anchor="end" class="muted body">همه کنترل‌ها به API واقعی، WorkContext مجاز و قرارداد Metadata-driven متصل‌اند.</text>
+
+    <!-- quick create drawer -->
+    <g id="quick-create-drawer" transform="translate(2020 2600)">
+      <rect width="300" height="800" rx="12" class="surface stroke"/>
+      <text x="270" y="42" text-anchor="end" class="h3">ایجاد سریع</text><text x="25" y="42" class="h2">×</text><line x1="0" y1="60" x2="300" y2="60" class="divider"/>
+      <text x="275" y="95" text-anchor="end" class="small">نوع عملیات *</text><rect x="20" y="108" width="260" height="44" rx="7" class="chip"/><text x="260" y="136" text-anchor="end" class="body">فاکتور فروش⌄</text>
+      <text x="275" y="185" text-anchor="end" class="small">شرکت</text><rect x="20" y="198" width="260" height="44" rx="7" class="soft stroke"/><text x="260" y="226" text-anchor="end" class="body">شرکت آسود دمو 🔒</text>
+      <text x="275" y="275" text-anchor="end" class="small">شعبه</text><rect x="20" y="288" width="260" height="44" rx="7" class="soft stroke"/><text x="260" y="316" text-anchor="end" class="body">دفتر مرکزی 🔒</text>
+      <rect x="20" y="365" width="260" height="110" rx="8" class="blue-soft"/><text x="265" y="395" text-anchor="end" class="small">فرم از Metadata واقعی DocType</text><text x="265" y="420" text-anchor="end" class="muted tiny">نوع، الزام، گزینه و Link هر فیلد</text><text x="265" y="445" text-anchor="end" class="muted tiny">از ERPNext/Frappe v15 دریافت می‌شود.</text>
+      <rect x="20" y="725" width="260" height="50" rx="8" class="button"/><text x="150" y="756" text-anchor="middle" class="buttonText">▤ تکمیل و ثبت پیش‌نویس</text>
+    </g>
+
+    <!-- typed operation form -->
+    <g id="typed-operation-form" transform="translate(1040 2600)">
+      <rect width="940" height="800" rx="12" class="surface stroke shadow"/>
+      <text x="900" y="44" text-anchor="end" class="h2">＋ پیش‌نویس فاکتور فروش</text><line x1="0" y1="65" x2="940" y2="65" class="divider"/>
+      <text x="900" y="100" text-anchor="end" class="small">مشتری *</text><rect x="490" y="112" width="420" height="44" rx="7" class="chip"/><text x="880" y="140" text-anchor="end" class="muted body">انتخاب مشتری</text><text x="515" y="140" class="primary h3">⌕</text>
+      <text x="450" y="100" text-anchor="end" class="small">تاریخ ثبت *</text><rect x="20" y="112" width="420" height="44" rx="7" class="chip"/><text x="410" y="140" text-anchor="end" class="body">۲۰۲۶-۰۷-۲۷</text><text x="45" y="140" class="primary">📅</text>
+      <text x="900" y="190" text-anchor="end" class="small">تاریخ سررسید</text><rect x="490" y="202" width="420" height="44" rx="7" class="chip"/><text x="515" y="230" class="primary">📅</text>
+      <text x="450" y="190" text-anchor="end" class="small">ارز</text><rect x="20" y="202" width="420" height="44" rx="7" class="chip"/><text x="410" y="230" text-anchor="end" class="body">IRR⌄</text>
+      <rect x="490" y="270" width="420" height="46" rx="7" class="soft stroke"/><text x="880" y="299" text-anchor="end" class="body">☑ اثر هم‌زمان در انبار</text>
+      <text x="450" y="280" text-anchor="end" class="small">شرح</text><rect x="20" y="292" width="420" height="70" rx="7" class="chip"/>
+      <line x1="20" y1="390" x2="910" y2="390" class="divider"/>
+      <text x="900" y="430" text-anchor="end" class="h3">ردیف‌های سند *</text><rect x="35" y="405" width="125" height="38" rx="7" class="blue-soft stroke"/><text x="98" y="430" text-anchor="middle" class="primary small">＋ افزودن ردیف</text>
+      <rect x="20" y="458" width="890" height="205" rx="9" class="soft stroke"/>
+      <text x="880" y="490" text-anchor="end" class="h3">ردیف ۱</text><text x="45" y="490" class="danger h3">⌫</text>
+      <text x="875" y="530" text-anchor="end" class="small">کالا یا خدمت *</text><rect x="490" y="542" width="390" height="42" rx="7" class="chip"/><text x="515" y="568" class="primary">⌕</text>
+      <text x="450" y="530" text-anchor="end" class="small">تعداد *</text><rect x="260" y="542" width="180" height="42" rx="7" class="chip"/><text x="420" y="568" text-anchor="end" class="body">۲</text>
+      <text x="220" y="530" text-anchor="end" class="small">نرخ *</text><rect x="20" y="542" width="190" height="42" rx="7" class="chip"/><text x="190" y="568" text-anchor="end" class="body">۶۲٬۷۰۰٬۰۰۰</text>
+      <text x="875" y="615" text-anchor="end" class="small">انبار</text><rect x="490" y="625" width="390" height="34" rx="7" class="chip"/><text x="515" y="648" class="primary">⌕</text>
+      <text x="450" y="615" text-anchor="end" class="small">مرکز هزینه</text><rect x="20" y="625" width="420" height="34" rx="7" class="chip"/><text x="45" y="648" class="primary">⌕</text>
+      <rect x="745" y="725" width="165" height="50" rx="8" class="button"/><text x="827" y="756" text-anchor="middle" class="buttonText">▣ ثبت پیش‌نویس</text>
+      <rect x="580" y="725" width="145" height="50" rx="8" class="soft stroke"/><text x="652" y="756" text-anchor="middle" class="body">انصراف</text>
+    </g>
+
+    <!-- search/help/context catalog -->
+    <g id="auxiliary-dialogs" transform="translate(80 2600)">
+      <rect width="910" height="245" rx="12" class="surface stroke"/>
+      <text x="875" y="42" text-anchor="end" class="h3">⌕ جست‌وجوی سراسری</text><rect x="25" y="62" width="860" height="44" rx="8" class="chip"/><text x="855" y="90" text-anchor="end" class="muted body">جست‌وجوی ماژول یا فرمان...</text>
+      <text x="860" y="145" text-anchor="end" class="body">▤ فاکتور فروش — فروش</text><text x="860" y="183" text-anchor="end" class="body">🏦 حساب‌های بانکی — خزانه‌داری</text><text x="860" y="221" text-anchor="end" class="body">⚖ تراز آزمایشی — گزارش‌ها</text>
+
+      <rect y="265" width="440" height="250" rx="12" class="surface stroke"/>
+      <text x="405" y="307" text-anchor="end" class="h3">؟ راهنمای میزکار</text><text x="405" y="348" text-anchor="end" class="small">منوی اصلی حوزه کاری را تعیین می‌کند.</text><text x="405" y="376" text-anchor="end" class="small">Ribbon فرمان‌های زمینه‌ای را نشان می‌دهد.</text><text x="405" y="404" text-anchor="end" class="small">شرکت و شعبه فقط از دسترسی‌های مجاز انتخاب می‌شوند.</text><rect x="25" y="445" width="130" height="42" rx="7" class="button"/><text x="90" y="472" text-anchor="middle" class="buttonText">متوجه شدم</text>
+
+      <rect x="470" y="265" width="440" height="250" rx="12" class="surface stroke"/>
+      <text x="875" y="307" text-anchor="end" class="h3">🏢 انتخاب زمینه فعال</text><text x="875" y="345" text-anchor="end" class="small primary">◉ شرکت آسود — دفتر مرکزی</text><text x="875" y="382" text-anchor="end" class="small">○ شرکت آسود — شعبه شرق</text><text x="875" y="419" text-anchor="end" class="small">○ شرکت وابسته نوین — دفتر مرکزی</text><text x="875" y="470" text-anchor="end" class="muted tiny">فعال‌سازی با Session API و کنترل مجدد Backend</text>
+
+      <rect y="535" width="440" height="265" rx="12" class="surface stroke"/>
+      <text x="405" y="577" text-anchor="end" class="h3">👤 پروفایل و زمینه فعال</text><circle cx="380" cy="632" r="28" class="blue-soft"/><text x="380" y="640" text-anchor="middle">👤</text><text x="335" y="625" text-anchor="end" class="body">کاربر جاری</text><text x="335" y="649" text-anchor="end" class="muted small">شرکت آسود — دفتر مرکزی</text><rect x="25" y="720" width="190" height="42" rx="7" class="soft stroke"/><text x="120" y="747" text-anchor="middle" class="small">تنظیمات و دسترسی</text>
+
+      <rect x="470" y="535" width="440" height="265" rx="12" class="surface stroke"/>
+      <text x="875" y="577" text-anchor="end" class="h3">🔔 رفتار اعلان</text><text x="875" y="620" text-anchor="end" class="small">● اعلان خوانده‌نشده</text><text x="875" y="655" text-anchor="end" class="small">○ اعلان خوانده‌شده</text><text x="875" y="690" text-anchor="end" class="small">انتخاب ← خواندن ← هدایت به ماژول سند</text><text x="875" y="725" text-anchor="end" class="small">«خواندن همه» ← Mutation مجوزمحور</text><text x="875" y="770" text-anchor="end" class="muted tiny">Notification فقط متعلق به User جاری تغییر می‌کند.</text>
+    </g>
+  </g>
+
+  <text x="1200" y="3480" text-anchor="middle" class="muted small">ASOUD ERP — Complete RTL Dashboard UI Specification v1.1 — Editable SVG</text>
+</svg>

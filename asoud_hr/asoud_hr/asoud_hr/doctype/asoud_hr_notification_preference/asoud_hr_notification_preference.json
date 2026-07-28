@@ -1,0 +1,25 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD HR Notification Preference",
+  "module": "ASOUD HR",
+  "autoname": "field:user",
+  "title_field": "user",
+  "track_changes": 1,
+  "field_order": ["user", "in_app_enabled", "work_report_enabled", "communication_enabled", "deadline_enabled", "quiet_from", "quiet_to"],
+  "fields": [
+    {"fieldname": "user", "label": "User", "fieldtype": "Link", "options": "User", "reqd": 1, "unique": 1, "in_list_view": 1},
+    {"fieldname": "in_app_enabled", "label": "In-app Notifications", "fieldtype": "Check", "default": "1"},
+    {"fieldname": "work_report_enabled", "label": "Work Report Notifications", "fieldtype": "Check", "default": "1"},
+    {"fieldname": "communication_enabled", "label": "Communication Notifications", "fieldtype": "Check", "default": "1"},
+    {"fieldname": "deadline_enabled", "label": "Deadline Reminders", "fieldtype": "Check", "default": "1"},
+    {"fieldname": "quiet_from", "label": "Quiet Hours From", "fieldtype": "Time"},
+    {"fieldname": "quiet_to", "label": "Quiet Hours To", "fieldtype": "Time"}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "ASOUD HR Manager", "read": 1},
+    {"role": "ASOUD HR User", "read": 1, "write": 1, "create": 1},
+    {"role": "ASOUD Employee", "read": 1, "write": 1, "create": 1}
+  ]
+}
+

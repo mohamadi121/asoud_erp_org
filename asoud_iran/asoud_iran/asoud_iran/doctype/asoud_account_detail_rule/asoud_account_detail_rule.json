@@ -1,0 +1,21 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Account Detail Rule",
+  "module": "ASOUD Iran",
+  "autoname": "ASOUD-ADR-.#####",
+  "track_changes": 1,
+  "field_order": ["company", "account", "detail_type", "required", "enabled"],
+  "fields": [
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "account", "label": "Account", "fieldtype": "Link", "options": "Account", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "detail_type", "label": "Allowed Detail Type", "fieldtype": "Select", "options": "Customer\nSupplier\nEmployee\nBank\nCashbox\nProject\nCost Center\nBranch\nOther", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "required", "label": "Required", "fieldtype": "Check", "default": "0"},
+    {"fieldname": "enabled", "label": "Enabled", "fieldtype": "Check", "default": "1", "in_list_view": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1},
+    {"role": "Accounts Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "Accounts User", "read": 1}
+  ]
+}
+

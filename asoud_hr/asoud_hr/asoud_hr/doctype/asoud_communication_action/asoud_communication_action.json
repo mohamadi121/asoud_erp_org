@@ -1,0 +1,31 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Communication Action",
+  "module": "ASOUD HR",
+  "autoname": "HR-ACT-.YYYY.-.#####",
+  "title_field": "action_title",
+  "track_changes": 1,
+  "field_order": ["communication", "company", "branch", "action_title", "assigned_to", "due_on", "priority", "expected_result", "status", "completed_on", "result", "work_report"],
+  "fields": [
+    {"fieldname": "communication", "label": "Communication", "fieldtype": "Link", "options": "ASOUD Internal Communication", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "branch", "label": "Branch", "fieldtype": "Link", "options": "ASOUD Branch", "read_only": 1},
+    {"fieldname": "action_title", "label": "Action", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "assigned_to", "label": "Assigned To", "fieldtype": "Link", "options": "User", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
+    {"fieldname": "due_on", "label": "Due On", "fieldtype": "Datetime", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "priority", "label": "Priority", "fieldtype": "Select", "options": "Low\nNormal\nHigh\nUrgent", "default": "Normal", "reqd": 1},
+    {"fieldname": "expected_result", "label": "Expected Result", "fieldtype": "Small Text", "reqd": 1},
+    {"fieldname": "status", "label": "Status", "fieldtype": "Select", "options": "Open\nIn Progress\nBlocked\nCompleted\nCancelled", "default": "Open", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
+    {"fieldname": "completed_on", "label": "Completed On", "fieldtype": "Datetime", "read_only": 1},
+    {"fieldname": "result", "label": "Result", "fieldtype": "Small Text"},
+    {"fieldname": "work_report", "label": "Related Work Report", "fieldtype": "Link", "options": "ASOUD Daily Work Report"}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1},
+    {"role": "ASOUD HR Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "ASOUD HR User", "read": 1, "write": 1, "create": 1},
+    {"role": "ASOUD Employee", "read": 1, "write": 1},
+    {"role": "ASOUD HR Auditor", "read": 1}
+  ]
+}
+

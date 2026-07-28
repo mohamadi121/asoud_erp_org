@@ -1,0 +1,29 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Bank Statement Line",
+  "module": "ASOUD Core",
+  "autoname": "field:fingerprint",
+  "field_order": ["fingerprint", "statement_import", "company", "branch", "posting_date", "reference", "description", "deposit", "withdrawal", "match_status", "matched_voucher_type", "matched_voucher", "match_score", "matched_by", "matched_at"],
+  "fields": [
+    {"fieldname": "fingerprint", "label": "Fingerprint", "fieldtype": "Data", "reqd": 1, "unique": 1},
+    {"fieldname": "statement_import", "label": "Statement Import", "fieldtype": "Link", "options": "ASOUD Bank Statement Import", "reqd": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1},
+    {"fieldname": "branch", "label": "Branch", "fieldtype": "Link", "options": "ASOUD Branch", "reqd": 1},
+    {"fieldname": "posting_date", "label": "Posting Date", "fieldtype": "Date", "reqd": 1},
+    {"fieldname": "reference", "label": "Reference", "fieldtype": "Data"},
+    {"fieldname": "description", "label": "Description", "fieldtype": "Small Text"},
+    {"fieldname": "deposit", "label": "Deposit", "fieldtype": "Currency", "default": "0"},
+    {"fieldname": "withdrawal", "label": "Withdrawal", "fieldtype": "Currency", "default": "0"},
+    {"fieldname": "match_status", "label": "Match Status", "fieldtype": "Select", "options": "Unmatched\nSuggested\nMatched\nIgnored", "default": "Unmatched", "read_only": 1},
+    {"fieldname": "matched_voucher_type", "label": "Voucher Type", "fieldtype": "Link", "options": "DocType", "read_only": 1},
+    {"fieldname": "matched_voucher", "label": "Voucher", "fieldtype": "Dynamic Link", "options": "matched_voucher_type", "read_only": 1},
+    {"fieldname": "match_score", "label": "Match Score", "fieldtype": "Int", "read_only": 1},
+    {"fieldname": "matched_by", "label": "Matched By", "fieldtype": "Link", "options": "User", "read_only": 1},
+    {"fieldname": "matched_at", "label": "Matched At", "fieldtype": "Datetime", "read_only": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1},
+    {"role": "Accounts Manager", "read": 1},
+    {"role": "Accounts User", "read": 1}
+  ]
+}

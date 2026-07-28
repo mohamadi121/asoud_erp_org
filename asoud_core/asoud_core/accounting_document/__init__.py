@@ -1,0 +1,2 @@
+"""Accounting document registry domain."""
+

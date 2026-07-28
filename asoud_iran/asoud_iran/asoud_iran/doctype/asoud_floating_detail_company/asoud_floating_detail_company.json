@@ -1,0 +1,14 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Floating Detail Company",
+  "module": "ASOUD Iran",
+  "istable": 1,
+  "field_order": ["company", "detail_code", "enabled"],
+  "fields": [
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "detail_code", "label": "Detail Code", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "enabled", "label": "Enabled", "fieldtype": "Check", "default": "1", "in_list_view": 1}
+  ],
+  "permissions": []
+}
+

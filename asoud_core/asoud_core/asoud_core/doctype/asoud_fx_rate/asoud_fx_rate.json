@@ -1,0 +1,25 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD FX Rate",
+  "module": "ASOUD Core",
+  "autoname": "prompt",
+  "is_submittable": 1,
+  "track_changes": 1,
+  "field_order": ["holding", "source_currency", "reporting_currency", "rate_type", "effective_from", "effective_to", "rate", "source_reference", "evidence", "approved_by"],
+  "fields": [
+    {"fieldname": "holding", "label": "Holding", "fieldtype": "Link", "options": "ASOUD Holding", "reqd": 1},
+    {"fieldname": "source_currency", "label": "Source Currency", "fieldtype": "Link", "options": "Currency", "reqd": 1},
+    {"fieldname": "reporting_currency", "label": "Reporting Currency", "fieldtype": "Link", "options": "Currency", "reqd": 1},
+    {"fieldname": "rate_type", "label": "Rate Type", "fieldtype": "Select", "options": "Closing\nAverage\nHistorical", "reqd": 1},
+    {"fieldname": "effective_from", "label": "Effective From", "fieldtype": "Date", "reqd": 1},
+    {"fieldname": "effective_to", "label": "Effective To", "fieldtype": "Date"},
+    {"fieldname": "rate", "label": "Rate", "fieldtype": "Float", "precision": "9", "reqd": 1},
+    {"fieldname": "source_reference", "label": "Source Reference", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "evidence", "label": "Evidence", "fieldtype": "Attach"},
+    {"fieldname": "approved_by", "label": "Approved By", "fieldtype": "Link", "options": "User", "reqd": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1},
+    {"role": "Accounts Manager", "read": 1, "write": 1, "create": 1, "submit": 1}
+  ]
+}

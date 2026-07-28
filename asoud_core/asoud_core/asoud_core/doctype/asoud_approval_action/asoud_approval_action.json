@@ -1,0 +1,29 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Approval Action",
+  "module": "ASOUD Core",
+  "autoname": "format:APR-ACT-{YYYY}-{#####}",
+  "track_changes": 0,
+  "field_order": ["approval_request", "sequence", "approver_key", "action", "actor", "acting_for", "acted_on", "comment", "request_version", "ip_address", "user_agent", "before_status", "after_status"],
+  "fields": [
+    {"fieldname": "approval_request", "label": "Approval Request", "fieldtype": "Link", "options": "ASOUD Approval Request", "reqd": 1, "in_list_view": 1, "read_only": 1},
+    {"fieldname": "sequence", "label": "Sequence", "fieldtype": "Int", "reqd": 1, "read_only": 1},
+    {"fieldname": "approver_key", "label": "Approver Key", "fieldtype": "Data", "reqd": 1, "read_only": 1},
+    {"fieldname": "action", "label": "Action", "fieldtype": "Select", "options": "Approve\nReject\nReturn", "reqd": 1, "in_list_view": 1, "read_only": 1},
+    {"fieldname": "actor", "label": "Actor", "fieldtype": "Link", "options": "User", "reqd": 1, "in_list_view": 1, "read_only": 1},
+    {"fieldname": "acting_for", "label": "Acting For", "fieldtype": "Link", "options": "User", "read_only": 1},
+    {"fieldname": "acted_on", "label": "Acted On", "fieldtype": "Datetime", "reqd": 1, "in_list_view": 1, "read_only": 1},
+    {"fieldname": "comment", "label": "Comment", "fieldtype": "Small Text", "read_only": 1},
+    {"fieldname": "request_version", "label": "Request Version", "fieldtype": "Data", "read_only": 1},
+    {"fieldname": "ip_address", "label": "IP Address", "fieldtype": "Data", "read_only": 1},
+    {"fieldname": "user_agent", "label": "User Agent", "fieldtype": "Small Text", "read_only": 1},
+    {"fieldname": "before_status", "label": "Before Status", "fieldtype": "Data", "read_only": 1},
+    {"fieldname": "after_status", "label": "After Status", "fieldtype": "Data", "read_only": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "report": 1, "export": 1},
+    {"role": "Accounts Manager", "read": 1, "report": 1},
+    {"role": "ASOUD HR Manager", "read": 1, "report": 1},
+    {"role": "ASOUD Employee", "read": 1}
+  ]
+}

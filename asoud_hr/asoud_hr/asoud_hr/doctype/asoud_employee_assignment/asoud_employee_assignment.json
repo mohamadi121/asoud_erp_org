@@ -1,0 +1,30 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Employee Assignment",
+  "module": "ASOUD HR",
+  "autoname": "HR-ASG-.YYYY.-.#####",
+  "title_field": "employee_name",
+  "track_changes": 1,
+  "field_order": ["employee", "employee_name", "company", "branch", "department", "position", "manager_employee", "from_date", "to_date", "active", "change_reason"],
+  "fields": [
+    {"fieldname": "employee", "label": "Employee", "fieldtype": "Link", "options": "Employee", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
+    {"fieldname": "employee_name", "label": "Employee Name", "fieldtype": "Data", "fetch_from": "employee.employee_name", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
+    {"fieldname": "branch", "label": "Branch", "fieldtype": "Link", "options": "ASOUD Branch", "in_list_view": 1},
+    {"fieldname": "department", "label": "Department", "fieldtype": "Link", "options": "Department", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "position", "label": "Organization Position", "fieldtype": "Link", "options": "ASOUD Organization Position", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "manager_employee", "label": "Direct Manager", "fieldtype": "Link", "options": "Employee"},
+    {"fieldname": "from_date", "label": "Effective From", "fieldtype": "Date", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "to_date", "label": "Effective To", "fieldtype": "Date"},
+    {"fieldname": "active", "label": "Active", "fieldtype": "Check", "default": "1", "in_list_view": 1},
+    {"fieldname": "change_reason", "label": "Change Reason", "fieldtype": "Small Text", "reqd": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1},
+    {"role": "ASOUD HR Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "ASOUD HR User", "read": 1, "write": 1, "create": 1},
+    {"role": "ASOUD Employee", "read": 1},
+    {"role": "ASOUD HR Auditor", "read": 1}
+  ]
+}
+

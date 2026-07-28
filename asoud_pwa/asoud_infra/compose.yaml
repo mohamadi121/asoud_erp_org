@@ -1,0 +1,178 @@
+name: asoud-erp
+
+x-erpnext-image: &erpnext_image
+  image: ${ASOUD_IMAGE:-asoud/erpnext}:${ASOUD_IMAGE_TAG:-v15-dev}
+  build:
+    context: .
+    dockerfile: docker/Dockerfile
+    additional_contexts:
+      asoud_core: ../../asoud_core
+      asoud_iran: ../../asoud_iran
+      asoud_hr: ../../asoud_hr
+    args:
+      ERPNEXT_VERSION: ${ERPNEXT_VERSION:-v15.117.0}
+  restart: unless-stopped
+  networks: [asoud]
+
+x-backend-defaults: &backend_defaults
+  <<: *erpnext_image
+  volumes:
+    - sites:/home/frappe/frappe-bench/sites
+    - logs:/home/frappe/frappe-bench/logs
+  depends_on:
+    configurator:
+      condition: service_completed_successfully
+
+services:
+  db:
+    image: mariadb:10.6
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Set DB_ROOT_PASSWORD in .env}
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "healthcheck.sh --connect --innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    networks: [asoud]
+
+  redis-cache:
+    image: redis:6.2-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    networks: [asoud]
+
+  redis-queue:
+    image: redis:6.2-alpine
+    restart: unless-stopped
+    volumes:
+      - redis-queue-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    networks: [asoud]
+
+  configurator:
+    <<: *erpnext_image
+    restart: "no"
+    entrypoint: ["bash", "-c"]
+    command:
+      - >-
+        printf 'frappe\nerpnext\nasoud_core\nasoud_iran\nasoud_hr\n' > sites/apps.txt;
+        bench set-config -g db_host db;
+        bench set-config -gp db_port 3306;
+        bench set-config -g redis_cache redis://redis-cache:6379;
+        bench set-config -g redis_queue redis://redis-queue:6379;
+        bench set-config -g redis_socketio redis://redis-queue:6379;
+        bench set-config -gp socketio_port 9000;
+        if [ -f "sites/${SITE_NAME:-asoud.localhost}/site_config.json" ]; then
+          if ! bench --site "${SITE_NAME:-asoud.localhost}" list-apps | grep -qx asoud_hr; then bench --site "${SITE_NAME:-asoud.localhost}" install-app asoud_hr; fi;
+          bench --site "${SITE_NAME:-asoud.localhost}" migrate;
+        fi;
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+    depends_on:
+      db: {condition: service_healthy}
+      redis-cache: {condition: service_healthy}
+      redis-queue: {condition: service_healthy}
+
+  create-site:
+    <<: *erpnext_image
+    restart: "no"
+    profiles: [setup]
+    entrypoint: ["bash", "-c"]
+    command:
+      - >-
+        wait-for-it -t 120 db:3306;
+        wait-for-it -t 120 redis-cache:6379;
+        wait-for-it -t 120 redis-queue:6379;
+        bench new-site "${SITE_NAME:-asoud.localhost}"
+        --mariadb-user-host-login-scope='%'
+        --admin-password "${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}"
+        --db-root-username root
+        --db-root-password "${DB_ROOT_PASSWORD:?Set DB_ROOT_PASSWORD in .env}"
+        --install-app erpnext;
+        bench --site "${SITE_NAME:-asoud.localhost}" install-app asoud_core;
+        bench --site "${SITE_NAME:-asoud.localhost}" install-app asoud_iran;
+        bench --site "${SITE_NAME:-asoud.localhost}" install-app asoud_hr;
+        bench --site "${SITE_NAME:-asoud.localhost}" set-config developer_mode 1;
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+    depends_on:
+      configurator: {condition: service_completed_successfully}
+
+  backend:
+    <<: *backend_defaults
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/127.0.0.1/8000'"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+
+  websocket:
+    <<: *backend_defaults
+    command: ["node", "/home/frappe/frappe-bench/apps/frappe/socketio.js"]
+
+  queue-short:
+    <<: *backend_defaults
+    command: ["bench", "worker", "--queue", "short,default"]
+
+  queue-long:
+    <<: *backend_defaults
+    command: ["bench", "worker", "--queue", "long"]
+
+  scheduler:
+    <<: *backend_defaults
+    command: ["bench", "schedule"]
+
+  frontend:
+    <<: *erpnext_image
+    command: ["nginx-entrypoint.sh"]
+    environment:
+      BACKEND: backend:8000
+      FRAPPE_SITE_NAME_HEADER: ${SITE_NAME:-asoud.localhost}
+      SOCKETIO: websocket:9000
+      UPSTREAM_REAL_IP_ADDRESS: 127.0.0.1
+      UPSTREAM_REAL_IP_HEADER: X-Forwarded-For
+      UPSTREAM_REAL_IP_RECURSIVE: "off"
+      PROXY_READ_TIMEOUT: 120
+      CLIENT_MAX_BODY_SIZE: 50m
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+    ports:
+      - "${HTTP_BIND:-127.0.0.1}:${HTTP_PORT:-8080}:8080"
+    depends_on:
+      backend: {condition: service_healthy}
+      websocket: {condition: service_started}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/api/method/ping || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+    networks: [asoud]
+
+volumes:
+  db-data:
+  redis-queue-data:
+  sites:
+  logs:
+
+networks:
+  asoud:
+    driver: bridge

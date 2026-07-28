@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate-document:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Validate architecture source and PDF
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          html = Path("architecture.html").read_text(encoding="utf-8")
+          pdf = Path("ASOUD_ERP_Architecture_FA_v2.4.pdf").read_bytes()
+          assert 'dir="rtl"' in html
+          assert "نسخه ۲.۴" in html
+          assert "فاز دو با اجرای موفق" in html
+          assert "ASOUD-IR-GENERAL-V1.1.0" in html
+          assert pdf.startswith(b"%PDF-")
+          assert len(pdf) > 100_000
+          print("Architecture document validation passed.")
+          PY

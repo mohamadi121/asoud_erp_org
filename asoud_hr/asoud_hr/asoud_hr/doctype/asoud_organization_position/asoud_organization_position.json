@@ -1,0 +1,29 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Organization Position",
+  "module": "ASOUD HR",
+  "autoname": "format:{company}-{position_code}",
+  "title_field": "position_title",
+  "track_changes": 1,
+  "field_order": ["position_title", "position_code", "company", "branch", "department", "designation", "reports_to_position", "manager_employee", "capacity", "enabled"],
+  "fields": [
+    {"fieldname": "position_title", "label": "Position Title", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "position_code", "label": "Position Code", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
+    {"fieldname": "branch", "label": "Branch", "fieldtype": "Link", "options": "ASOUD Branch", "in_list_view": 1, "in_standard_filter": 1},
+    {"fieldname": "department", "label": "Department", "fieldtype": "Link", "options": "Department", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "designation", "label": "Designation", "fieldtype": "Link", "options": "Designation", "reqd": 1},
+    {"fieldname": "reports_to_position", "label": "Reports To Position", "fieldtype": "Link", "options": "ASOUD Organization Position"},
+    {"fieldname": "manager_employee", "label": "Current Position Holder", "fieldtype": "Link", "options": "Employee", "read_only": 1},
+    {"fieldname": "capacity", "label": "Capacity", "fieldtype": "Int", "default": "1", "reqd": 1},
+    {"fieldname": "enabled", "label": "Enabled", "fieldtype": "Check", "default": "1", "in_list_view": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1},
+    {"role": "ASOUD HR Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "ASOUD HR User", "read": 1},
+    {"role": "ASOUD Employee", "read": 1},
+    {"role": "ASOUD HR Auditor", "read": 1}
+  ]
+}
+

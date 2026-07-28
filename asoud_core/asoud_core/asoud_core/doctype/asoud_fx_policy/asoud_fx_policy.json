@@ -1,0 +1,24 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD FX Policy",
+  "module": "ASOUD Core",
+  "autoname": "field:holding",
+  "track_changes": 1,
+  "field_order": ["holding", "reporting_currency", "asset_rate_type", "liability_rate_type", "income_rate_type", "expense_rate_type", "equity_rate_type", "cta_account_code", "cta_account_title", "enabled"],
+  "fields": [
+    {"fieldname": "holding", "label": "Holding", "fieldtype": "Link", "options": "ASOUD Holding", "reqd": 1, "unique": 1},
+    {"fieldname": "reporting_currency", "label": "Reporting Currency", "fieldtype": "Link", "options": "Currency", "reqd": 1},
+    {"fieldname": "asset_rate_type", "label": "Asset Rate", "fieldtype": "Select", "options": "Closing", "default": "Closing", "reqd": 1},
+    {"fieldname": "liability_rate_type", "label": "Liability Rate", "fieldtype": "Select", "options": "Closing", "default": "Closing", "reqd": 1},
+    {"fieldname": "income_rate_type", "label": "Income Rate", "fieldtype": "Select", "options": "Average", "default": "Average", "reqd": 1},
+    {"fieldname": "expense_rate_type", "label": "Expense Rate", "fieldtype": "Select", "options": "Average", "default": "Average", "reqd": 1},
+    {"fieldname": "equity_rate_type", "label": "Equity Rate", "fieldtype": "Select", "options": "Historical", "default": "Historical", "reqd": 1},
+    {"fieldname": "cta_account_code", "label": "CTA Account Code", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "cta_account_title", "label": "CTA Account Title", "fieldtype": "Data", "default": "Currency Translation Adjustment", "reqd": 1},
+    {"fieldname": "enabled", "label": "Enabled", "fieldtype": "Check", "default": "1"}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "Accounts Manager", "read": 1, "write": 1, "create": 1}
+  ]
+}

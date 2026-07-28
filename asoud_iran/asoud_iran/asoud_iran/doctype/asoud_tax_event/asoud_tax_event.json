@@ -1,0 +1,24 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Tax Event",
+  "module": "ASOUD Iran",
+  "autoname": "hash",
+  "title_field": "submission",
+  "field_order": ["submission", "company", "event_at", "from_status", "to_status", "provider_reference", "payload_checksum", "response_checksum", "details_json"],
+  "fields": [
+    {"fieldname": "submission", "label": "Submission", "fieldtype": "Link", "options": "ASOUD Tax Submission", "reqd": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1},
+    {"fieldname": "event_at", "label": "Event At", "fieldtype": "Datetime", "reqd": 1},
+    {"fieldname": "from_status", "label": "From Status", "fieldtype": "Data"},
+    {"fieldname": "to_status", "label": "To Status", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "provider_reference", "label": "Provider Reference", "fieldtype": "Data"},
+    {"fieldname": "payload_checksum", "label": "Payload SHA-256", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "response_checksum", "label": "Response SHA-256", "fieldtype": "Data"},
+    {"fieldname": "details_json", "label": "Details", "fieldtype": "Code", "options": "JSON"}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1},
+    {"role": "Accounts Manager", "read": 1},
+    {"role": "Accounts User", "read": 1}
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Cutover Check",
+  "module": "ASOUD Core",
+  "istable": 1,
+  "field_order": ["check_code", "check_title", "mandatory", "status", "owner", "evidence"],
+  "fields": [
+    {"fieldname": "check_code", "label": "Check Code", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "check_title", "label": "Check Title", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "mandatory", "label": "Mandatory", "fieldtype": "Check", "default": 1},
+    {"fieldname": "status", "label": "Status", "fieldtype": "Select", "options": "Pass\nFail\nBlocked\nNot Run", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "owner", "label": "Owner", "fieldtype": "Link", "options": "User"},
+    {"fieldname": "evidence", "label": "Evidence", "fieldtype": "Small Text", "reqd": 1}
+  ]
+}

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>ASOUD HR PRD — نسخه ۲.۰</title>
+  <style>
+    @page { size: A4; margin: 16mm 14mm; }
+    * { box-sizing: border-box; }
+    body { font-family: Tahoma, "Segoe UI", sans-serif; color: #0f172a; line-height: 1.85; margin: 0; background: white; }
+    .cover { min-height: 255mm; display: flex; flex-direction: column; justify-content: center; padding: 20mm; background: linear-gradient(145deg,#eef4ff,#fff); page-break-after: always; }
+    .mark { width: 58px; height: 58px; border: 10px solid #2563eb; transform: rotate(45deg); margin-bottom: 28px; }
+    h1 { color: #173b83; font-size: 23px; margin: 22px 0 10px; }
+    h2 { color: #2457c5; font-size: 17px; border-bottom: 1px solid #dbe6fb; padding-bottom: 5px; }
+    p, li, td, th { font-size: 11px; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; page-break-inside: avoid; }
+    th, td { border: 1px solid #cfd8e7; padding: 7px; vertical-align: top; }
+    th { background: #eef4ff; color: #173b83; }
+    .decision { background: #eefbf3; border-right: 4px solid #16a34a; padding: 10px 14px; margin: 15px 0; }
+    .deferred { background: #fff8e8; border-right: 4px solid #f59e0b; padding: 10px 14px; }
+    section { page-break-before: auto; }
+    .meta { color: #475569; }
+    code { direction: ltr; display: inline-block; color: #1d4ed8; }
+  </style>
+</head>
+<body>
+  <div class="cover">
+    <div class="mark"></div>
+    <h1>سند نیازمندی محصول و معماری ASOUD HR</h1>
+    <h2>نسخه ۲.۰ — یکپارچه با ASOUD ERP</h2>
+    <p class="meta">ERPNext/Frappe v15 · Flutter Web PWA · Custom App: asoud_hr</p>
+    <p class="meta">تاریخ: ۱۴۰۵/۰۵/۰۴ — وضعیت: Technical Baseline</p>
+    <div class="decision">این نسخه جایگزین فرض «محصول مستقل + Next.js + موبایل فاز اول» است و ASOUD HR را از ابتدا بخشی از پروژه اصلی تعریف می‌کند.</div>
+  </div>
+
+  <section>
+    <h1>۱. تصمیمات و مرز معماری</h1>
+    <ul>
+      <li>ASOUD HR ماژول دامنه‌ای ASOUD ERP است و پایگاه داده یا احراز هویت جدا ندارد.</li>
+      <li>رابط فعلی فقط Flutter Web PWA است؛ Next.js و اپ Native از دامنه جاری حذف شدند.</li>
+      <li>Holding، Company، Branch، User Context، Access، Approval، Delegation، Idempotency و Audit از asoud_core استفاده می‌شوند.</li>
+      <li>Coreهای Frappe و ERPNext تغییر نمی‌کنند.</li>
+      <li>حضور، مرخصی و Payroll به بررسی و نصب نسخه سازگار HRMS v15 در آینده وابسته‌اند.</li>
+    </ul>
+    <table>
+      <tr><th>لایه</th><th>مسئولیت</th></tr>
+      <tr><td>ERPNext</td><td>User، Role، Company، Department، Designation، Employee، File، ToDo و Notification Log</td></tr>
+      <tr><td>asoud_core</td><td>ساختار مشترک، Scope، Approval، Audit و Idempotency</td></tr>
+      <tr><td>asoud_hr</td><td>سمت، انتساب، مدارک، گزارش روزانه، مکاتبات، اقدامات و داشبورد HR</td></tr>
+      <tr><td>asoud_iran</td><td>اعتبارسنجی و نمایش ایرانی و مسیر الزامات بومی آینده</td></tr>
+      <tr><td>asoud_pwa</td><td>رابط Flutter Web PWA فارسی و RTL</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h1>۲. دامنه اجرایی</h1>
+    <h2>HR-1 — سازمان و پرسنل</h2>
+    <p>Position Instance با ظرفیت، انتساب تاریخ‌دار، جلوگیری از حلقه مدیریتی و هم‌پوشانی، توسعه Employee، مدارک خصوصی، تاریخچه وضعیت و پروفایل پایه.</p>
+    <h2>HR-2 — گزارش کار</h2>
+    <p>یک گزارش فعال برای هر کارمند/روز، فعالیت‌های متعدد، محاسبه زمان، کنترل تناقض و اتصال به Approval مدیر مستقیم یا HR.</p>
+    <h2>HR-3 — مکاتبات و اقدامات</h2>
+    <p>نامه، درخواست، اطلاعیه، گزارش، دستور و پیشنهاد با گیرنده/رونوشت، محرمانگی، Thread پاسخ، View Log و اقدام دارای مسئول و مهلت.</p>
+    <h2>HR-4 — داشبورد و PWA</h2>
+    <p>داشبورد عملیاتی، فهرست پرسنل، گزارش و مکاتبه، ثبت سریع و Ribbon دسکتاپ منابع انسانی.</p>
+    <h2>HR-5 — کنترل و پذیرش</h2>
+    <p>Scope سمت سرور، Redaction، Private File، Audit، Idempotency، migration، تست، Build و UAT.</p>
+  </section>
+
+  <section>
+    <h1>۳. مدل داده</h1>
+    <table>
+      <tr><th>DocType</th><th>کارکرد</th></tr>
+      <tr><td>ASOUD Organization Position</td><td>جایگاه واقعی، ظرفیت و سلسله‌مراتب</td></tr>
+      <tr><td>ASOUD Employee Assignment</td><td>انتساب مؤثر در بازه زمانی</td></tr>
+      <tr><td>ASOUD Employee Document</td><td>مدرک خصوصی و طبقه‌بندی‌شده</td></tr>
+      <tr><td>ASOUD Employment Status History</td><td>تاریخچه وضعیت همکاری</td></tr>
+      <tr><td>ASOUD Daily Work Report / Activity</td><td>گزارش والد و فعالیت‌های روز</td></tr>
+      <tr><td>ASOUD Internal Communication / Recipient</td><td>مکاتبه رسمی و گیرندگان</td></tr>
+      <tr><td>ASOUD Communication Reply</td><td>پاسخ Thread</td></tr>
+      <tr><td>ASOUD Communication Action</td><td>اقدام قابل پیگیری</td></tr>
+      <tr><td>ASOUD Communication View Log</td><td>اثبات مشاهده Append-only</td></tr>
+      <tr><td>ASOUD HR Notification Preference</td><td>ترجیحات اعلان و ساعات سکوت</td></tr>
+    </table>
+    <div class="decision">هیچ‌یک از Masterهای مشترک Core در asoud_hr دوباره ساخته نمی‌شوند.</div>
+  </section>
+
+  <section>
+    <h1>۴. دسترسی، API و امنیت</h1>
+    <table>
+      <tr><th>نقش</th><th>دامنه</th></tr>
+      <tr><td>System Manager</td><td>کنترل فنی کامل</td></tr>
+      <tr><td>ASOUD HR Manager</td><td>مدیریت HR در Scope مجاز</td></tr>
+      <tr><td>ASOUD HR User</td><td>عملیات پرسنلی محدود</td></tr>
+      <tr><td>مدیر مستقیم</td><td>زیرمجموعه مستقیم و گزارش آنان</td></tr>
+      <tr><td>ASOUD Employee</td><td>اطلاعات، گزارش، مکاتبه و اقدام خود</td></tr>
+      <tr><td>ASOUD HR Auditor</td><td>مشاهده کنترل‌شده</td></tr>
+    </table>
+    <p>APIهای اولیه شامل dashboard، organization، employees، employee_profile، work_reports، save_work_report، request_work_report_approval، communications، create_communication، communication_detail، add_reply، create_action و notifications هستند.</p>
+    <ul>
+      <li>شناسه ملی برای کاربر غیرمجاز Mask و در permlevel بالاتر نگهداری می‌شود.</li>
+      <li>مدارک باید File خصوصی باشند.</li>
+      <li>اعلان محرمانه متن کامل را افشا نمی‌کند.</li>
+      <li>View Log و Audit قابل حذف نیستند.</li>
+      <li>Mutationهای حساس Idempotency Key دارند.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h1>۵. معیار خروج و موارد معوق</h1>
+    <ul>
+      <li>نصب app ششم در image و Site واقعی</li>
+      <li>ساخت همه DocTypeها و Custom Fieldها در migration</li>
+      <li>Policy گزارش روزانه با مدیر مستقیم/HR</li>
+      <li>عبور تست Backend، Gateway، Flutter Analyze و Release Build</li>
+      <li>عبور Metadata Gate و HTTP Smoke Test</li>
+    </ul>
+    <div class="deferred"><b>معوق:</b> موبایل Native، Push موبایل، Offline Draft موبایل، حضور و غیاب، مرخصی پیشرفته، Payroll، KPI پیشرفته، AI و SMS بیرونی. این سند درباره تکمیل آن‌ها ادعایی ندارد.</div>
+  </section>
+</body>
+</html>
+

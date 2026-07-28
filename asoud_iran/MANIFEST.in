@@ -1,0 +1,2 @@
+recursive-include asoud_iran *.css *.csv *.html *.ico *.js *.json *.md *.png *.py *.svg *.txt
+recursive-exclude asoud_iran *.pyc

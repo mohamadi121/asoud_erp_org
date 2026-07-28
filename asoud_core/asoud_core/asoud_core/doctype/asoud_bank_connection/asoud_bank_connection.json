@@ -1,0 +1,24 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Bank Connection",
+  "module": "ASOUD Core",
+  "autoname": "naming_series:",
+  "track_changes": 1,
+  "field_order": ["naming_series", "company", "branch", "treasury_account", "bank_name", "iban", "environment", "provider_profile", "secret_reference", "enabled"],
+  "fields": [
+    {"fieldname": "naming_series", "label": "Series", "fieldtype": "Select", "options": "ASOUD-BANK-CONN-.#####", "default": "ASOUD-BANK-CONN-.#####", "hidden": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1},
+    {"fieldname": "branch", "label": "Branch", "fieldtype": "Link", "options": "ASOUD Branch", "reqd": 1},
+    {"fieldname": "treasury_account", "label": "Treasury Account", "fieldtype": "Link", "options": "ASOUD Treasury Account", "reqd": 1},
+    {"fieldname": "bank_name", "label": "Bank", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "iban", "label": "IBAN", "fieldtype": "Data"},
+    {"fieldname": "environment", "label": "Environment", "fieldtype": "Select", "options": "Sandbox\nProduction", "default": "Sandbox", "reqd": 1},
+    {"fieldname": "provider_profile", "label": "Contracted Provider Profile", "fieldtype": "Data"},
+    {"fieldname": "secret_reference", "label": "External Secret Reference", "fieldtype": "Data"},
+    {"fieldname": "enabled", "label": "Enabled", "fieldtype": "Check", "default": "0"}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "Accounts Manager", "read": 1}
+  ]
+}

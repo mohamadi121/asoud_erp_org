@@ -1,0 +1,33 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Pilot Run",
+  "module": "ASOUD Core",
+  "autoname": "naming_series:",
+  "is_submittable": 1,
+  "track_changes": 1,
+  "field_order": ["naming_series", "environment_name", "site_name", "data_profile", "release_reference", "started_at", "completed_at", "status", "decision", "passed_scenarios", "total_scenarios", "limitations", "acceptance_section", "accepted_by", "business_signoff", "scenarios_section", "scenarios"],
+  "fields": [
+    {"fieldname": "naming_series", "label": "Series", "fieldtype": "Select", "options": "ASOUD-PILOT-.YYYY.-.#####", "default": "ASOUD-PILOT-.YYYY.-.#####", "hidden": 1},
+    {"fieldname": "environment_name", "label": "Environment", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "site_name", "label": "Site Name", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "data_profile", "label": "Data Profile", "fieldtype": "Select", "options": "Synthetic\nAnonymized\nReal", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "release_reference", "label": "Release Reference", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "started_at", "label": "Started At", "fieldtype": "Datetime", "reqd": 1},
+    {"fieldname": "completed_at", "label": "Completed At", "fieldtype": "Datetime", "reqd": 1},
+    {"fieldname": "status", "label": "Status", "fieldtype": "Select", "options": "Running\nPassed\nFailed", "default": "Running", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "decision", "label": "Decision", "fieldtype": "Select", "options": "Technical Go Only\nGo\nNo-Go", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "passed_scenarios", "label": "Passed Scenarios", "fieldtype": "Int", "read_only": 1},
+    {"fieldname": "total_scenarios", "label": "Total Scenarios", "fieldtype": "Int", "read_only": 1},
+    {"fieldname": "limitations", "label": "Limitations", "fieldtype": "Small Text", "reqd": 1},
+    {"fieldname": "acceptance_section", "label": "Business Acceptance", "fieldtype": "Section Break"},
+    {"fieldname": "accepted_by", "label": "Accepted By", "fieldtype": "Link", "options": "User"},
+    {"fieldname": "business_signoff", "label": "Business Sign-off", "fieldtype": "Attach"},
+    {"fieldname": "scenarios_section", "label": "UAT Scenarios", "fieldtype": "Section Break"},
+    {"fieldname": "scenarios", "label": "Scenarios", "fieldtype": "Table", "options": "ASOUD UAT Scenario", "reqd": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1},
+    {"role": "Accounts Manager", "read": 1},
+    {"role": "Accounts User", "read": 1}
+  ]
+}

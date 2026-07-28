@@ -1,0 +1,29 @@
+groups:
+  - name: asoud-platform
+    rules:
+      - alert: ASOUDMonitoringTargetDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: ASOUD monitoring target is unavailable
+      - alert: ASOUDHostDiskNearlyFull
+        expr: |
+          (
+            node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"}
+            /
+            node_filesystem_size_bytes{fstype!~"tmpfs|overlay"}
+          ) < 0.15
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: ASOUD host filesystem has less than 15% free space
+      - alert: ASOUDContainerRestarting
+        expr: changes(container_start_time_seconds{name=~".*asoud.*"}[15m]) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: ASOUD container is repeatedly restarting

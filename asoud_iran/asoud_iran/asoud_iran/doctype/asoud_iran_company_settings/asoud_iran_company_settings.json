@@ -1,0 +1,27 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Iran Company Settings",
+  "module": "ASOUD Iran",
+  "autoname": "field:company",
+  "title_field": "company",
+  "track_changes": 1,
+  "field_order": ["company", "coa_template", "base_currency", "amount_input_unit", "calendar_display", "timezone", "setup_version", "setup_status", "setup_hash", "installed_on"],
+  "fields": [
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "unique": 1, "in_list_view": 1},
+    {"fieldname": "coa_template", "label": "COA Template", "fieldtype": "Link", "options": "ASOUD COA Template", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "base_currency", "label": "Ledger Currency", "fieldtype": "Link", "options": "Currency", "default": "IRR", "reqd": 1, "read_only": 1},
+    {"fieldname": "amount_input_unit", "label": "Default Amount Unit", "fieldtype": "Select", "options": "IRR\nTOMAN", "default": "IRR", "reqd": 1},
+    {"fieldname": "calendar_display", "label": "Calendar Display", "fieldtype": "Select", "options": "Jalali\nGregorian", "default": "Jalali", "reqd": 1},
+    {"fieldname": "timezone", "label": "Timezone", "fieldtype": "Data", "default": "Asia/Tehran", "reqd": 1, "read_only": 1},
+    {"fieldname": "setup_version", "label": "Setup Version", "fieldtype": "Data", "read_only": 1},
+    {"fieldname": "setup_status", "label": "Setup Status", "fieldtype": "Select", "options": "Pending\nCompleted\nFailed", "default": "Pending", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "setup_hash", "label": "Setup Hash", "fieldtype": "Data", "read_only": 1, "no_copy": 1},
+    {"fieldname": "installed_on", "label": "Installed On", "fieldtype": "Datetime", "read_only": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "Accounts Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "Accounts User", "read": 1}
+  ]
+}
+

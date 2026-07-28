@@ -1,0 +1,32 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Tax Submission",
+  "module": "ASOUD Iran",
+  "autoname": "naming_series:",
+  "title_field": "source_name",
+  "track_changes": 1,
+  "field_order": ["naming_series", "company", "source_doctype", "source_name", "invoice_kind", "reference_tax_uid", "idempotency_key", "payload_checksum", "payload_json", "status_section", "status", "provider_reference", "attempt_count", "last_attempt_at", "last_error", "response_checksum"],
+  "fields": [
+    {"fieldname": "naming_series", "label": "Series", "fieldtype": "Select", "options": "ASOUD-TAX-.YYYY.-.#####", "default": "ASOUD-TAX-.YYYY.-.#####", "hidden": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "source_doctype", "label": "Source DocType", "fieldtype": "Link", "options": "DocType", "default": "Sales Invoice", "reqd": 1},
+    {"fieldname": "source_name", "label": "Source Document", "fieldtype": "Dynamic Link", "options": "source_doctype", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "invoice_kind", "label": "Invoice Kind", "fieldtype": "Select", "options": "Original\nCorrection\nCancellation\nReturn", "default": "Original", "reqd": 1},
+    {"fieldname": "reference_tax_uid", "label": "Original Tax UID", "fieldtype": "Data"},
+    {"fieldname": "idempotency_key", "label": "Idempotency Key", "fieldtype": "Data", "reqd": 1, "unique": 1, "read_only": 1},
+    {"fieldname": "payload_checksum", "label": "Payload SHA-256", "fieldtype": "Data", "reqd": 1, "read_only": 1},
+    {"fieldname": "payload_json", "label": "Canonical Payload", "fieldtype": "Code", "options": "JSON", "reqd": 1, "read_only": 1},
+    {"fieldname": "status_section", "label": "Transmission", "fieldtype": "Section Break"},
+    {"fieldname": "status", "label": "Status", "fieldtype": "Select", "options": "Draft\nQueued\nSending\nAccepted\nRejected\nRetry\nBlocked", "default": "Draft", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "provider_reference", "label": "Provider Reference", "fieldtype": "Data", "read_only": 1},
+    {"fieldname": "attempt_count", "label": "Attempt Count", "fieldtype": "Int", "default": "0", "read_only": 1},
+    {"fieldname": "last_attempt_at", "label": "Last Attempt", "fieldtype": "Datetime", "read_only": 1},
+    {"fieldname": "last_error", "label": "Last Error", "fieldtype": "Small Text", "read_only": 1},
+    {"fieldname": "response_checksum", "label": "Response SHA-256", "fieldtype": "Data", "read_only": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "Accounts Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "Accounts User", "read": 1}
+  ]
+}

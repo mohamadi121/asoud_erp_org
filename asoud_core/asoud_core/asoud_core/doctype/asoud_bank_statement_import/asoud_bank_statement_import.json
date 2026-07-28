@@ -1,0 +1,25 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Bank Statement Import",
+  "module": "ASOUD Core",
+  "autoname": "naming_series:",
+  "field_order": ["naming_series", "import_key", "company", "branch", "bank_connection", "file_name", "file_checksum", "imported_at", "imported_by", "row_count", "status"],
+  "fields": [
+    {"fieldname": "naming_series", "label": "Series", "fieldtype": "Select", "options": "ASOUD-BANK-IMP-.YYYY.-.#####", "default": "ASOUD-BANK-IMP-.YYYY.-.#####", "hidden": 1},
+    {"fieldname": "import_key", "label": "Import Key", "fieldtype": "Data", "reqd": 1, "unique": 1, "hidden": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1},
+    {"fieldname": "branch", "label": "Branch", "fieldtype": "Link", "options": "ASOUD Branch", "reqd": 1},
+    {"fieldname": "bank_connection", "label": "Bank Connection", "fieldtype": "Link", "options": "ASOUD Bank Connection", "reqd": 1},
+    {"fieldname": "file_name", "label": "Source File Name", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "file_checksum", "label": "Source SHA-256", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "imported_at", "label": "Imported At", "fieldtype": "Datetime", "reqd": 1},
+    {"fieldname": "imported_by", "label": "Imported By", "fieldtype": "Link", "options": "User", "reqd": 1},
+    {"fieldname": "row_count", "label": "Row Count", "fieldtype": "Int", "read_only": 1},
+    {"fieldname": "status", "label": "Status", "fieldtype": "Select", "options": "Imported\nPartially Reconciled\nReconciled", "default": "Imported", "read_only": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1},
+    {"role": "Accounts Manager", "read": 1},
+    {"role": "Accounts User", "read": 1}
+  ]
+}

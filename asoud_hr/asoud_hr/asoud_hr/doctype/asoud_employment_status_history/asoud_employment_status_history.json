@@ -1,0 +1,25 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Employment Status History",
+  "module": "ASOUD HR",
+  "autoname": "HR-STS-.YYYY.-.#####",
+  "track_changes": 1,
+  "field_order": ["employee", "company", "effective_on", "previous_status", "new_status", "reason", "changed_by"],
+  "fields": [
+    {"fieldname": "employee", "label": "Employee", "fieldtype": "Link", "options": "Employee", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "effective_on", "label": "Effective On", "fieldtype": "Datetime", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "previous_status", "label": "Previous Status", "fieldtype": "Data", "read_only": 1},
+    {"fieldname": "new_status", "label": "New Status", "fieldtype": "Data", "reqd": 1, "read_only": 1},
+    {"fieldname": "reason", "label": "Reason", "fieldtype": "Small Text"},
+    {"fieldname": "changed_by", "label": "Changed By", "fieldtype": "Link", "options": "User", "read_only": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1},
+    {"role": "ASOUD HR Manager", "read": 1},
+    {"role": "ASOUD HR User", "read": 1},
+    {"role": "ASOUD Employee", "read": 1},
+    {"role": "ASOUD HR Auditor", "read": 1}
+  ]
+}
+

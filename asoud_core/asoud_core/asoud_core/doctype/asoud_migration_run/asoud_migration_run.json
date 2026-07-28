@@ -1,0 +1,33 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Migration Run",
+  "module": "ASOUD Core",
+  "autoname": "naming_series:",
+  "is_submittable": 1,
+  "track_changes": 1,
+  "field_order": ["naming_series", "company", "environment_name", "data_profile", "source_system", "source_checksum", "release_reference", "started_at", "completed_at", "status", "decision", "limitations", "acceptance_section", "reconciled_by", "reconciliation_evidence", "controls_section", "controls"],
+  "fields": [
+    {"fieldname": "naming_series", "label": "Series", "fieldtype": "Select", "options": "ASOUD-MIG-.YYYY.-.#####", "default": "ASOUD-MIG-.YYYY.-.#####", "hidden": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "environment_name", "label": "Environment", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "data_profile", "label": "Data Profile", "fieldtype": "Select", "options": "Synthetic\nAnonymized\nReal", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "source_system", "label": "Source System", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "source_checksum", "label": "Source SHA-256", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "release_reference", "label": "Release Reference", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "started_at", "label": "Started At", "fieldtype": "Datetime", "reqd": 1},
+    {"fieldname": "completed_at", "label": "Completed At", "fieldtype": "Datetime", "reqd": 1},
+    {"fieldname": "status", "label": "Status", "fieldtype": "Select", "options": "Running\nReconciled\nFailed", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "decision", "label": "Decision", "fieldtype": "Select", "options": "Technical Ready\nAccepted\nRejected", "read_only": 1},
+    {"fieldname": "limitations", "label": "Limitations", "fieldtype": "Small Text", "reqd": 1},
+    {"fieldname": "acceptance_section", "label": "Reconciliation Acceptance", "fieldtype": "Section Break"},
+    {"fieldname": "reconciled_by", "label": "Reconciled By", "fieldtype": "Link", "options": "User"},
+    {"fieldname": "reconciliation_evidence", "label": "Signed Reconciliation", "fieldtype": "Attach"},
+    {"fieldname": "controls_section", "label": "Controls", "fieldtype": "Section Break"},
+    {"fieldname": "controls", "label": "Controls", "fieldtype": "Table", "options": "ASOUD Migration Control", "reqd": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1},
+    {"role": "Accounts Manager", "read": 1, "write": 1, "create": 1, "submit": 1},
+    {"role": "Accounts User", "read": 1}
+  ]
+}

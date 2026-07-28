@@ -1,0 +1,26 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Tax Settings",
+  "module": "ASOUD Iran",
+  "autoname": "field:company",
+  "title_field": "company",
+  "track_changes": 1,
+  "field_order": ["company", "enabled", "environment", "provider", "adapter_version", "base_url", "allowed_hosts", "credential_section", "memory_id", "certificate_reference", "secret_reference"],
+  "fields": [
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "unique": 1},
+    {"fieldname": "enabled", "label": "Enabled", "fieldtype": "Check", "default": "0"},
+    {"fieldname": "environment", "label": "Environment", "fieldtype": "Select", "options": "Sandbox\nProduction", "default": "Sandbox", "reqd": 1},
+    {"fieldname": "provider", "label": "Provider", "fieldtype": "Select", "options": "ASOUD Sandbox\nDirect\nTrusted Provider", "default": "ASOUD Sandbox", "reqd": 1},
+    {"fieldname": "adapter_version", "label": "Adapter Version", "fieldtype": "Data", "default": "1.0", "reqd": 1},
+    {"fieldname": "base_url", "label": "Base URL", "fieldtype": "Data"},
+    {"fieldname": "allowed_hosts", "label": "Allowed HTTPS Hosts", "fieldtype": "Small Text"},
+    {"fieldname": "credential_section", "label": "External Secret References", "fieldtype": "Section Break"},
+    {"fieldname": "memory_id", "label": "Tax Memory ID", "fieldtype": "Data"},
+    {"fieldname": "certificate_reference", "label": "Certificate Reference", "fieldtype": "Data"},
+    {"fieldname": "secret_reference", "label": "Secret Reference", "fieldtype": "Data"}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "Accounts Manager", "read": 1}
+  ]
+}

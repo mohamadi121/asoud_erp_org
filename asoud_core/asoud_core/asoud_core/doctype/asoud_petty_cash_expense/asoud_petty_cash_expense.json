@@ -1,0 +1,15 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Petty Cash Expense",
+  "module": "ASOUD Core",
+  "istable": 1,
+  "field_order": ["expense_date", "expense_account", "floating_detail", "description", "amount", "receipt_no"],
+  "fields": [
+    {"fieldname": "expense_date", "label": "Expense Date", "fieldtype": "Date", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "expense_account", "label": "Expense Account", "fieldtype": "Link", "options": "Account", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "floating_detail", "label": "Floating Detail", "fieldtype": "Link", "options": "ASOUD Floating Detail"},
+    {"fieldname": "description", "label": "Description", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "amount", "label": "Amount", "fieldtype": "Currency", "reqd": 1, "non_negative": 1, "in_list_view": 1},
+    {"fieldname": "receipt_no", "label": "Receipt No", "fieldtype": "Data"}
+  ]
+}

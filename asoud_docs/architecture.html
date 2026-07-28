@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>معماری نهایی ASOUD ERP — نسخه ۳.۵</title>
+  <style>
+    @page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #172033; font-family: Tahoma, "Segoe UI", Arial, sans-serif; font-size: 10.5pt; line-height: 1.85; background: white; }
+    h1,h2,h3 { color: #143e66; margin: 0 0 8px; page-break-after: avoid; }
+    h1 { font-size: 24pt; } h2 { font-size: 16pt; border-bottom: 2px solid #d8e6f2; padding-bottom: 5px; margin-top: 12px; }
+    h3 { font-size: 12.5pt; margin-top: 10px; }
+    p { margin: 4px 0 8px; text-align: justify; }
+    ul,ol { margin: 4px 0 10px; padding-right: 20px; }
+    li { margin-bottom: 3px; }
+    table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; page-break-inside: avoid; }
+    th,td { border: 1px solid #b9cada; padding: 6px 7px; vertical-align: top; }
+    th { background: #eaf2f8; color: #143e66; }
+    code,pre { direction: ltr; text-align: left; font-family: Consolas, monospace; }
+    pre { background: #f3f6f8; border-right: 4px solid #2674a9; padding: 9px; white-space: pre-wrap; font-size: 9pt; page-break-inside: avoid; }
+    .cover { height: 255mm; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; page-break-after: always; }
+    .cover .brand { font-size: 38pt; font-weight: 800; color: #0f4c73; letter-spacing: 2px; }
+    .cover .fa { font-size: 28pt; font-weight: 700; color: #2674a9; }
+    .cover .sub { margin-top: 25px; font-size: 15pt; max-width: 150mm; }
+    .meta { margin-top: 30px; width: 135mm; }
+    .meta td { text-align: center; }
+    .page { page-break-before: always; }
+    .box { background: #f2f8fc; border: 1px solid #b8d3e5; border-radius: 6px; padding: 9px 12px; margin: 8px 0 12px; }
+    .decision { border-right: 5px solid #20845b; background: #eef8f3; padding: 8px 11px; margin: 8px 0; }
+    .future { border-right: 5px solid #b67a16; background: #fff8e9; padding: 8px 11px; margin: 8px 0; }
+    .small { font-size: 9pt; color: #4e6070; }
+    .toc a { color: inherit; text-decoration: none; }
+    .footer-note { color: #647684; font-size: 8.5pt; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <div class="brand">ASOUD</div><div class="fa">آسود</div>
+    <div class="sub">معماری مصوب، مدل داده، حسابداری ایرانی و نقشه راه اجرای سامانه ERP</div>
+    <table class="meta">
+      <tr><th>نسخه سند</th><td>۳.۴ — منابع انسانی، گزارش کار و مکاتبات سازمانی</td></tr>
+      <tr><th>هسته</th><td>ERPNext / Frappe v15</td></tr>
+      <tr><th>رابط کاربری</th><td>Flutter Web PWA + BLoC</td></tr>
+      <tr><th>تاریخ</th><td>۴ مرداد ۱۴۰۵ / 26 July 2026</td></tr>
+      <tr><th>وضعیت</th><td>RTL Ribbon Dashboard Technical Gate — Business UAT Pending</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h1>کنترل سند</h1>
+    <table><tr><th>مالک</th><td>تیم محصول و توسعه ASOUD</td></tr><tr><th>مخاطبان</th><td>محصول، حسابداری، Frappe/Python، Flutter، QA و DevOps</td></tr><tr><th>قاعده تغییر</th><td>هر تغییر معماری باید با ADR، اثر، نسخه و تاریخ ثبت شود.</td></tr><tr><th>قاعده Core</th><td>ویرایش مستقیم Frappe یا ERPNext ممنوع است.</td></tr></table>
+    <div class="decision"><b>تصمیم مبنا:</b> هر مشتری یا هلدینگ یک Frappe Site و دیتابیس مستقل دارد. قابلیت‌های عمومی در <code>asoud_core</code>، انطباق ایران در <code>asoud_iran</code>، منابع انسانی در <code>asoud_hr</code> و رابط در <code>asoud_pwa</code> پیاده می‌شوند.</div>
+    <h2>فهرست</h2>
+    <ol class="toc">
+      <li>هدف و اصول محصول</li><li>مرز دامنه و فاز اول</li><li>معماری کلان و مخازن</li><li>Organization، Company و Branch</li><li>کاربر، Context و Permission</li><li>اطلاعات پایه مشترک</li><li>حسابداری ایرانی و تفصیلی شناور</li><li>سند، شماره‌گذاری و بستن سال</li><li>خزانه و چک</li><li>انتقال بین‌شرکتی و تلفیق</li><li>API و Flutter PWA</li><li>امنیت، استقرار و تست</li><li>نقشه راه و معیار پذیرش</li><li>وضعیت پیاده‌سازی و شواهد اجرا</li><li>حاکمیت مخزن‌ها و GitHub</li><li>راهنمای عملیات توسعه</li><li>ترتیب ادامه پروژه و Gateها</li><li>فاز ۱۴: درگاه مؤدیان</li><li>فاز ۱۵: بانک و صیاد</li><li>فاز ۱۶: تلفیق چندارزی</li><li>کارتابل، گردش تأیید و کنترل دسترسی</li><li>منابع انسانی، گزارش کار و مکاتبات سازمانی</li>
+    </ol>
+  </section>
+
+  <section class="page">
+    <h1>۱. هدف و اصول محصول</h1>
+    <p>ASOUD یک ERP عمومی با مبنای حسابداری ایران است که برای بازرگانی، خدمات، تولید و فعالیت‌های ترکیبی قابل استفاده خواهد بود. در فاز فعلی برای صنایع مختلف مدل موازی ساخته نمی‌شود؛ مفاهیم مشترک ERPNext مبنا هستند و توسعه تخصصی فقط پس از تعریف نیاز قطعی انجام می‌شود.</p>
+    <h2>اصول قطعی</h2>
+    <ul><li>ERPNext/Frappe v15 موتور ERP و ثبت دوطرفه است.</li><li>Core اصلی دست‌نخورده می‌ماند؛ توسعه از Custom App، Hook و Service انجام می‌شود.</li><li>همه کنترل‌های امنیتی و مالی در Backend اجرا می‌شوند.</li><li>PWA رابط اصلی کاربران عملیاتی است؛ Desk فقط برای مدیر سیستم و تنظیمات تخصصی محدود می‌ماند.</li><li>محصول Online-first است و عملیات مالی در Offline نهایی نمی‌شود.</li><li>Party، Item، Account، Company و اسناد استاندارد دوباره ساخته نمی‌شوند.</li><li>مستندات، تست، Migration و Audit بخشی از Definition of Done هستند.</li></ul>
+    <h2>دامنه فاز اول انطباق ایران</h2>
+    <p>زیرساخت، فیلدها، اعتبارسنجی و خروجی استاندارد صورتحساب الکترونیکی ساخته می‌شود؛ ارسال مستقیم به سامانه مؤدیان و حقوق‌ودستمزد ایران فاز مستقل‌اند.</p>
+    <div class="future"><b>خارج از فاز اول:</b> Native App، Offline کامل، حقوق‌ودستمزد، اتصال عملیاتی مؤدیان، بانکداری مستقیم و بسته‌های تخصصی صنعت.</div>
+  </section>
+
+  <section class="page">
+    <h1>۲. معماری کلان و مرزبندی</h1>
+    <pre>Flutter Web PWA
+        ↓
+ASOUD API v1 (Context, Permission, Contract)
+        ↓
+asoud_core  ←  asoud_iran
+        ↓
+ERPNext / Frappe v15
+        ↓
+MariaDB + Redis + Workers + File Storage</pre>
+    <table><tr><th>لایه</th><th>مسئولیت</th></tr><tr><td>asoud_pwa</td><td>نمایش، تعامل، State، RTL، Responsive و Cache محدود</td></tr><tr><td>asoud_core</td><td>Organization، Membership، Context، رجیستر سند، انتقال، تلفیق، API و Audit</td></tr><tr><td>asoud_iran</td><td>کدینگ ایران، تفصیلی، ریال/تومان، شمسی، مالیات، چک، گزارش و چاپ</td></tr><tr><td>ERPNext</td><td>Company، Account، Party، Item، خرید، فروش، انبار، دارایی و GL</td></tr></table>
+    <h2>مخازن</h2>
+    <pre>asoud_core
+asoud_iran
+asoud_pwa
+asoud_docs
+asoud_infra</pre>
+    <p>نسخه‌ها مستقل‌اند و Release Manifest نسخه دقیق Frappe، ERPNext و هر App را قفل می‌کند. وابستگی مجاز: <code>asoud_iran → asoud_core → ERPNext/Frappe</code>.</p>
+  </section>
+
+  <section class="page">
+    <h1>۳. Organization، Company و Branch</h1>
+    <pre>ASOUD Organization (یک رکورد در هر Site)
+└── Group Company
+    ├── Operating Company A
+    │   ├── Branch A1
+    │   └── Branch A2
+    └── Operating Company B</pre>
+    <ul><li>مالک Organization می‌تواند حقیقی یا حقوقی باشد؛ Organization مستقیماً GL ندارد.</li><li>هر واحد با شناسه قانونی، دفاتر و صورت مالی مستقل یک Company است.</li><li>ساختار شرکت‌ها در فاز اول یک‌سطحی است: یک Group و Companyهای عملیاتی.</li><li>هر Company می‌تواند چند Branch غیرمستقل با صندوق، انبار، کاربران و گزارش عملکرد جدا داشته باشد.</li><li>هنگام ایجاد Company، Main Branch، Cost Center، Cash Account، Warehouse اختیاری، Naming Series و تنظیمات ایران به‌صورت پیش‌فرض ساخته و بعداً قابل تغییرند.</li></ul>
+    <h2>قواعد Branch</h2>
+    <p>Branch استاندارد با Company، کد یکتا، وضعیت، حساب‌ها و انبارهای پیش‌فرض توسعه می‌یابد و به‌عنوان Accounting Dimension به GL منتقل می‌شود. Branch دارای تراکنش حذف یا به Company دیگر منتقل نمی‌شود.</p>
+    <h2>قواعد Company</h2>
+    <p>اختصار، ارز پایه، شناسه ملی و کد اقتصادی کنترل می‌شوند. Company دارای تراکنش حذف نمی‌شود. شماره قطعی سند حسابداری در سطح Company و سال مالی یکپارچه است، نه Branch.</p>
+  </section>
+
+  <section class="page">
+    <h1>۴. کاربر، نقش و Context</h1>
+    <p>هویت ورود از User استاندارد Frappe و محدوده کاری از مدل‌های ASOUD تأمین می‌شود.</p>
+    <pre>ASOUD Membership
+- user
+- scope_type: Holding / Company / Branch
+- company / branch
+- access_profile
+- valid_from / valid_to / status</pre>
+    <p>یک کاربر در هر Company یا Branch نقش متفاوت دارد و با مجوز Holding می‌تواند داشبورد و گزارش تلفیقی ببیند. Access Profileهای سیستمی Template هستند و مشتری از آن‌ها Profile سفارشی می‌سازد.</p>
+    <h2>Context مستقل</h2>
+    <p><code>active_company</code> به‌صورت مقدار عمومی User ذخیره نمی‌شود. هر Tab یا دستگاه یک <code>context_id</code> مستقل، تاریخ انقضا و <code>permission_version</code> دارد. هر درخواست Backend مالکیت و اعتبار Context را بررسی می‌کند.</p>
+    <h2>Permission Snapshot</h2>
+    <p>Snapshot برای ساخت منو و UI است و منبع Authorization نیست. Backend روی List، Document، Workflow، Report، Export، Job و File مجوز را مجدداً کنترل می‌کند.</p>
+    <div class="decision">مدل فاز اول Allow-based است: هر عمل صریحاً مجاز نشده، ممنوع است. محدودیت مبلغ تأیید فعلاً پیاده نمی‌شود ولی مسیر توسعه آن بسته نیست.</div>
+  </section>
+
+  <section class="page">
+    <h1>۵. اطلاعات پایه مشترک</h1>
+    <p>Customer، Supplier و Item در سطح Site مشترک‌اند؛ حساب، اعتبار، قیمت، شرایط پرداخت، فعال‌بودن و کد داخلی می‌توانند برای هر Company مستقل باشند.</p>
+    <table><tr><th>مفهوم</th><th>منبع اصلی</th><th>تکمیل ASOUD</th></tr><tr><td>Customer</td><td>Customer + Party Account + Credit Limit</td><td>Company Policy، کد داخلی، فعال‌بودن و قیمت</td></tr><tr><td>Supplier</td><td>Supplier + Party Account</td><td>Company Policy، کد داخلی و Block</td></tr><tr><td>Item</td><td>Item + Item Default</td><td>فعال‌بودن، کد Company، مالیات و Branch</td></tr></table>
+    <p>شناسه ملی تکراری به‌طور پیش‌فرض مسدود است و مدیر فقط با دلیل ثبت‌شده می‌تواند استثنا را تأیید کند. Item مشترک می‌تواند کد داخلی متفاوت در هر Company داشته باشد.</p>
+    <h2>کالا و خدمت</h2>
+    <p>Item استاندارد همه موارد را پوشش می‌دهد. خدمت با <code>is_stock_item=false</code> ثبت می‌شود و اثر انبار ندارد؛ ماژول جداگانه خدماتی ساخته نمی‌شود.</p>
+    <h2>قیمت</h2>
+    <p>Price List و Pricing Rule استاندارد استفاده می‌شوند. اولویت: قیمت ویژه مشتری، Branch، Company و سپس عمومی. قیمت‌ها دارای بازه اعتبار و Snapshot سند هستند.</p>
+  </section>
+
+  <section class="page">
+    <h1>۶. حسابداری ایرانی و تفصیلی شناور</h1>
+    <pre>گروه (Account Group)
+└── کل (Account Group)
+    └── معین (Postable Account)
+        └── تفصیلی شناور (Reference/Dimension)</pre>
+    <p>از <code>account_number</code> استاندارد استفاده می‌شود. ثبت فقط روی حساب معین قابل ثبت مجاز است. تفصیلی Account فرزند نیست؛ یک هویت مشترک است که در چند حساب معین استفاده می‌شود.</p>
+    <p>Customer، Supplier، Employee، Bank، Cashbox، Project، Cost Center و Branch می‌توانند کد تفصیلی داشته باشند. هویت در Holding مشترک و کد آن برای هر Company مستقل است. Party، Project و Cost Center همچنان منبع استاندارد باقی می‌مانند.</p>
+    <h2>ریال، تومان و تاریخ</h2>
+    <ul><li>واحد پایه GL برای ایران IRR است؛ تومان فقط نمایش/ورودی است.</li><li>محاسبات با Decimal/Integer و API مبلغ به‌صورت String و واحد صریح انجام می‌شود.</li><li>تاریخ Backend استاندارد و نمایش/ورودی جلالی است؛ Timezone برابر Asia/Tehran.</li><li>نرخ‌های مالیات و کسورات نسخه‌دار، دارای بازه اثر و بدون Hard-code هستند.</li></ul>
+    <h2>خروجی مالیاتی فاز اول</h2>
+    <p>یک Canonical Tax Document نسخه‌دار تولید می‌شود و JSON مرجع است؛ Excel/CSV و PDF از همان مدل ساخته می‌شوند. ارسال مستقیم مؤدیان در فاز بعد است.</p>
+  </section>
+
+  <section class="page">
+    <h1>۷. رجیستر سند و شماره‌گذاری</h1>
+    <p>تمام رویدادهای دارای GL، شامل Invoice، Payment، Stock، Asset و Journal Entry، یک ASOUD Accounting Document دریافت می‌کنند. این رجیستر جایگزین GL نیست.</p>
+    <pre>شناسه فنی immutable
+→ شماره موقت دائمی
+→ بررسی چندمرحله‌ای
+→ مرتب‌سازی تاریخ/زمان/شماره موقت
+→ شماره قطعی Company/Fiscal Year
+→ قفل عملیاتی
+→ قفل قانونی</pre>
+    <p>شماره موقت هیچ‌گاه پاک نمی‌شود. شماره قطعی تا قبل از قفل قانونی با Batch کاربر مجاز قابل بازشماری است و همه شماره‌های قبلی در History باقی می‌مانند.</p>
+    <h2>ادغام</h2>
+    <p>چند سند یک روز و یک Company می‌توانند خودکار یا انتخابی تجمیع شوند. منابع و شماره موقت آن‌ها حفظ و Drill-down تا GL ممکن است. Branch روی ردیف‌ها باقی می‌ماند.</p>
+    <h2>اصلاح</h2>
+    <p>سند نهایی حذف نمی‌شود؛ اصلاح با Reversal/Amendment انجام می‌شود. ثبت‌کننده به‌صورت پیش‌فرض تأییدکننده خودش نیست و دلیل بازکردن دوره، ابطال و بازشماری اجباری است.</p>
+  </section>
+
+  <section class="page">
+    <h1>۸. اختتامیه و افتتاحیه واقعی</h1>
+    <p>در پایان سال سند اختتامیه واقعی حساب‌های دائمی را می‌بندد و سند افتتاحیه سال بعد آن‌ها را باز می‌کند. حساب‌های درآمد و هزینه به سود و زیان منتقل می‌شوند.</p>
+    <pre>Preflight
+→ بستن حساب‌های موقت
+→ انتقال سود/زیان
+→ سند اختتامیه (آخرین شماره سال)
+→ قفل قانونی
+→ سند افتتاحیه (اولین شماره سال بعد)
+→ Reconciliation</pre>
+    <ul><li>عملیات Idempotent و قابل Retry کنترل‌شده است.</li><li>جمع افتتاحیه دقیقاً با اختتامیه تطبیق می‌یابد.</li><li>گزارش‌های ERPNext برای جلوگیری از دوبرابرشدن مانده با داده دو سال تست می‌شوند.</li><li>بازگشایی باعث ابطال کنترل‌شده اسناد، اصلاح و تولید مجدد می‌شود؛ سوابق قبلی حذف نمی‌شوند.</li></ul>
+    <div class="box"><b>Gate مالی:</b> تا زمانی که ترازنامه، GL، مانده Party و افتتاحیه/اختتامیه روی سناریوی دو ساله دقیقاً تطبیق نکرده‌اند، این قابلیت Production-ready محسوب نمی‌شود.</div>
+  </section>
+
+  <section class="page">
+    <h1>۹. خزانه و چک</h1>
+    <p>Bank، Bank Account، Payment Entry و Reconciliation استاندارد حفظ می‌شوند. Treasury Unit صندوق، بانک، تنخواه، درگاه و محل نگهداری چک را در Company/Branch مشخص می‌کند.</p>
+    <h2>چک دریافتی</h2>
+    <pre>دریافت → نزد صندوق → واگذاری بانک → وصول / برگشت
+                   └→ خرج‌کردن / انتقال</pre>
+    <h2>چک پرداختی</h2>
+    <pre>پیش‌نویس → تأیید → صدور → تحویل → وصول / برگشت / ابطال</pre>
+    <p>اثر حسابداری در Draft ایجاد نمی‌شود؛ پس از پذیرش یا صدور نهایی، حساب‌های اسناد دریافتنی، در جریان وصول و اسناد پرداختنی به‌کار می‌روند. هر Transition یک Cheque Event غیرقابل حذف و سند حسابداری متناظر دارد.</p>
+    <p>شناسه صیادی، بانک، شماره، مبلغ، تاریخ، دارنده و محل نگهداری کنترل می‌شوند. یک چک می‌تواند چند فاکتور را تسویه کند ولی مجموع تخصیص از مبلغ آن بیشتر نمی‌شود.</p>
+  </section>
+
+  <section class="page">
+    <h1>۱۰. انتقال بین‌شرکتی</h1>
+    <pre>درخواست مبدأ
+→ تأیید مبدأ
+→ ایجاد خودکار Draft مقصد
+→ تأیید مقصد
+→ ثبت اسناد دوطرفه
+→ تطبیق
+→ تکمیل</pre>
+    <p>کالا، وجه، هزینه، دارایی و سند پشتیبانی می‌شوند. ارسال و دریافت جزئی، مغایرت، Idempotency و Compensation جزو State Machine هستند. لغو مستقیم یک سمت ممنوع است.</p>
+    <p>انتقال کالا از Delivery Note/Sales Invoice در مبدأ و Purchase Receipt/Purchase Invoice در مقصد استفاده می‌کند، زیرا Inter-company Invoice به‌تنهایی Stock Ledger را تغییر نمی‌دهد.</p>
+    <p>قیمت انتقال می‌تواند Cost، Valuation، Price List، Cost+Markup یا Manual باشد. زمان انتقال مالکیت قابل تنظیم و پیش‌فرض On Receipt است.</p>
+    <h2>تلفیق</h2>
+    <p>هر Company کدینگ مستقل دارد و با Consolidation Account Map به کدینگ Holding نگاشت می‌شود. حذف دریافتنی/پرداختنی، خریدوفروش داخلی و سود تحقق‌نیافته در یک لایه Adjustment مستقل انجام می‌شود و GL قانونی Companyها تغییر نمی‌کند.</p>
+  </section>
+
+  <section class="page">
+    <h1>۱۱. API و PWA</h1>
+    <p>تمام عملیات PWA از ASOUD API v1 عبور می‌کنند. API عمومی DocType مبنای رابط محصول نیست.</p>
+    <pre>Same-Origin Session Cookie + CSRF
+X-ASOUD-Context-ID
+X-Correlation-ID
+Idempotency-Key (عملیات حساس)</pre>
+    <ul><li>پاسخ‌ها قرارداد data/meta و خطاهای code/message/field_errors/request_id دارند.</li><li>Pagination، Filter و Sort در Backend انجام می‌شود.</li><li>مبلغ، تاریخ، ارز و نسخه سند قرارداد صریح دارند.</li><li>Conflict و ویرایش هم‌زمان با document_version کنترل می‌شود.</li><li>گزارش، Closing، Export و Renumbering سنگین در Queue اجرا می‌شوند.</li></ul>
+    <h2>Flutter Web PWA</h2>
+    <p>ساختار Feature-first و لایه‌های Data/Domain/Presentation با BLoC/Cubit استفاده می‌شود. UI فارسی RTL، Responsive، قابل استفاده با صفحه‌کلید و دارای Semantics است. Business Rule مالی یا Permission امنیتی در Widget قرار نمی‌گیرد.</p>
+    <p>Cache فقط برای App Shell و داده کم‌خطر نسخه‌دار است. اطلاعات مالی Online-first و عملیات حساس Offline ممنوع‌اند. Flutter و Packageها در Release Manifest Pin می‌شوند.</p>
+  </section>
+
+  <section class="page">
+    <h1>۱۲. امنیت، Audit و استقرار</h1>
+    <ul><li>MFA برای Access Profile قابل اجبار و برای نقش‌های حساس پیش‌فرض است.</li><li>Audit Event append-only با actor، context، resource، reason، before/after و زنجیره Hash ثبت می‌شود.</li><li>Export مجوز مستقل دارد و Download فایل خصوصی مجدداً Permission را کنترل می‌کند.</li><li>Secret در Git، PWA یا Log ذخیره نمی‌شود.</li><li>دسترسی پشتیبانی زمان‌دار، محدود و کاملاً Audit می‌شود.</li></ul>
+    <h2>استقرار</h2>
+    <p>Container-based، بدون Kubernetes در فاز اول؛ Reverse Proxy/TLS، PWA و Backend Same-origin، MariaDB، Redis Cache/Queue، Workerها و Scheduler.</p>
+    <p>هر Tenant Site/DB/File/Backup مستقل دارد. Cloud و On-premise پشتیبانی می‌شوند. هدف اولیه Cloud برابر RPO پانزده دقیقه و RTO چهار ساعت است.</p>
+    <h2>Backup</h2>
+    <p>Backup روزانه، Point-in-time، فایل و Encryption Key، نسخه Appها و Manifest را شامل می‌شود؛ Offsite و رمزگذاری‌شده است و با Restore Drill دوره‌ای اعتبارسنجی می‌شود.</p>
+  </section>
+
+  <section class="page">
+    <h1>۱۳. تست و ظرفیت</h1>
+    <table><tr><th>شاخص مبنا هر Site</th><th>هدف</th></tr><tr><td>کاربر ثبت‌شده / هم‌زمان</td><td>۵۰۰ / ۱۰۰</td></tr><tr><td>Company / Branch</td><td>۱۰ / ۵۰</td></tr><tr><td>Item و Party</td><td>هرکدام تا ۱۰۰٬۰۰۰</td></tr><tr><td>سند عملیاتی / GL سالانه</td><td>۵۰۰٬۰۰۰ / ۵٬۰۰۰٬۰۰۰</td></tr></table>
+    <p>اهداف اولیه: Shell کش‌شده کمتر از ۲ ثانیه، ورود تا Dashboard کمتر از ۴ ثانیه، API تعاملی P95 کمتر از ۸۰۰ میلی‌ثانیه. تأیید نهایی فقط با Benchmark زیرساخت مشخص انجام می‌شود.</p>
+    <h2>هرم تست</h2>
+    <pre>Unit → Domain/Service → API Contract → Integration
+→ Permission/Workflow → Flutter/Bloc → E2E
+→ Performance/Security/Migration/Restore</pre>
+    <p>Invariantهای مالی، ماتریس User×Company×Branch×Action، چک، Intercompany، Consolidation، بازشماری و Closing Gate مستقل دارند. هر تست مجاز یک تست غیرمجاز متناظر دارد.</p>
+  </section>
+
+  <section class="page">
+    <h1>۱۴. نقشه راه تحویل</h1>
+    <table><tr><th>بازه</th><th>خروجی</th></tr><tr><td>ماه ۱</td><td>سند نهایی، مخازن، CI/Docker و PoC شماره‌گذاری و Closing</td></tr><tr><td>ماه ۲–۳</td><td>Organization، Permission، MFA/Audit، API و PWA Shell</td></tr><tr><td>ماه ۳–۵</td><td>حسابداری ایرانی، سند، شماره‌گذاری و گزارش پایه</td></tr><tr><td>ماه ۵–۷</td><td>Master Data، خریدوفروش، انبار و خزانه</td></tr><tr><td>ماه ۷–۹</td><td>چک و انتقال بین‌شرکتی؛ پایلوت محدود</td></tr><tr><td>ماه ۹–۱۱</td><td>تلفیق و حذف معاملات داخلی</td></tr><tr><td>ماه ۱۱–۱۲</td><td>خروجی مالیاتی و پایان سال؛ Beta کامل</td></tr><tr><td>ماه ۱۳–۱۵</td><td>Regression، Security، Migration، Pilot و Production</td></tr></table>
+    <h2>Alpha فشرده ماه اول</h2>
+    <p>هدف ماه اول: زیرساخت سالم، حسابداری پایه، دسترسی چندشرکتی، PWA Shell و یک جریان خرید/فروش تا گزارش. قابلیت‌های مالی سنگین ابتدا PoC و سپس طبق Gateها Production می‌شوند.</p>
+  </section>
+
+  <section class="page">
+    <h1>۱۵. معیار پذیرش و تصمیم نهایی</h1>
+    <ul><li>هیچ نشت داده میان Tenant، Company و Branch وجود ندارد.</li><li>تمام اسناد و گزارش‌ها با GL متوازن و قابل Drill-down هستند.</li><li>شماره موقت حفظ و شماره قطعی تکراری یا گمشده ایجاد نمی‌شود.</li><li>اختتامیه و افتتاحیه بدون دوبرابرشدن مانده تطبیق می‌یابند.</li><li>چک و انتقال بین‌شرکتی State Machine، Idempotency و Audit کامل دارند.</li><li>گزارش تلفیقی برابر جمع شرکت‌ها منهای Adjustmentهای تأییدشده است.</li><li>JSON، Excel/CSV و PDF مالیاتی از یک Canonical Model تولید می‌شوند.</li><li>Backup/Restore، Migration، Performance و Security Gate موفق‌اند.</li></ul>
+    <div class="decision"><b>بیانیه معماری:</b> ASOUD یک ERP عمومی، چندشرکتی و حسابداری‌محور برای ایران است که روی ERPNext/Frappe v15، بدون تغییر Core، با Custom Appهای مستقل و Flutter Web PWA ساخته می‌شود. استقلال قانونی Companyها، گزارش تلفیقی Holding، کنترل Backend و قابلیت ارتقا اصول غیرقابل نقض پروژه‌اند.</div>
+    <p class="footer-note">پایان مبنای معماری — ادامه سند شامل وضعیت اجرای واقعی و برنامه کنترل‌شده تحویل است.</p>
+  </section>
+
+  <section class="page">
+    <h1>۱۶. وضعیت پیاده‌سازی و شواهد اجرا</h1>
+    <p>در تاریخ این نسخه، Foundation اجرایی، پایه حسابداری ایران، رجیستر و شماره‌گذاری، اختتامیه/افتتاحیه، عملیات عمومی، خزانه، گزارش‌های استاندارد، انتقال رسمی بین‌شرکتی و تراز تلفیقی روی Docker و ERPNext/Frappe v15 پذیرفته شده‌اند. پایلوت کنترل‌شده روی Site و پایگاه‌داده مستقل با داده مصنوعی اجرا شده است؛ این وضعیت جایگزین پذیرش کسب‌وکار با داده واقعی نیست.</p>
+    <table>
+      <tr><th>مولفه</th><th>وضعیت تأییدشده</th></tr>
+      <tr><td>Frappe</td><td><code>15.115.4</code> — نصب‌شده روی Site توسعه</td></tr>
+      <tr><td>ERPNext</td><td><code>15.117.0</code> — image پایه Pin شده</td></tr>
+      <tr><td>Custom Apps</td><td><code>asoud_core 0.7.0</code> و <code>asoud_iran 0.5.0</code> نصب و migrate شده‌اند؛ PWA نسخه <code>0.7.0+7</code> است.</td></tr>
+      <tr><td>Site توسعه</td><td><code>asoud.localhost</code> در Docker؛ endpoint سلامت روی پورت 8080 پاسخ <code>pong</code> داده است.</td></tr>
+      <tr><td>سرویس‌ها</td><td>Backend، Frontend، MariaDB 10.6، Redis Cache/Queue، WebSocket، Scheduler و Workerهای Short/Long فعال‌اند.</td></tr>
+      <tr><td>تست مستقل</td><td>۲۱ تست Core، ۳۰ تست Iran و ۱۰ تست Flutter موفق؛ تحلیل ایستا و Build نسخه Release وب نیز موفق‌اند.</td></tr>
+      <tr><td>Gate واقعی Frappe</td><td>Regression فازهای یک تا هشت، Gate بین‌شرکتی و هشت سناریوی UAT فنی روی Site پایلوت مستقل موفق‌اند.</td></tr>
+      <tr><td>HTTP و Smoke Test</td><td>ورود مدیر شرکت و حسابدار محدود، Context، تنظیمات، COA، تبدیل مبلغ/تاریخ، تراز، مسیر غیرمجاز، migration و HTTP Ping موفق‌اند.</td></tr>
+    </table>
+    <h2>قابلیت‌های موجود</h2>
+    <ul>
+      <li>DocTypeهای Holding، Branch، User Access، Numbering Batch، Number History و Period Lock.</li>
+      <li>فیلدهای شماره موقت، شماره قطعی و وضعیت شماره‌گذاری روی Journal Entry.</li>
+      <li>بازشماری تراکنشی از ابتدای بازه تا پایان سال مالی و نگهداری تاریخچه تغییر شماره.</li>
+      <li>DocType اجرای بستن سال و Adapter ساخت Journal Entryهای واقعی اختتامیه و افتتاحیه.</li>
+      <li>PWA فارسی RTL برای ورود Frappe و انتخاب Company/Branch مجاز.</li>
+      <li>DocType زمینه فعال کاربر و APIهای خواندن، تغییر امن و دریافت زمینه‌های مجاز.</li>
+      <li>کنترل Backend شرکت/شعبه روی Journal Entry، Sales/Purchase Invoice، Payment Entry، Stock Entry، Delivery Note و Purchase Receipt.</li>
+      <li>پشتیبانی از دسترسی کل شرکت، دسترسی محدود به شعبه و دسترسی تجمیعی مدیر هلدینگ.</li>
+      <li>کنترل تعلق انبار و مرکز هزینه پیش‌فرض شعبه به شرکت و جلوگیری از تغییر شرکت شعبه پس از ایجاد.</li>
+      <li>همگام‌سازی دسترسی ASOUD با User Permission استاندارد ERPNext بدون حذف مجوزهای دستی.</li>
+      <li>Seed تکرارپذیر شامل یک هلدینگ، دو شرکت مستقل، چهار شعبه، دو سال مالی، دو دوره مالی و چهار کاربر کنترل‌شده.</li>
+      <li>انتخاب‌گر Responsive در PWA و ذخیره Context در Backend پیش از ورود به محیط کار.</li>
+      <li>Gate سراسری قابل اجرای محلی و Workflow آماده GitHub برای تست یکپارچه مخزن‌های خصوصی.</li>
+      <li>DocType قالب COA نسخه‌دار و قالب عمومی <code>ASOUD-IR-GENERAL-V1.1.0</code> شامل ۹۶ حساب گروه/کل/معین برای فعالیت عمومی.</li>
+      <li>Setup قفل‌شده و تکرارپذیر روی هر Company؛ افزودن حساب مفقود، توقف در تعارض و حفظ حساب‌های موجود و دارای گردش.</li>
+      <li>دفتر کل IRR، ورود/نمایش صریح Toman با Decimal، Preference کاربر و API مبلغ مبتنی بر String.</li>
+      <li>تبدیل دوطرفه و اعتبارسنجی‌شده تاریخ جلالی/میلادی با Timezone تهران و تست مرز سال و کبیسه.</li>
+      <li>تفصیلی شناور مشترک Holding با کد مستقل Company، قاعده نوع/الزام حساب و Permission مثبت/منفی.</li>
+      <li>تزریق Snapshot تفصیلی در GL Map استاندارد و جلوگیری از Merge ردیف‌های دارای تفصیلی متفاوت، بدون تغییر Core.</li>
+      <li>تراز آزمایشی و گردش تفصیلی مبتنی بر GL استاندارد و داشبورد PWA برای تنظیمات، COA، مبلغ، تاریخ و گزارش پایه.</li>
+      <li>رجیستر مشترک هفت نوع سند حسابداری با شماره موقت immutable، شماره قطعی Company/Fiscal Year، Batch idempotent، History عمومی و Backfill اسناد قدیمی.</li>
+      <li>ادغام انتخابی چند سند همان‌روز در یک واحد شماره‌گذاری با حفظ شماره‌های موقت و Drill-down به تمام اسناد منبع.</li>
+      <li>Preflight بستن سال، حفظ Customer/Supplier و ابعاد Cost Center، Project، Finance Book، Branch و تفصیلی شناور در اسناد واقعی.</li>
+      <li>تطبیق بعدی دوساله بر مبنای کلید کامل حساب/طرف‌حساب/ابعاد، Retry ایمن، شماره قطعی اختتامیه و افتتاحیه و داشبورد نظارتی PWA.</li>
+    </ul>
+    <div class="future"><b>باقی‌مانده خارج از پذیرش فنی:</b> ارسال عملیاتی سامانه مؤدیان، اتصال مستقیم بانک، ترجمه ارز برای تلفیق چندارزی و پایلوت با داده واقعی و امضای کاربران کسب‌وکار هنوز انجام نشده‌اند.</div>
+  </section>
+
+  <section class="page">
+    <h1>۱۷. ساختار Workspace و حاکمیت مخزن‌ها</h1>
+    <pre>asoud erp/
+├── asoud_core/   # دامنه عمومی، سازمان، دسترسی و شماره‌گذاری
+├── asoud_iran/   # انطباق و حسابداری ایران
+├── asoud_pwa/    # Flutter Web PWA
+├── asoud_infra/  # Docker، Bootstrap، Smoke Test و استقرار
+└── asoud_docs/   # معماری، ADR، Runbook و PDFهای کنترل‌شده</pre>
+    <p>هر زیرپوشه یک Git Repository مستقل با شاخه اصلی <code>main</code> است. وابستگی میان مخزن‌ها یک‌طرفه و شفاف می‌ماند: Infra image اپ‌ها را بسته‌بندی می‌کند؛ Iran به Core وابسته است؛ PWA فقط از API قراردادشده استفاده می‌کند.</p>
+    <h2>سیاست GitHub</h2>
+    <ul>
+      <li>تا تعیین مجوز، مدل تجاری، سیاست Secret و Branch Protection، مخزن‌ها باید Private باشند.</li>
+      <li>برای هر مخزن remote مستقل با همان نام ایجاد می‌شود؛ Monorepo کردن بدون ADR ممنوع است.</li>
+      <li>شاخه <code>main</code> محافظت‌شده، Pull Request اجباری و عبور CI شرط Merge است.</li>
+      <li>Secret، فایل <code>.env</code>، Backup، Site Config، Encryption Key و داده مشتری هرگز Commit نمی‌شوند.</li>
+      <li>Release Manifest نسخه image، digest، commit پنج مخزن، migration و نتیجه تست‌ها را ثبت می‌کند.</li>
+      <li>انتشار فعلی تا نصب و احراز هویت GitHub CLI و تأیید مالک/Organization و Private بودن متوقف است.</li>
+    </ul>
+    <h2>نسخه و تغییر</h2>
+    <table>
+      <tr><th>نسخه</th><th>تغییر اصلی</th></tr>
+      <tr><td>۱.۱</td><td>سند ورودی و مبنای اولیه پروژه.</td></tr>
+      <tr><td>۲.۰</td><td>معماری مصوب، مدل شرکت/شعبه، حسابداری ایران و نقشه راه.</td></tr>
+      <tr><td>۲.۱</td><td>ثبت Foundation اجرایی، نسخه‌های واقعی، Runbook، ساختار Workspace و Gateهای ادامه.</td></tr>
+      <tr><td>۲.۲</td><td>پیاده‌سازی زمینه فعال، دسترسی Company/Branch/Holding، کنترل اسناد استاندارد و آزمون‌های ماتریس دسترسی.</td></tr>
+      <tr><td>۲.۳</td><td>تکمیل Seed، PWA، Frappe Gate، قفل دوره، اسناد واقعی Closing/Opening، CI یکپارچه و پذیرش رسمی فاز یک.</td></tr>
+      <tr><td>۲.۴</td><td>COA عمومی ۹۶ حسابی نسخه‌دار، IRR/Toman، تاریخ جلالی، تفصیلی شناور GL، Setup تکرارپذیر، گزارش و PWA؛ پذیرش رسمی فاز دو.</td></tr>
+      <tr><td>۲.۵</td><td>رجیستر عمومی و ادغام انتخابی اسناد، Batch و History، Preflight و اختتامیه/افتتاحیه Party/Dimension-aware، Reconciliation و Retry؛ پذیرش فازهای سه و چهار.</td></tr>
+      <tr><td>۲.۶</td><td>اطلاعات پایه مشترک Holding، پروفایل مستقل Company، خرید، فروش، پرداخت، انبار و داشبورد عملیاتی؛ پذیرش فاز پنج.</td></tr>
+      <tr><td>۲.۷</td><td>بانک، صندوق، تنخواه، تسویه هزینه، چرخه چک، شمارش صندوق، تطبیق بانکی، PWA و Gate تکرارپذیر؛ پذیرش فاز شش.</td></tr>
+      <tr><td>۲.۸</td><td>تعویق مصوب انتقال بین‌شرکتی و تلفیق؛ تعیین خروجی‌های استاندارد ایران و آماده‌سازی پایلوت به‌عنوان مرحله اجرایی بعد.</td></tr>
+      <tr><td>۲.۹</td><td>Canonical Report Schema، شش گزارش، CSV/XLSX/PDF، ورود کنترل‌شده مانده افتتاحیه، Permission/Performance Gate و Backup/Restore Drill؛ پذیرش آمادگی فنی پایلوت.</td></tr>
+      <tr><td>۳.۰</td><td>انتقال بین‌شرکتی دوطرفه، تأیید مبدأ/مقصد، جبران، نگاشت حساب، حذف داخلی، تراز تلفیقی و اجرای پایلوت مستقل با هشت سناریوی UAT مصنوعی.</td></tr>
+      <tr><td>۳.۱</td><td>میزکار عملیاتی PWA، CSRF و Idempotency پایدار، Audit زنجیره‌ای، زیرساخت Production، تطبیق مهاجرت و Cutover فنی با جلوگیری صریح از Production Go بدون امضا.</td></tr>
+    </table>
+  </section>
+
+  <section class="page">
+    <h1>۱۸. راهنمای عملیات محیط توسعه</h1>
+    <p>محیط توسعه از image اختصاصی <code>asoud/erpnext:v15-dev</code> استفاده می‌کند. کد دو App در زمان Build وارد image می‌شود و نصب دستی داخل Container مجاز نیست.</p>
+    <h2>راه‌اندازی</h2>
+    <pre>cd "asoud erp/asoud_infra"
+Copy-Item .env.example .env
+# مقادیر change-me فقط برای محیط محلی جایگزین شوند.
+powershell -ExecutionPolicy Bypass -File .\scripts\bootstrap.ps1</pre>
+    <p>Bootstrap باید idempotent باشد: image را می‌سازد، سرویس‌های پایه را بالا می‌آورد، Site را فقط در صورت نبودن ایجاد می‌کند، Appها را نصب، migration را اجرا و سرویس‌های اصلی را فعال می‌کند.</p>
+    <h2>اعتبارسنجی</h2>
+    <pre>powershell -ExecutionPolicy Bypass -File .\scripts\smoke-test.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\phase-two-gate.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\phase-three-four-gate.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\phase-six-gate.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\phase-seven-gate.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\phase-nine-pilot.ps1
+docker-compose ps
+docker-compose logs --tail 200 backend frontend scheduler</pre>
+    <p>Smoke Test باید نصب <code>frappe</code>، <code>erpnext</code>، <code>asoud_core</code> و <code>asoud_iran</code>، اجرای migration و پاسخ endpoint سلامت را کنترل کند.</p>
+    <h2>قواعد عملیاتی</h2>
+    <ul>
+      <li>فایل <code>.env</code> فقط محلی و Git-ignored است؛ رمزهای محیط نمونه در Production قابل استفاده نیستند.</li>
+      <li>حذف Volume، Reset دیتابیس یا بازسازی Site عملیات مخرب است و فقط با Backup و تأیید صریح انجام می‌شود.</li>
+      <li>قبل از تغییر Schema، Backup و migration rollback plan لازم است.</li>
+      <li>پس از هر تغییر Dockerfile، Hook، DocType یا Patch، Build، Migrate و Smoke Test تکرار می‌شوند.</li>
+      <li>محیط Production باید TLS، Secret Manager، Backup Offsite، Monitoring و digest ثابت image داشته باشد.</li>
+    </ul>
+  </section>
+
+  <section class="page">
+    <h1>۱۹. ترتیب ادامه پروژه و Gateهای تحویل</h1>
+    <p>ادامه توسعه باید به ترتیب زیر انجام شود. شروع مرحله بعد پیش از عبور معیار پذیرش مرحله جاری مجاز نیست.</p>
+    <table>
+      <tr><th>ترتیب</th><th>مرحله</th><th>خروجی و Gate</th></tr>
+      <tr><td>۰ — انجام‌شده</td><td>Foundation اجرایی</td><td>پنج مخزن، Docker v15، Site واقعی، CI پایه، PoC شماره‌گذاری و Closing، PDF کنترل‌شده.</td></tr>
+      <tr><td>۱ — انجام‌شده و پذیرفته‌شده</td><td>Foundation، Organization و Permission</td><td>Image و Site خودکار، Holding/Company/Branch، سال/دوره، Context فعال، Permission استاندارد، شماره‌گذاری، قفل، Closing/Opening، PWA، CI و Gate واقعی.</td></tr>
+      <tr><td>۲ — انجام‌شده و پذیرفته‌شده</td><td>پایه حسابداری ایران</td><td>COA نسخه‌دار ۹۶ حسابی، IRR/Toman، تاریخ جلالی، تفصیلی شناور GL، Setup تکرارپذیر، گزارش، PWA و Gate واقعی.</td></tr>
+      <tr><td>۳ — انجام‌شده و پذیرفته‌شده</td><td>رجیستر و شماره‌گذاری سند</td><td>شماره موقت immutable، رجیستر هفت نوع سند، Batch قطعی و idempotent، بازشماری اسناد بعدی، History، Lock، ادغام انتخابی و Gate واقعی.</td></tr>
+      <tr><td>۴ — انجام‌شده و پذیرفته‌شده</td><td>اختتامیه/افتتاحیه</td><td>طرف حساب و Dimension حفظ‌شده، Preflight، اسناد واقعی شماره‌دار، Reconciliation دوساله و Retry ایمن روی Site واقعی.</td></tr>
+      <tr><td>۵ — انجام‌شده و پذیرفته‌شده</td><td>اطلاعات پایه و عملیات عمومی</td><td>Party، Item/Service، قیمت، خرید، فروش، انبار و خدمات با تفکیک Company/Branch.</td></tr>
+      <tr><td>۶ — انجام‌شده و پذیرفته‌شده</td><td>خزانه، بانک، صندوق، تنخواه و چک</td><td>State Machine، رویداد غیرقابل حذف، اسناد واقعی متناظر، شمارش صندوق و تطبیق بانکی.</td></tr>
+      <tr><td>۷ — انجام‌شده و پذیرفته‌شده فنی</td><td>بین‌شرکتی و تلفیق</td><td>سند دوطرفه، تأیید مبدأ/مقصد، Idempotency، جبران بدون ابطال مستقیم، Mapping، حذف معاملات داخلی و تراز تلفیقی کنترل‌شده.</td></tr>
+      <tr><td>۸ — انجام‌شده و پذیرفته‌شده</td><td>خروجی استاندارد ایران و آماده‌سازی فنی پایلوت</td><td>مدل Canonical، شش گزارش، Excel/CSV/PDF، مهاجرت افتتاحیه، Security، Performance و Restore Drill؛ اتصال عملیاتی سامانه مؤدیان همچنان فاز مستقل است.</td></tr>
+      <tr><td>۹ — انجام‌شده فنی؛ پذیرش واقعی باز</td><td>پایلوت کنترل‌شده و UAT</td><td>Site و دیتابیس مستقل، داده مصنوعی کنترل‌شده، هشت سناریوی UAT، اجرای تکراری، Backup/Restore و تصمیم Technical Go Only؛ مهاجرت داده و امضای کسب‌وکار واقعی باقی است.</td></tr>
+    </table>
+    <h2>Definition of Done مشترک</h2>
+    <ul>
+      <li>کد، migration، test، permission test، API contract و مستند همان تغییر با هم تحویل می‌شوند.</li>
+      <li>هیچ Business Rule مالی فقط در PWA پیاده نمی‌شود؛ Backend مرجع نهایی است.</li>
+      <li>هر قابلیت مالی مسیر Audit، Reversal، Idempotency و خطای قابل فهم دارد.</li>
+      <li>Core ERPNext بدون تغییر باقی می‌ماند و ارتقای v15 در CI/محیط staging آزمایش می‌شود.</li>
+    </ul>
+    <div class="decision"><b>تصمیم Gate:</b> فازهای هفت و نه از نظر فنی پذیرفته شدند. تصمیم فعلی <code>Technical Go Only</code> است؛ تبدیل آن به Go عملیاتی نیازمند داده واقعی پاک‌سازی‌شده، کاربران منتخب، آموزش، امضای UAT کسب‌وکار و برنامه Cutover مصوب است. انتشار GitHub همچنان موکول است.</div>
+    <p class="footer-note">پایان مبنای مرحله‌بندی — ASOUD ERP Architecture & Execution Baseline v3.0</p>
+  </section>
+  <section class="page">
+    <h1>۲۰. الحاقیه اجرایی فاز پنج — اطلاعات پایه و عملیات عمومی</h1>
+    <p>فاز پنج در ۳ مرداد ۱۴۰۵ / 25 July 2026 روی ERPNext/Frappe v15.117.0 و Site واقعی توسعه اجرا و پذیرفته شد. این الحاقیه وضعیت پیاده‌سازی را ثبت می‌کند و جایگزین قواعد معماری بخش‌های قبل نیست.</p>
+    <h2>مدل اطلاعات پایه مصوب</h2>
+    <ul>
+      <li>Customer، Supplier و Item در سطح Holding مشترک‌اند و رکورد تکراری برای هر Company ساخته نمی‌شود.</li>
+      <li>فعال‌بودن، سقف اعتبار، شرایط پرداخت، Price List، حساب پیش‌فرض، Branch و Warehouse برای هر Company در Profile مستقل نگهداری می‌شود.</li>
+      <li>Goods با <code>is_stock_item=1</code> و Service با <code>is_stock_item=0</code> از قرارداد استاندارد ERPNext استفاده می‌کنند.</li>
+      <li>Warehouse به Branch متصل است و تعلق Company/Branch در Backend کنترل می‌شود؛ کنترل فقط به PWA وابسته نیست.</li>
+    </ul>
+    <h2>جریان‌های عملیاتی تحویل‌شده</h2>
+    <table>
+      <tr><th>دامنه</th><th>جریان پذیرفته‌شده</th><th>کنترل کلیدی</th></tr>
+      <tr><td>فروش</td><td>Sales Order → Delivery Note → Sales Invoice → Payment Entry</td><td>Company/Branch، کالای مجاز، مشتری فعال و سقف اعتبار مستقل</td></tr>
+      <tr><td>خرید</td><td>Purchase Order → Purchase Receipt → Purchase Invoice → Payment Entry</td><td>Company/Branch، تأمین‌کننده و کالای فعال، حساب‌های همان شرکت</td></tr>
+      <tr><td>انبار</td><td>Stock Reconciliation و Material Transfer بین دو Branch</td><td>انبار برگ، تعلق شرکت، دفتر مبدأ/مقصد و Stock Ledger</td></tr>
+      <tr><td>حسابداری</td><td>رجیستر عمومی برای ۸ سند عملیاتی و ثبت GL</td><td>شماره موقت پایدار، تراز بدهکار/بستانکار و Drill-down</td></tr>
+      <tr><td>PWA/API</td><td>داشبورد فروش، خرید، دریافت، پرداخت و موجودی</td><td>Scope بر اساس Context فعال Company/Branch</td></tr>
+    </table>
+    <h2>شواهد Gate واقعی</h2>
+    <ul>
+      <li>یک مشتری، یک تأمین‌کننده، یک کالای انباری و یک خدمت کنترل‌شده ایجاد شدند.</li>
+      <li>چرخه کامل فروش و خرید با اسناد Submitted واقعی ERPNext عبور کرد.</li>
+      <li>انبارگردانی ۱۰۰ واحدی و انتقال یک واحد بین دفتر HQ و OPS در Stock Ledger و Bin ثبت شد.</li>
+      <li>هشت سند عملیاتی در ASOUD Accounting Document ثبت شدند.</li>
+      <li>کنترل منفی سقف اعتبار با خطای Validation و کنترل تراز GL با موفقیت عبور کرد.</li>
+      <li>Migration، ۱۵ تست Core، تحلیل ایستای Flutter و ۶ تست PWA عبور کردند.</li>
+    </ul>
+    <div class="decision"><b>تصمیم Gate:</b> فاز پنج تحویل‌شده و قابل تکرار است. مرحله بعدی طبق نقشه راه، خزانه و چک است. انتشار GitHub مطابق تصمیم مالک محصول همچنان به بعد موکول است.</div>
+    <p class="footer-note">ASOUD ERP Architecture & Execution Baseline v2.6 — Phase Five Accepted</p>
+  </section>
+  <section class="page">
+    <h1>۲۱. الحاقیه اجرایی فاز شش — خزانه، بانک، صندوق، تنخواه و چک</h1>
+    <p>فاز شش در ۴ مرداد ۱۴۰۵ / 26 July 2026 روی ERPNext/Frappe v15.117.0 و Site واقعی توسعه اجرا و پذیرفته شد. ثبت‌های مالی این بخش Journal Entry و GL Entry واقعی ERPNext هستند و هیچ تغییری در Core فریم‌ورک یا ERPNext ایجاد نشده است.</p>
+
+    <h2>مدل و مرز حسابداری</h2>
+    <table>
+      <tr><th>مدل</th><th>کارکرد مصوب</th><th>کنترل اصلی</th></tr>
+      <tr><td>ASOUD Treasury Account</td><td>تعریف حساب عملیاتی بانک، صندوق یا تنخواه در Company/Branch</td><td>حساب معین برگ، تفصیلی شناور، متصدی، فعال‌بودن و سقف مانده</td></tr>
+      <tr><td>ASOUD Treasury Transaction</td><td>دریافت، پرداخت، انتقال و تأمین تنخواه</td><td>دوطرفه، مبلغ مثبت، زمینه یکسان، سقف مقصد و Journal Entry واقعی</td></tr>
+      <tr><td>ASOUD Petty Cash Claim</td><td>تسویه ریزهزینه‌های تنخواه با رسید</td><td>متصدی، تاریخ/حساب/تفصیلی هر ردیف، جمع خودکار و کفایت مانده</td></tr>
+      <tr><td>ASOUD Cheque + Event</td><td>چک دریافتی و پرداختی با تاریخچه وضعیت</td><td>State Machine، رویداد immutable، طرف حساب و سند مالی متناظر</td></tr>
+      <tr><td>ASOUD Cash Count</td><td>شمارش صندوق یا تنخواه و ثبت کسری/اضافه</td><td>مانده GL در تاریخ شمارش و حساب تعدیل تفصیلی</td></tr>
+      <tr><td>ASOUD Bank Reconciliation</td><td>مقایسه مانده دفتر با صورت‌حساب بانک</td><td>بازه معتبر، مانده سیستمی، اختلاف و وضعیت Reconciled/Open</td></tr>
+    </table>
+
+    <h2>چرخه‌های پذیرفته‌شده چک</h2>
+    <pre>دریافتی: Draft → Received → Deposited → Cleared
+دریافتی برگشتی: Received/Deposited → Returned → Received → Cleared
+پرداختی: Draft → Issued → Cleared
+لغو فقط از وضعیت‌های مجاز و با رویداد حسابرسی ثبت می‌شود.</pre>
+    <p>پرش مستقیم از Draft به Cleared مجاز نیست. هر انتقال وضعیت تحت قفل رکورد انجام می‌شود؛ تکرار همان درخواست، رویداد یا Journal Entry مضاعف ایجاد نمی‌کند. رویداد چک فقط از Service انتقال وضعیت ساخته می‌شود و ویرایش یا حذف مستقیم مسیر رسمی عملیات نیست.</p>
+
+    <h2>ثبت‌های مالی و تفصیلی شناور</h2>
+    <ul>
+      <li>حساب بانک، صندوق و تنخواه تفصیلی نوع «سایر» دارند؛ ردیف‌های هزینه تنخواه و کسری صندوق از تفصیلی «مرکز هزینه» استفاده می‌کنند.</li>
+      <li>چک دریافتی تفصیلی «مشتری» و حساب دریافتنی دارد؛ چک پرداختی تفصیلی «تأمین‌کننده» و حساب پرداختنی دارد.</li>
+      <li>تمام ردیف‌ها Branch سند را به GL منتقل می‌کنند و قواعد حساب/نوع تفصیلی در <code>asoud_iran</code> کنترل می‌شوند.</li>
+      <li>ابطال سند Submitted از مسیر استاندارد، Journal Entry متصل را نیز معکوس می‌کند؛ حذف خام اطلاعات مالی مجاز نیست.</li>
+    </ul>
+
+    <h2>PWA، API و دسترسی</h2>
+    <ul>
+      <li><code>asoud_core.api.treasury_dashboard</code> مانده بانک، صندوق، تنخواه، حساب‌ها، وضعیت چک‌ها و تعداد تسویه‌های باز را فقط در Context مجاز Company/Branch برمی‌گرداند.</li>
+      <li><code>asoud_core.api.transition_cheque</code> فقط POST است و علاوه بر Permission زمینه، نقش Accounts Manager یا System Manager را لازم دارد.</li>
+      <li>PWA نسخه <code>0.6.0+6</code> صفحه RTL خزانه با Refresh، وضعیت خطا، مانده‌ها و تفکیک حساب‌ها/چک‌ها دارد.</li>
+      <li>Permission Query و Document Permission روی تمام DocTypeهای فاز شش اعمال شده و PWA مرجع مجوز نیست.</li>
+    </ul>
+
+    <h2>شواهد پذیرش واقعی</h2>
+    <table>
+      <tr><th>کنترل</th><th>نتیجه ثبت‌شده</th></tr>
+      <tr><td>حساب‌های عملیاتی</td><td>سه حساب مستقل بانک، صندوق و تنخواه برای Company و شعبه HQ</td></tr>
+      <tr><td>عملیات وجه</td><td>دریافت اولیه، انتقال بانک به صندوق و تأمین تنخواه با اسناد Submitted</td></tr>
+      <tr><td>تنخواه</td><td>تسویه ۱٬۰۰۰ ریالی شامل دو رسید هزینه و کاهش واقعی مانده تنخواه</td></tr>
+      <tr><td>چک</td><td>سه فقره و ۹ رویداد: وصول دریافتی، برگشت/بازیابی دریافتی و وصول پرداختی</td></tr>
+      <tr><td>کنترل صندوق/بانک</td><td>ثبت کسری ۱۰۰ ریالی صندوق و تطبیق بانکی با اختلاف صفر</td></tr>
+      <tr><td>GL و رجیستری</td><td>۱۳ Journal Entry متوازن و ثبت همه آن‌ها در رجیستری مشترک حسابداری</td></tr>
+      <tr><td>Regression</td><td>۱۸ تست Core، ۲۷ تست Iran، ۸ تست Flutter، تحلیل ایستا و Web Release Build موفق</td></tr>
+      <tr><td>Idempotency</td><td>اجرای متوالی Gate با همان شناسه اسناد، همان ۹ رویداد و بدون رکورد اضافه</td></tr>
+    </table>
+
+    <div class="future"><b>مرز تاریخی فاز شش:</b> اتصال آنلاین بانک، واردکردن خودکار صورت‌حساب، چاپ/صیاد عملیاتی و گردش تصویب مبتنی بر سقف مبلغ در این Gate نبودند. عملیات بین‌شرکتی که در زمان فاز شش معوق بود، اکنون طبق الحاقیه ۲۳ تحویل شده است.</div>
+    <div class="decision"><b>تصمیم تاریخی Gate:</b> فاز شش پذیرفته شد. وضعیت جاری انتقال رسمی کالا، پول و سند و گزارش تلفیقی در الحاقیه فاز هفت ثبت شده است. انتشار GitHub همچنان انجام نشده است.</div>
+    <p class="footer-note">ASOUD ERP Architecture & Execution Baseline v2.8 — Phase Six Accepted / Phase Seven Deferred</p>
+  </section>
+  <section class="page">
+    <h1>۲۲. الحاقیه اجرایی فاز هشت — خروجی استاندارد ایران و آمادگی فنی پایلوت</h1>
+    <p>فاز هشت در ۴ مرداد ۱۴۰۵ / 26 July 2026 روی ERPNext/Frappe v15.117.0 اجرا و Gate فنی آن پذیرفته شد. مبنای همه گزارش‌ها GL Entry استاندارد و غیرابطال‌شده است. این پذیرش به معنی اجرای پایلوت واقعی یا تأیید حقوقی خروجی مالیاتی نیست.</p>
+
+    <h2>قرارداد Canonical Report Schema 1.0</h2>
+    <ul>
+      <li>هر گزارش دارای نوع، عنوان، هویت شرکت، Company/Branch، بازه میلادی و جلالی، واحد IRR، ستون‌ها، ردیف‌ها، جمع‌های کنترلی و SHA-256 Checksum است.</li>
+      <li>JSON، CSV، XLSX و PDF از یک Payload مشترک تولید می‌شوند؛ منطق محاسبات در Rendererها تکرار نمی‌شود.</li>
+      <li>بازه هر درخواست حداکثر دو سال و حجم هر خروجی حداکثر ۲۰٬۰۰۰ ردیف است؛ برای داده بیشتر باید بازه، Branch، Account یا Detail محدود شود.</li>
+      <li>Authorization در Backend با User×Company×Branch کنترل می‌شود و لینک دانلود نیز از Session احرازشده استفاده می‌کند.</li>
+    </ul>
+
+    <h2>گزارش‌های تحویل‌شده</h2>
+    <table>
+      <tr><th>گزارش</th><th>کنترل حسابداری</th></tr>
+      <tr><td>دفتر روزنامه</td><td>تاریخ، شماره موقت/قطعی، سند، حساب، طرف حساب، تفصیلی، Branch، بدهکار/بستانکار و شرح</td></tr>
+      <tr><td>دفتر کل و معین</td><td>مانده اول دوره، گردش مرتب‌شده و مانده جاری بر اساس Account</td></tr>
+      <tr><td>دفتر تفصیلی شناور</td><td>گردش و مانده مستقل بر اساس Account و Floating Detail</td></tr>
+      <tr><td>تراز آزمایشی شش‌ستونی</td><td>اول دوره بدهکار/بستانکار، گردش بدهکار/بستانکار و پایان دوره بدهکار/بستانکار</td></tr>
+      <tr><td>صورت وضعیت مالی</td><td>Asset، Liability و Equity؛ اختلاف معادله با سود/زیان بسته‌نشده کنترل می‌شود</td></tr>
+      <tr><td>صورت سود و زیان</td><td>Income، Expense و سود خالص دوره بر اساس GL</td></tr>
+    </table>
+
+    <h2>خروجی و PWA</h2>
+    <ul>
+      <li>CSV با UTF-8 BOM برای سازگاری صحیح فارسی، XLSX راست‌چین با ستون‌بندی و PDF افقی راست‌چین تولید می‌شود.</li>
+      <li>PWA نسخه <code>0.7.0+7</code> صفحه مستقل گزارش، انتخاب نوع/بازه، نمایش جمع‌ها و Checksum و دانلود سه قالب را ارائه می‌کند.</li>
+      <li>در رابط حداکثر ۵۰۰ ردیف نمایش داده می‌شود، ولی فایل دانلودی تمام ردیف‌های مجاز گزارش را دارد.</li>
+    </ul>
+
+    <h2>مهاجرت کنترل‌شده مانده افتتاحیه</h2>
+    <p><code>ASOUD Opening Balance Import</code> دارای External Reference یکتا، Company/Branch، تاریخ، ردیف‌های حساب/طرف‌حساب/تفصیلی و جمع کنترل است. هر ردیف فقط بدهکار یا بستانکار، حساب برگ همان Company و تفصیلی مجاز می‌پذیرد. Submit فقط در صورت تراز صفر، Opening Entry واقعی و رجیستری‌شده می‌سازد؛ Retry همان Reference سند مضاعف ایجاد نمی‌کند و Cancel، سند متصل را از مسیر استاندارد معکوس می‌کند.</p>
+
+    <h2>شواهد Gate و آمادگی پایلوت</h2>
+    <table>
+      <tr><th>کنترل</th><th>نتیجه</th></tr>
+      <tr><td>Unit/Flutter</td><td>۱۸ تست Core، ۳۰ تست Iran و ۱۰ تست Flutter؛ تحلیل ایستا و Web Release Build موفق</td></tr>
+      <tr><td>گزارش واقعی</td><td>شش گزارش شامل ۲۶۵ ردیف کنترل‌شده؛ تراز اول دوره، گردش و پایان دوره برابر</td></tr>
+      <tr><td>خروجی واقعی</td><td>CSV، OOXML Excel و PDF معتبر از دفتر روزنامه ۷۳ ردیفی</td></tr>
+      <tr><td>Idempotency</td><td>دو اجرای متوالی با همان Opening Import، Journal Entry و Checksumها</td></tr>
+      <tr><td>Permission</td><td>Manager مجاز از HTTP گزارش/فایل دریافت کرد؛ حسابدار Company دیگر با خطای Permission متوقف شد</td></tr>
+      <tr><td>Performance</td><td>تولید هر شش گزارش روی داده کنترل‌شده در حدود ۰٫۰۳ تا ۰٫۰۶ ثانیه؛ بودجه Gate برابر ۵ ثانیه</td></tr>
+      <tr><td>Backup/Restore</td><td>Backup دیتابیس و فایل‌ها، Restore روی Site تصادفی ایزوله، Migration، تطبیق Fingerprint و حذف امن Site موقت</td></tr>
+      <tr><td>CI/Release</td><td>Workflow فاز هشت و تولید Release Manifest شامل نسخه Appها، Image Digest و commit مخزن‌ها آماده است</td></tr>
+    </table>
+
+    <div class="future"><b>محدودیت حقوقی و عملیاتی:</b> این خروجی‌ها گزارش‌های استاندارد فنی و قابل تطبیق با GL هستند؛ عنوان «مورد قبول قطعی مراجع قانونی یا مالیاتی» تنها پس از بازبینی حسابدار/مشاور حقوقی، تنظیم مشخصات کسب‌وکار و آزمون با داده واقعی قابل اعلام است. اتصال مستقیم سامانه مؤدیان در این فاز نیست.</div>
+    <div class="decision"><b>تصمیم Gate تاریخی فاز هشت:</b> آمادگی فنی پایلوت پذیرفته شد. وضعیت جدید اجرای فازهای هفت و نه در الحاقیه‌های بعدی ثبت شده است؛ GitHub هنوز منتشر نشده است.</div>
+    <p class="footer-note">ASOUD ERP Architecture & Execution Baseline v2.9 — Phase Eight Technical Gate Accepted</p>
+  </section>
+  <section class="page">
+    <h1>۲۳. الحاقیه اجرایی فاز هفت — انتقال بین‌شرکتی و تلفیق</h1>
+    <p>فاز هفت در ۴ مرداد ۱۴۰۵ / 26 July 2026 روی ERPNext/Frappe v15 اجرا و Gate فنی آن پذیرفته شد. دفاتر قانونی Companyها مستقل باقی می‌مانند و حذف‌های تلفیقی فقط در لایه گزارش Holding اعمال می‌شوند.</p>
+
+    <h2>سند و گردش رسمی</h2>
+    <pre>Requested
+→ Source Approved
+→ Destination Accepted
+→ Paired Journal Entries
+→ Completed
+→ Compensating Transfer (در صورت اصلاح)</pre>
+    <ul>
+      <li><code>ASOUD Intercompany Transfer</code> شرکت و شعبه مبدأ/مقصد، نوع انتقال، تاریخ، مبلغ IRR، حساب‌های تسویه و فی‌مابین و کلید یکتای Idempotency را ثبت می‌کند.</li>
+      <li>دسترسی هر تأیید در Backend نسبت به Company/Branch کنترل و پذیرش مقصد با قفل رکورد اجرا می‌شود.</li>
+      <li>تکمیل، دو Journal Entry واقعی و متوازن در دو Company ایجاد و هر دو را در رجیستر حسابداری ثبت می‌کند.</li>
+      <li>ابطال مستقیم سند تکمیل‌شده ممنوع است؛ اصلاح پول، خدمت، هزینه، دارایی یا سند با انتقال جبرانی رسمی انجام می‌شود.</li>
+      <li>انتقال کالا تنها با Delivery Note/Sales Invoice دارای Update Stock یا Stock Entry در مبدأ و Purchase Receipt/Purchase Invoice دارای Update Stock یا Stock Entry در مقصد پذیرفته می‌شود؛ تاریخ، Company، وضعیت Submitted، مبلغ و استفاده‌نشدن مجدد Voucher کنترل می‌شوند.</li>
+    </ul>
+
+    <h2>تلفیق و حذف داخلی</h2>
+    <ul>
+      <li><code>ASOUD Consolidation Account Map</code> هر حساب برگ Company را به کد و عنوان Holding نگاشت می‌کند.</li>
+      <li>گزارش تلفیقی سه لایه Raw Balance، Elimination و Consolidated Balance را جدا نگه می‌دارد و Drill-down انتقال منبع را برمی‌گرداند.</li>
+      <li>دریافتنی و پرداختنی متقابل انتقال‌های تکمیل‌شده به‌طور متوازن حذف می‌شوند؛ GL قانونی Company تغییر نمی‌کند.</li>
+      <li>Adjustment دستی فقط به‌شکل سند Submitted، دارای دلیل و پیوست قابل ثبت است.</li>
+      <li>حساب بدون Mapping باعث شکست کنترل گزارش می‌شود. تلفیق ارزهای متفاوت تا تحویل موتور ترجمه ارز صریحاً متوقف می‌شود.</li>
+    </ul>
+
+    <h2>شواهد پذیرش</h2>
+    <table>
+      <tr><th>کنترل</th><th>نتیجه</th></tr>
+      <tr><td>انتقال اصلی</td><td><code>ASOUD-ICT-2026-00001</code> به مبلغ ۱۰٬۰۰۰ IRR با دو Journal Entry واقعی</td></tr>
+      <tr><td>جبران</td><td>انتقال ۱٬۰۰۰ IRR و سند جبرانی مستقل؛ ابطال مستقیم با ValidationError متوقف شد</td></tr>
+      <tr><td>انتقال کالا</td><td><code>ASOUD-ICT-2026-00004</code> با Material Issue و Material Receipt واقعی و مبلغ یکسان ۱٬۰۰۰ IRR</td></tr>
+      <tr><td>Mapping</td><td>تمام حساب‌های برگ دارای گردش دو Company نگاشت شدند؛ Gate توسعه ۲۵۸ و پایلوت مستقل ۲۵۵ Mapping داشت</td></tr>
+      <tr><td>تلفیق</td><td>Gate توسعه ۲۲ ردیف و ۸ ردیف حذف؛ Raw، Elimination و Consolidated Difference همگی صفر</td></tr>
+      <tr><td>امنیت و تکرار</td><td>حسابدار محدود از گزارش Holding منع شد و پذیرش تکراری سند جدید نساخت</td></tr>
+    </table>
+    <div class="decision"><b>تصمیم Gate:</b> موتور انتقال حسابداری بین‌شرکتی و تراز تلفیقی پذیرفته شد. اجرای انتقال کالای واقعی در هر استقرار باید علاوه بر این Gate با Item، Warehouse، مالیات و Voucherهای همان کسب‌وکار UAT شود.</div>
+    <p class="footer-note">ASOUD ERP Architecture & Execution Baseline v3.0 — Phase Seven Technical Gate Accepted</p>
+  </section>
+
+  <section class="page">
+    <h1>۲۴. الحاقیه اجرایی فاز نه — پایلوت کنترل‌شده و UAT</h1>
+    <p>یک Site دائمی و مستقل با نام <code>asoud-pilot.localhost</code> و پایگاه‌داده جدا ساخته شد. اپ‌ها روی آن نصب، Migration اجرا و داده مصنوعی کنترل‌شده تولید شد. این محیط clone دیتابیس توسعه نیست و شواهد آن در <code>phase-nine-uat.json</code> ثبت شده است.</p>
+
+    <h2>سناریوهای اجراشده</h2>
+    <table>
+      <tr><th>کد</th><th>دامنه</th><th>نتیجه</th></tr>
+      <tr><td>P9-01</td><td>Holding، Company، Branch، کاربر و Context</td><td>Pass</td></tr>
+      <tr><td>P9-02</td><td>COA ایران، IRR/Toman، جلالی و تفصیلی شناور</td><td>Pass</td></tr>
+      <tr><td>P9-03</td><td>رجیستر، شماره موقت/قطعی و ادغام روزانه</td><td>Pass</td></tr>
+      <tr><td>P9-04</td><td>اختتامیه و افتتاحیه واقعی</td><td>Pass</td></tr>
+      <tr><td>P9-05</td><td>فروش، خرید، پرداخت و انبار</td><td>Pass</td></tr>
+      <tr><td>P9-06</td><td>بانک، صندوق، تنخواه و چرخه چک</td><td>Pass</td></tr>
+      <tr><td>P9-07</td><td>انتقال بین‌شرکتی و تلفیق</td><td>Pass</td></tr>
+      <tr><td>P9-08</td><td>گزارش‌ها، خروجی‌ها و مهاجرت افتتاحیه</td><td>Pass</td></tr>
+    </table>
+
+    <h2>کنترل محیط و قابلیت بازگشت</h2>
+    <ul>
+      <li>اجرای نخست یک <code>ASOUD Pilot Run</code> Submitted با ۸ سناریوی Pass ساخت؛ اجرای دوم همان Run را بدون تکثیر بازگرداند.</li>
+      <li>HTTP Ping مستقیم Site پایلوت موفق بود و نسخه‌های نصب‌شده Frappe 15.115.4، ERPNext 15.117.0، Core 0.10.0 و Iran 0.5.0 ثبت شدند.</li>
+      <li>Backup دیتابیس، فایل عمومی و خصوصی گرفته و روی Site تصادفی جدا Restore شد؛ پس از Migration، Fingerprint مبدأ و مقصد برابر بود.</li>
+      <li>Workflow یکپارچه فازهای هفت و نه و Artifact شواهد UAT آماده است؛ انتشار در GitHub طبق تصمیم مالک محصول انجام نشده است.</li>
+    </ul>
+
+    <div class="future"><b>مرز صداقت پذیرش:</b> Data Profile این اجرا <code>Synthetic</code> است و Business Sign-off برابر <code>not-claimed</code>. مهاجرت داده واقعی، آموزش کاربران منتخب، آزمون حجم واقعی، کنترل مالیاتی/حقوقی، Cutover و امضای صورت‌جلسه هنوز باید با یک کسب‌وکار منتخب انجام شوند.</div>
+    <div class="decision"><b>تصمیم:</b> نتیجه پایلوت فعلی <code>Technical Go Only</code> است، نه Production Go. زیرساخت و سناریوها آماده تکرار با داده Anonymized یا Real هستند و DocType پایلوت اجازه ثبت Go واقعی را بدون پیوست امضای کسب‌وکار و کاربر پذیرنده نمی‌دهد.</div>
+    <p class="footer-note">ASOUD ERP Architecture & Execution Baseline v3.0 — Phase Nine Controlled Technical UAT Accepted</p>
+  </section>
+
+  <section class="page">
+    <h1>۲۵. الحاقیه فاز ده — میزکار عملیاتی PWA</h1>
+    <p>فاز ده رابط را از داشبورد صرف به یک میزکار عملیاتی permission-scoped ارتقا داد. PWA از API عمومی DocType برای Mutation استفاده نمی‌کند و همه تغییرها از قراردادهای محدود ASOUD عبور می‌کنند.</p>
+    <table>
+      <tr><th>دامنه</th><th>خروجی</th></tr>
+      <tr><td>پوشش سند</td><td>Sales Invoice، Purchase Invoice، Payment Entry، Stock Entry، Journal Entry، عملیات خزانه، چک و انتقال بین‌شرکتی</td></tr>
+      <tr><td>فرم</td><td>فرم فارسی Responsive با ردیف‌های قابل افزودن/حذف، ایجاد Draft و نمایش آخرین اسناد همان Company/Branch</td></tr>
+      <tr><td>گردش</td><td>Submit/Cancel فقط برای اسناد مجاز؛ علت ابطال الزامی؛ چک و انتقال بین‌شرکتی از State Machine اختصاصی خود عبور می‌کنند</td></tr>
+      <tr><td>نشست</td><td>یک Client مشترک، دریافت CSRF پس از Login و ارسال Token روی Mutationها</td></tr>
+      <tr><td>تکرار</td><td>کلید Idempotency تصادفی PWA و Ledger پایدار Backend؛ استفاده مجدد با Payload متفاوت Fail می‌شود</td></tr>
+    </table>
+    <p>Gate روی Site پایلوت یک Journal Entry متوازن با نام <code>ACC-JV-2026-00032</code> در وضعیت Draft ساخت و اجرای تکراری همان نتیجه را بدون سند دوم بازگرداند. مسیر عمومی Submit برای Intercompany عمداً مسدود است تا تأیید مبدأ/مقصد دور زده نشود.</p>
+    <div class="decision"><b>تصمیم فاز ده:</b> قرارداد عملیاتی و PWA از نظر فنی پذیرفته شد. انتخاب مقادیر واقعی Party، Account، Warehouse و سایر Linkها باید در UAT کسب‌وکار همان استقرار کنترل شود.</div>
+
+    <h1>۲۶. الحاقیه فاز یازده — آمادگی Production و امنیت</h1>
+    <ul>
+      <li>Compose تولید جدا شامل Caddy/TLS، Headerهای امنیتی، اتصال Frontend فقط روی Loopback، Redis رمزدار، MariaDB Binary Log و Image tag غیر dev است.</li>
+      <li>Baseline Frappe، Developer Mode را خاموش، Origin را HTTPS و MFA و Session controls موجود در v15 را اعمال می‌کند.</li>
+      <li><code>ASOUD Audit Event</code> append-only است و Actor، Context، Resource، Reason، Before/After و زنجیره SHA-256 را نگه می‌دارد؛ ویرایش و حذف مستقیم ممنوع است.</li>
+      <li>Prometheus، cAdvisor، Node Exporter و Ruleهای Down، Disk و Restart آماده شده‌اند.</li>
+      <li>Runbook انتشار، Secret، Backup Offsite، Restore Drill، Incident و Rollback ثبت شده است.</li>
+    </ul>
+    <div class="future"><b>مرز استقرار:</b> فایل Production با مقادیر کنترل‌شده Validate شده ولی سرور، DNS، گواهی واقعی، Secret Manager، مقصد Offsite و Alert Receiver متعلق به محیط مشتری هنوز ایجاد نشده‌اند؛ بنابراین «Production deployed» اعلام نمی‌شود.</div>
+    <p class="footer-note">ASOUD ERP Architecture & Execution Baseline v3.1 — Phases 10 &amp; 11 Technical Readiness Accepted</p>
+  </section>
+
+  <section class="page">
+    <h1>۲۷. الحاقیه فاز دوازده — مهاجرت و تطبیق کنترل‌شده</h1>
+    <p><code>ASOUD Migration Run</code> منبع، SHA-256، نسخه Release، Data Profile، زمان اجرا و کنترل‌های تطبیق را نگه می‌دارد. هر کنترل Source/Target/Tolerance/Difference/Evidence دارد و Migration دارای اختلاف Submit نمی‌شود.</p>
+    <table>
+      <tr><th>کنترل پایلوت</th><th>نتیجه</th></tr>
+      <tr><td>تعداد GL Entry</td><td>Source و Target برابر</td></tr>
+      <tr><td>جمع بدهکار</td><td>اختلاف صفر</td></tr>
+      <tr><td>جمع بستانکار</td><td>اختلاف صفر</td></tr>
+      <tr><td>توازن GL</td><td>بدهکار و بستانکار برابر</td></tr>
+      <tr><td>رکورد</td><td><code>ASOUD-MIG-2026-00001</code> — Submitted — Technical Ready</td></tr>
+    </table>
+    <p>ترتیب مهاجرت و کنترل Account، Party، Item، Stock، Treasury و Cheque در راهنمای مهاجرت فارسی ثبت شده است. Data Profile پایلوت <code>Synthetic</code> است؛ برای <code>Real</code>، سیستم کاربر تطبیق‌دهنده و فایل امضاشده را اجباری می‌کند و فقط آن‌گاه تصمیم Accepted ممکن است.</p>
+    <div class="future"><b>باقی‌مانده واقعی:</b> فایل سیستم قبلی، پاک‌سازی، Mapping، Exception List و امضای حسابدار فقط پس از انتخاب شرکت پایلوت و تحویل داده قابل انجام است.</div>
+
+    <h1>۲۸. الحاقیه فاز سیزده — UAT، Cutover و Rollback</h1>
+    <p><code>ASOUD Cutover Run</code> Migration، Pilot، Release، برنامه Rollback، مسئول و Evidence هر کنترل را به هم متصل می‌کند. Gate هشت کنترل اجباری Release، Migration، UAT، Restore، Rollback، Permission، Training و Sign-off را اجرا کرد.</p>
+    <table>
+      <tr><th>شاهد</th><th>نتیجه</th></tr>
+      <tr><td>Cutover</td><td><code>ASOUD-CUTOVER-2026-00001</code> — Submitted — Technical Ready</td></tr>
+      <tr><td>Audit Chain</td><td>معتبر و Hash-chained</td></tr>
+      <tr><td>اجرای تکراری</td><td>Migration، Cutover و Workbench Draft تکثیر نشدند</td></tr>
+      <tr><td>Backup/Restore</td><td>Restore روی Site تصادفی مستقل و Fingerprint برابر</td></tr>
+      <tr><td>Artifact</td><td><code>phase-ten-thirteen-technical-readiness.json</code></td></tr>
+    </table>
+    <div class="decision"><b>تصمیم نهایی فعلی:</b> فازهای ۱۰ تا ۱۳ از نظر کد، Schema، PWA، زیرساخت و Gate فنی به وضعیت <code>Technical Ready</code> رسیده‌اند. مقدار <code>production_go=false</code> و <code>business_signoff=not-claimed</code> عمداً حفظ شده است. Production Go تنها با داده Real، Pilot واقعی، آموزش، شواهد، امضای کسب‌وکار و اجرای Cutover در محیط مقصد صادر می‌شود.</div>
+    <p class="footer-note">ASOUD ERP Architecture & Execution Baseline v3.1 — Phases 12 &amp; 13 Technical Readiness Accepted / Production Go Pending</p>
+  </section>
+
+  <section class="page">
+    <h1>۲۹. الحاقیه فاز چهارده — زیرساخت سامانه مؤدیان</h1>
+    <p>درگاه مالیاتی به‌صورت Adapter نسخه‌پذیر در <code>asoud_iran</code> پیاده شد. سند حسابداری منبع همچنان Sales Invoice استاندارد ERPNext است و یک Snapshot Canonical و تغییرناپذیر برای انتقال ساخته می‌شود تا تغییر قرارداد ارائه‌دهنده به دفتر قانونی یا مدل فروش نفوذ نکند.</p>
+    <table>
+      <tr><th>جزء</th><th>کنترل فنی</th></tr>
+      <tr><td>ASOUD Tax Settings</td><td>تنظیم مستقل Company، محیط Sandbox/Production، نسخه Adapter، فهرست Host مجاز و فقط Reference گواهی/Secret؛ ذخیره کلید خصوصی در دیتابیس ممنوع</td></tr>
+      <tr><td>ASOUD Tax Submission</td><td>نوع Original/Correction/Cancellation/Return، مرجع صورتحساب اصلی، Payload JSON، SHA-256، کلید Idempotency، شمارنده تلاش و پاسخ ارائه‌دهنده</td></tr>
+      <tr><td>ASOUD Tax Event</td><td>تاریخچه Append-only وضعیت‌های صف، ارسال، پذیرش، رد یا Retry با Checksum درخواست و پاسخ</td></tr>
+      <tr><td>Mapper</td><td>تبدیل Sales Invoice Submitted، اقلام، تخفیف، مالیات، شناسه ملی و کد اقتصادی به Envelope داخلی نسخه ۱</td></tr>
+      <tr><td>Sandbox</td><td>پاسخ قطعی و تکرارپذیر برای یک Payload/Idempotency Key؛ هیچ پاسخ Sandbox با عنوان رسمی ثبت نمی‌شود</td></tr>
+    </table>
+    <div class="future"><b>مرز انطباق:</b> Schema داخلی و چرخه کنترل آماده است، اما نگاشت نهایی به آخرین الگوی صورتحساب، امضای رمزنگاری‌شده، شناسه حافظه و Endpoint تولیدی باید با مستند رسمی و گواهی همان مؤدی/شرکت معتمد تطبیق و UAT شود. چون این ورودی‌ها تحویل نشده‌اند، Production Adapter عمداً نصب نشده و انتخاب Production به‌صورت Fail-closed متوقف می‌شود.</div>
+  </section>
+
+  <section class="page">
+    <h1>۳۰. الحاقیه فاز پانزده — بانک، تطبیق و صیاد</h1>
+    <p>اتصال بانکی Provider-neutral است. هر حساب بانکی یک Connection مستقل در Company/Branch دارد؛ Secret فقط با Reference بیرونی معرفی می‌شود. فایل واسط CSV مستند ASOUD با ستون‌های تاریخ ISO، مرجع، شرح، واریز و برداشت دریافت و قبل از ثبت کامل اعتبارسنجی می‌شود.</p>
+    <ul>
+      <li>Checksum فایل در محدوده همان Connection از ورود دوباره جلوگیری می‌کند؛ Fingerprint هر ردیف نیز به حساب بانکی Scope شده است تا تراکنش مشابه دو حساب به‌اشتباه یکی تلقی نشود.</li>
+      <li>Evidence واردشده حذف‌پذیر نیست. تطبیق مبلغ دقیق، فاصله تاریخ و مرجع را امتیازدهی می‌کند، ولی وجود چند Candidate پنهان نمی‌شود و تأیید نهایی کاربر مجاز لازم است.</li>
+      <li>شناسه صیادی ۱۶ رقمی اعتبارسنجی و عملیات Inquiry/Issue/Confirm/Reject/Transfer/Cancel با Idempotency و تاریخچه Append-only ثبت می‌شود.</li>
+      <li>ماشین حالت عبور مستقیم Draft به Settled را ممنوع می‌کند. محیط Production بدون Provider قراردادی و Secret Reference متوقف می‌شود.</li>
+    </ul>
+    <p>این طراحی با الزام ثبت صدور/انتقال و تأیید گیرنده در سامانه صیاد هم‌راستا است؛ مبنای حقوقی در «دستورالعمل اجرایی ماده ۶ اصلاحی قانون صدور چک» و اصلاحیه ۱۴۰۴/۰۹/۲۵ ثبت شده است.</p>
+    <div class="future"><b>مرز اتصال:</b> API عمومی و واحدی برای همه بانک‌ها/صیاد در اختیار پروژه نیست. فعال‌سازی هر بانک نیازمند قرارداد، مستند Provider، IP/Certificate، Credential آزمایشی و تست پذیرش رسمی همان بانک یا پرداخت‌یار است. تا آن زمان فقط Sandbox اجرا می‌شود.</div>
+  </section>
+
+  <section class="page">
+    <h1>۳۱. الحاقیه فاز شانزده — تلفیق چندارزی</h1>
+    <p>محدودیت توقف تلفیق ارزهای متفاوت برداشته و با سیاست صریح نرخ جایگزین شد. ارز گزارش از Holding گرفته می‌شود؛ دارایی و بدهی با نرخ اختتام، درآمد و هزینه با نرخ میانگین دوره و حقوق مالکانه با نرخ تاریخی ترجمه می‌شوند.</p>
+    <table>
+      <tr><th>جزء</th><th>قاعده</th></tr>
+      <tr><td>ASOUD FX Policy</td><td>یک سیاست فعال برای هر Holding، ارز گزارش و کد/عنوان حساب تعدیل تسعیر CTA</td></tr>
+      <tr><td>ASOUD FX Rate</td><td>Closing/Average/Historical، بازه اثر، نرخ مثبت، منبع، پیوست و تأییدکننده؛ فقط نرخ Submitted مصرف می‌شود</td></tr>
+      <tr><td>انتخاب نرخ</td><td>دقیقاً یک نرخ واجد شرایط لازم است؛ نبودن یا هم‌پوشانی Evidence باعث شکست گزارش می‌شود و سیستم نرخ را حدس نمی‌زند</td></tr>
+      <tr><td>دوره</td><td>حساب‌های ترازنامه تا پایان دوره و درآمد/هزینه فقط در بازه گزارش محاسبه می‌شوند؛ نرخ تاریخی بر تاریخ حرکت حقوق مالکانه اعمال می‌شود</td></tr>
+      <tr><td>CTA و حذف</td><td>اختلاف ترجمه در سطر Equity مستقل متوازن می‌شود؛ حذف‌های بین‌شرکتی پس از تبدیل به ارز گزارش انجام و GL قانونی Companyها دست‌نخورده می‌ماند</td></tr>
+    </table>
+    <h2>شواهد فنی مشترک فازهای ۱۴ تا ۱۶</h2>
+    <ul>
+      <li>نسخه‌ها: ERPNext 15.117.0، Frappe 15.115.4، asoud_core 0.13.0 و asoud_iran 0.8.0.</li>
+      <li>Migration واقعی Site پایلوت و بررسی Metadata ده DocType جدید موفق بود.</li>
+      <li>Gate دو بار اجرا و همان رکوردها را بدون تکثیر بازگرداند: <code>ASOUD-TAX-2026-00001</code> در وضعیت Accepted، <code>ASOUD-BANK-IMP-2026-00001</code> با یک ردیف، <code>ASOUD-SAYAD-2026-00001</code> در وضعیت Issued، سیاست <code>ASOUD-DEMO</code> و سه نرخ Submitted.</li>
+      <li>Unit tests هسته ۳۷ و ایران ۳۴ در اجرای اولیه سبز شدند؛ مجموعه نهایی پس از اصلاح Scope بانکی دوباره اجرا می‌شود.</li>
+      <li>Artifact رسمی: <code>phase-fourteen-sixteen-readiness.json</code>. Production Connectivity در آن صریحاً False است.</li>
+    </ul>
+    <div class="decision"><b>تصمیم:</b> فازهای ۱۴ تا ۱۶ از نظر مدل، API، کنترل امنیتی، Sandbox، Migration و Gate فنی پذیرفته‌اند. پذیرش اتصال رسمی مؤدیان/بانک و صحت سیاست حسابداری چندارزی برای یک کسب‌وکار واقعی نیازمند Credential، داده، حسابدار مسئول و Business Sign-off است و در این سند ادعا نشده است.</div>
+    <p class="footer-note">ASOUD ERP Architecture & Execution Baseline v3.2 — Phases 14–16 Technical Gates Accepted / External Production Connectivity Pending</p>
+  </section>
+
+  <section class="page">
+    <h1>۳۲. الحاقیه — کارتابل، گردش تأیید و کنترل دسترسی</h1>
+    <p>این زیرسامانه در ۴ مرداد ۱۴۰۵ / 26 July 2026 به‌عنوان توسعه مستقیم پروژه اصلی روی ERPNext/Frappe v15 و Flutter Web PWA اجرا شد. تصاویر موبایلی فقط مرجع جریان محصول بودند؛ هیچ اپلیکیشن Native، Backend مستقل، پایگاه‌داده موازی یا سامانه هویت جداگانه ایجاد نشده است.</p>
+
+    <h2>مرز معماری</h2>
+    <pre>ERPNext Source Document (Draft)
+        ↓
+ASOUD Approval Policy + Immutable Snapshot
+        ↓
+ASOUD Approval Request / Current Stage
+        ↓
+Flutter Web PWA Inbox
+        ↓
+Idempotent Approve / Reject / Return
+        ↓
+Immutable Action + Hash-chained Audit
+        ↓
+ERPNext Submit (only after valid approval)</pre>
+    <div class="decision"><b>قاعده منبع حقیقت:</b> درخواست تأیید جایگزین یا کپی سند مالی نیست. Company، Branch، مبلغ، طرف حساب و ثبت GL همچنان از سند واقعی ERPNext می‌آیند. PWA فقط فرمان را ارسال می‌کند و مجوز، مسیر، نسخه سند و مرحله بعد در Backend تعیین می‌شوند.</div>
+
+    <h2>مدل داده</h2>
+    <table>
+      <tr><th>DocType</th><th>مسئولیت</th></tr>
+      <tr><td>ASOUD Approval Policy</td><td>نوع سند، Company/Branch اختیاری، بازه مبلغ، اولویت، منع Self-approval و حالت All/Any برای مراحل موازی</td></tr>
+      <tr><td>ASOUD Approval Stage</td><td>ردیف Child برای ترتیب مرحله، عنوان، User یا Role تأییدکننده و مهلت مرحله</td></tr>
+      <tr><td>ASOUD Approval Request</td><td>پیوند Dynamic Link به سند واقعی، Digest سند، Snapshot تغییرناپذیر سیاست، وضعیت و مرحله جاری</td></tr>
+      <tr><td>ASOUD Approval Action</td><td>اقدام Append-only شامل Actor، Acting-for، زمان، توضیح، IP، User-Agent، نسخه و وضعیت قبل/بعد؛ حذف و ویرایش ممنوع</td></tr>
+      <tr><td>ASOUD Approval Delegation</td><td>جانشینی مدت‌دار و Scope شده برای Company/Branch؛ اقدام با نام جانشین و صاحب اختیار ثبت می‌شود</td></tr>
+      <tr><td>ASOUD User Access Schedule</td><td>بازه تاریخ، روزهای هفته و ساعت مجاز برای اقدام حساس</td></tr>
+    </table>
+
+    <h2>قواعد کنترلی</h2>
+    <ul>
+      <li>مسیر ترتیبی و مراحل موازی پشتیبانی می‌شوند. تکرار Sequence یک مرحله موازی می‌سازد و Policy تعیین می‌کند تأیید همه جایگاه‌ها یا یکی کافی باشد.</li>
+      <li>Self-approval پیش‌فرض ممنوع است و فقط با گزینه صریح Policy قابل فعال‌سازی است.</li>
+      <li>رد یا بازگشت برای اصلاح بدون علت مستند پذیرفته نمی‌شود.</li>
+      <li>Mutationهای Start و Action و تغییر Access دارای Idempotency Key هستند؛ اقدام با نسخه قدیمی Request رد می‌شود.</li>
+      <li>Digest فیلدهای مؤثر سند ذخیره می‌شود. تغییر سند Pending یا Approved، درخواست را Invalidated و Assignmentهای باز را می‌بندد.</li>
+      <li>اگر Policy فعال منطبق وجود داشته باشد، Submit سند ERPNext بدون درخواست Approved و Digest منطبق متوقف می‌شود.</li>
+      <li>Company/Branch ارسال‌شده از PWA منبع مجوز نیست؛ دسترسی با ASOUD User Access و Holding Manager در Backend دوباره ارزیابی می‌شود.</li>
+      <li>تأییدکنندگان مرحله با ToDo استاندارد Frappe Assignment می‌گیرند و با تکمیل یا ابطال مرحله بسته می‌شوند.</li>
+      <li>هر اقدام علاوه بر ASOUD Approval Action در زنجیره Hash شده ASOUD Audit Event ثبت می‌شود.</li>
+    </ul>
+
+    <h2>قرارداد API اختصاصی</h2>
+    <table>
+      <tr><th>Endpoint</th><th>روش و کنترل</th></tr>
+      <tr><td><code>approval_inbox</code></td><td>GET؛ فهرست Incoming/Outgoing محدود به Context و تأییدکننده واقعی مرحله</td></tr>
+      <tr><td><code>approval_request_detail</code></td><td>GET؛ Snapshot مسیر، تاریخچه اقدام، Version و can_act</td></tr>
+      <tr><td><code>start_approval_request</code></td><td>POST؛ Draft واقعی، Policy منطبق، Digest و Idempotency</td></tr>
+      <tr><td><code>act_on_approval</code></td><td>POST؛ Approve/Reject/Return، Optimistic Concurrency، Schedule، Delegation و Audit</td></tr>
+      <tr><td><code>approval_policy_catalog</code></td><td>GET؛ مسیرهای فعال Scope شده برای محیط کاری</td></tr>
+      <tr><td><code>access_overview / set_user_access</code></td><td>GET/POST؛ فقط مدیر مجاز، کنترل Company/Branch، Sync با User Permission و Audit</td></tr>
+    </table>
+
+    <h2>Flutter Web PWA</h2>
+    <ul>
+      <li>محدودیت تاریخی عرض ۴۸۰ پیکسل از Workspace حذف و فقط برای Login/Context Selector حفظ شد؛ محیط کاری PWA دسکتاپ تمام‌عرض است.</li>
+      <li>ناوبری دو‌سطحی اجرا شد: ردیف اول ماژول اصلی و ردیف دوم Ribbon گروه‌بندی‌شده متناسب با ماژول فعال.</li>
+      <li>بخش «گردش کار» شامل کارتابل من، درخواست‌های من، مسیرهای تأیید و کاربران/دسترسی است.</li>
+      <li>جدول دسکتاپ، جزئیات درخواست، نمایش مراحل و تاریخچه، اقدام تأیید/رد/بازگشت، ارسال سند، فهرست Policy و فعال/غیرفعال‌سازی Scope دسترسی پیاده شد.</li>
+      <li>Gateway جدید از همان ASOUD API Client، Session Cookie، CSRF Token و WorkContext موجود استفاده می‌کند.</li>
+    </ul>
+
+    <h2>شواهد فنی</h2>
+    <ul>
+      <li>۴۰ تست مستقل <code>asoud_core</code> موفق؛ شامل Normalization مراحل، All/Any، ترتیب مرحله و Digest سند.</li>
+      <li>Flutter Analyze بدون Issue و ۱۶ تست Flutter موفق؛ تست Gateway کارتابل، Scope شعبه، Idempotency و Optimistic Version افزوده شد.</li>
+      <li>Flutter Web Release Build با موفقیت در <code>build/web</code> تولید شد.</li>
+      <li>نسخه‌های این Gate: <code>asoud_core 0.14.0</code> و <code>asoud_pwa 0.14.0+14</code>.</li>
+      <li>Image اختصاصی <code>asoud/erpnext:v15-dev</code> با ERPNext 15.117.0 بازسازی شد.</li>
+      <li>Migration واقعی <code>asoud.localhost</code> برای Frappe، ERPNext، asoud_core و asoud_iran موفق و HTTP Ping برابر Pong بود.</li>
+    </ul>
+
+    <div class="future"><b>مرز پذیرش کسب‌وکار:</b> طراحی فنی و Migration پذیرفته شده‌اند، اما Routeهای واقعی هر Company، کاربران واقعی، SLA، تفکیک وظایف سازمان، Credential اعلان بیرونی و امضای UAT کسب‌وکار باید در استقرار مقصد پیکربندی و تصویب شوند. این سند Production Go را ادعا نمی‌کند.</div>
+    <div class="decision"><b>تصمیم Gate:</b> کارتابل، موتور گردش تأیید، کنترل دسترسی و PWA از نظر کد، Schema، API، Migration، تست و Build در وضعیت <code>Technical Ready</code> هستند.</div>
+    <p class="footer-note">ASOUD ERP Architecture & Execution Baseline v3.3 — Workflow & Access Control Technical Gate Accepted / Business Configuration Pending</p>
+  </section>
+  <section class="page">
+    <h1>۳۳. الحاقیه — ASOUD HR</h1>
+    <p>ASOUD HR از ابتدا ماژول اصلی ASOUD ERP است و به‌صورت Custom App ششم با نام <code>asoud_hr</code> اجرا می‌شود. فرض محصول مستقل، Next.js و اپ موبایل فاز اول حذف شده است؛ رابط جاری فقط Flutter Web PWA است.</p>
+
+    <h2>مرز مالکیت</h2>
+    <table>
+      <tr><th>App/Platform</th><th>مسئولیت</th></tr>
+      <tr><td>ERPNext</td><td>User، Role، Company، Department، Designation، Employee، File، ToDo و Notification Log</td></tr>
+      <tr><td>asoud_core</td><td>Holding، Branch، Context، Access، Approval، Delegation، Idempotency و Audit</td></tr>
+      <tr><td>asoud_hr</td><td>Position، انتساب تاریخ‌دار، مدارک، گزارش کار، مکاتبات، اقدامات، ترجیحات اعلان و داشبورد HR</td></tr>
+      <tr><td>asoud_iran</td><td>اعتبارسنجی و نمایش ایرانی و مسیر الزامات بومی آینده</td></tr>
+      <tr><td>asoud_pwa</td><td>ماژول منابع انسانی در Flutter Web PWA و Ribbon دو‌سطحی</td></tr>
+    </table>
+
+    <h2>مدل داده</h2>
+    <ul>
+      <li><code>ASOUD Organization Position</code> جایگاه واقعی با ظرفیت و سلسله‌مراتب را نگه می‌دارد.</li>
+      <li><code>ASOUD Employee Assignment</code> انتساب مؤثر در بازه زمانی است و هم‌پوشانی و ظرفیت را کنترل می‌کند.</li>
+      <li><code>ASOUD Employee Document</code> فقط File خصوصی می‌پذیرد و طبقه‌بندی محرمانگی دارد.</li>
+      <li><code>ASOUD Daily Work Report</code> والد Submittable و <code>ASOUD Work Report Activity</code> فعالیت‌های روز هستند.</li>
+      <li><code>ASOUD Internal Communication</code>، Recipient، Reply، Action و View Log مکاتبات رسمی و اقدامات را تشکیل می‌دهند.</li>
+      <li><code>ASOUD HR Notification Preference</code> ترجیحات In-app و ساعات سکوت را نگه می‌دارد.</li>
+    </ul>
+
+    <h2>قواعد کلیدی</h2>
+    <ul>
+      <li>حلقه مدیر/سمت، انتساب هم‌پوشان، ظرفیت اضافه، گزارش تکراری روز و مدت متناقض رد می‌شوند.</li>
+      <li>گزارش روزانه از Approval مشترک استفاده می‌کند؛ مدیر مستقیم یا HR Manager مسیر پیش‌فرض است و تغییر سند Approval را باطل می‌کند.</li>
+      <li>مکاتبه کاملاً محرمانه فقط گیرنده صریح User می‌پذیرد؛ اعلان متن کامل محرمانه را نمایش نمی‌دهد.</li>
+      <li>Scope مجوز در Backend بر Company، Branch، خود کارمند و مدیر مستقیم اعمال می‌شود.</li>
+      <li>شناسه ملی برای کاربر غیرمجاز Mask و مدارک فقط به‌صورت Private File ارائه می‌شوند.</li>
+    </ul>
+
+    <h2>دامنه معوق</h2>
+    <div class="future">اپ موبایل Native، Push موبایل، Offline Draft موبایل، حضور و غیاب، مرخصی پیشرفته، Payroll، KPI پیشرفته، AI و SMS بیرونی در Gate جاری ادعا نشده‌اند. حضور و Payroll به تصمیم نصب نسخه سازگار HRMS v15 نیاز دارند.</div>
+
+    <h2>مرجع تفصیلی</h2>
+    <p>PRD اصلاح‌شده در <code>asoud_docs/hr/ASOUD_HR_PRD_FA_v2.0.pdf</code> نگهداری می‌شود و نسخه اولیه دریافت‌شده را بدون بازنویسی فایل مبدأ جایگزین منطقی می‌کند.</p>
+    <p class="footer-note">ASOUD ERP Architecture & Execution Baseline v3.4 — ASOUD HR Technical Baseline</p>
+  </section>
+  <section class="page">
+    <h1>۳۴. الحاقیه — داشبورد RTL با Ribbon دو‌سطحی</h1>
+    <p>پوسته دسکتاپ Flutter Web PWA بر اساس طرح تأییدشده و الگوی Ribbon شبیه Word بازسازی شد. این تغییر Backend یا منبع داده موازی ایجاد نمی‌کند و تمام داده‌ها از ERPNext/Frappe v15 و Custom Appهای موجود می‌آیند.</p>
+
+    <h2>ساختار رابط</h2>
+    <ul>
+      <li>ردیف اول شامل ماژول‌های داشبورد، مالی، خزانه‌داری، فروش، خرید، انبار، منابع انسانی، گزارش‌ها و تنظیمات است.</li>
+      <li>ردیف دوم Ribbon با گروه‌های زمینه‌ای، فرمان‌های دارای آیکن و فیلتر Company/Branch/سال مالی است.</li>
+      <li>کشوی راست «دسترسی سریع»، کشوی چپ «ایجاد سریع» و Popover اعلان‌ها Overlay ثانویه هستند و جای منوی اصلی را نمی‌گیرند.</li>
+      <li>صفحه در عرض‌های کمتر Wrap می‌شود و Scroll افقی کنترل‌شده برای Ribbon و Tabها دارد؛ اپ موبایل Native در دامنه نیست.</li>
+    </ul>
+
+    <h2>قرارداد تجمیعی</h2>
+    <table>
+      <tr><th>Endpoint</th><th>خروجی و کنترل</th></tr>
+      <tr><td><code>dashboard_workspace</code></td><td>GET؛ شش KPI، جریان نقدی شش ماهه، ترکیب درآمد، هشت عملیات اخیر، کارتابل، اعلان‌ها و قراردادهای ایجاد سریع؛ مجوز Company/Branch در Backend</td></tr>
+      <tr><td><code>create_operational_draft</code></td><td>POST؛ فرم Dynamic بر اساس Allowlist هشت نوع سند و Idempotency Key</td></tr>
+    </table>
+
+    <h2>مرز کامپوننت‌ها</h2>
+    <p>Design Tokens در <code>asoud_theme.dart</code>، مدل‌ها و Gateway در Feature مستقل Dashboard، و Shell/Ribbon در Workspace نگهداری می‌شوند. نمودارها با CustomPainter و بدون کتابخانه خارجی ساخته شده‌اند. فایل SVG نام‌گذاری‌شده در <code>asoud_docs/ui/asoud-dashboard-ribbon-v1.svg</code> مرجع اندازه‌گیری است.</p>
+
+    <h2>شواهد فنی</h2>
+    <ul>
+      <li><code>asoud_core 0.16.0</code>: چهل‌وپنج تست موفق.</li>
+      <li><code>asoud_pwa 0.16.0+16</code>: Flutter Analyze بدون Issue و نوزده تست موفق.</li>
+      <li>Flutter Web Release Build با موفقیت تولید شد.</li>
+      <li>آزمون HTTP واقعی با Session احراز هویت‌شده: شش کارت، شش ماه، هشت عملیات اخیر، هشت قرارداد ایجاد سریع و ارز IRR.</li>
+      <li>Image اختصاصی ERPNext v15 بازسازی، Migration موفق و سرویس Backend سالم است.</li>
+    </ul>
+
+    <div class="future"><b>مرز UAT:</b> اعداد Site توسعه داده نمونه هستند. رنگ سازمانی نهایی، فونت مجاز، نماهای ذخیره‌شده واقعی، رفتار فرمان‌های تخصصی فروش/خرید/انبار و تأیید کاربران واقعی در UAT کسب‌وکار تکمیل می‌شود. این Gate ادعای Production Go ندارد.</div>
+    <p class="footer-note">ASOUD ERP Architecture & Execution Baseline v3.5 — RTL Ribbon Dashboard Technical Gate</p>
+  </section>
+  <section class="page">
+    <h1>۳۵. الحاقیه — تعامل کامل داشبورد و فرم‌های Metadata-driven</h1>
+    <p>پس از Gate تصویری Ribbon، تمام کنترل‌های پوسته از حالت نمایشی خارج و به رفتار واقعی PWA یا ماژول مقصد متصل شدند. این الحاقیه قرارداد فنی نسخه ۳.۶ را ثبت می‌کند.</p>
+
+    <h2>ناوبری و تعامل</h2>
+    <ul>
+      <li>جست‌وجوی سراسری ماژول‌ها و فرمان‌های Ribbon، راهنمای درون‌برنامه‌ای و پنجره پروفایل/زمینه فعال پیاده شد.</li>
+      <li>تمام فرمان‌های Ribbon به داشبورد، مالی، خزانه‌داری، فروش، خرید، انبار، منابع انسانی، گزارش، تنظیمات یا کارتابل مسیریابی می‌شوند و فرمان Placeholder باقی نمانده است.</li>
+      <li>همه Dashboardها و نماهای ذخیره‌شده در کشوی دسترسی سریع مقصد دارند؛ «مشاهده همه عملیات» و ردیف‌های کارتابل نیز قابل انتخاب‌اند.</li>
+      <li>Company و Branch از Contextهای مجاز Session انتخاب و با API فعال‌سازی زمینه در Backend ثبت می‌شوند. سال مالی به صفحه دوره‌های مالی متصل است.</li>
+      <li>صفحات فروش، خرید و انبار روی Workbench مشترک باقی مانده‌اند، ولی قراردادها و اسناد هر صفحه با نوع سند همان حوزه فیلتر می‌شوند.</li>
+    </ul>
+
+    <h2>فرم‌های واقعی Frappe v15</h2>
+    <table>
+      <tr><th>قابلیت</th><th>کنترل</th></tr>
+      <tr><td>Schema فرم</td><td><code>field_specs</code> و <code>child_field_specs</code> از Metadata DocType شامل label، fieldtype، options، required و read_only</td></tr>
+      <tr><td>Link</td><td><code>operational_link_options</code> فقط برای فیلد Allowlist شده و با <code>frappe.get_list</code> مجوزمحور</td></tr>
+      <tr><td>Widget</td><td>Date Picker، Select، Check، عدد/Currency، متن چندخطی و انتخاب‌گر جست‌وجویی Link</td></tr>
+      <tr><td>اعتبارسنجی</td><td>Required، عدد معتبر، حداقل Child Row برای فاکتور، انبار و سند حسابداری و حفظ Idempotency</td></tr>
+      <tr><td>یکپارچگی</td><td>یک فرم مشترک برای Quick Create داشبورد و میزکار عملیات؛ کد فرم قدیمی حذف شد</td></tr>
+    </table>
+
+    <h2>اعلان‌ها</h2>
+    <p><code>mark_dashboard_notification_read</code> فقط Notification متعلق به User جاری را تغییر می‌دهد. انتخاب هر اعلان آن را خوانده و بر اساس Document Type به ماژول مقصد هدایت می‌کند؛ فرمان «خواندن همه» نیز فعال است.</p>
+
+    <h2>شواهد فنی</h2>
+    <ul>
+      <li><code>asoud_core 0.17.0</code>: چهل‌وشش تست موفق.</li>
+      <li><code>asoud_iran</code>: سی‌وپنج تست و <code>asoud_hr</code>: پنج تست موفق.</li>
+      <li><code>asoud_pwa 0.17.0+17</code>: Flutter Analyze بدون Issue و بیست‌ویک تست موفق.</li>
+      <li>تست اختصاصی برای Schema قرارداد، Child requirement، Link option و Mutation اعلان افزوده شد.</li>
+    </ul>
+
+    <div class="future"><b>مرز UAT:</b> اتصال فنی کامل است؛ صحت گزینه‌های واقعی هر Master، ترجمه Labelهای ERPNext، سیاست‌های دسترسی سازمان مقصد و سناریوهای داده واقعی باید در UAT کسب‌وکار تصویب شوند.</div>
+    <p class="footer-note">ASOUD ERP Architecture &amp; Execution Baseline v3.6 — Interactive Dashboard &amp; Typed Forms Technical Gate</p>
+  </section>
+  <section class="page">
+    <h1>۳۶. الحاقیه — صفحه کارتابل BLoC و گردش تأیید</h1>
+    <p>دکمه کارتابل در Ribbon داشبورد به یک Workspace مستقل و کامل متصل شد. State صفحه از FutureBuilder محلی به Cubit منتقل و فرمان‌های ورودی، ارسالی، تاریخچه، سیاست‌ها و جانشینی به View متناظر نگاشت شدند.</p>
+
+    <h2>طراحی Flutter Web PWA</h2>
+    <ul>
+      <li>ناوبری پنج‌گانه شامل کارتابل من، ارسالی‌ها، تاریخچه، مسیرهای تأیید و کاربران/دسترسی است.</li>
+      <li>نوار جست‌وجو و فیلتر وضعیت Responsive است و در عرض متوسط Wrap می‌شود؛ تست Widget عدم Overflow را کنترل می‌کند.</li>
+      <li>جدول درخواست‌ها سه شمارنده ورودی، ارسالی باز و تاریخچه دارد.</li>
+      <li>جزئیات در دسکتاپ به‌صورت Master/Detail و در عرض محدود به‌صورت پنل Overlay نمایش داده می‌شود.</li>
+      <li>مسیر مرحله‌ای، مرحله جاری، اقدامات قبلی و دکمه‌های تأیید، بازگشت و رد در پنل جزئیات قرار دارند.</li>
+    </ul>
+
+    <h2>BLoC و قرارداد API</h2>
+    <table>
+      <tr><th>بخش</th><th>مسئولیت</th></tr>
+      <tr><td><code>ApprovalCubit</code></td><td>View، Query، Status، Loading، Inbox، Detail، Action و Error به‌عنوان State واحد</td></tr>
+      <tr><td><code>approval_inbox</code></td><td>GET؛ incoming/outgoing/history، Search، Status و Limit با Scope Company/Branch و Visibility مجوزمحور</td></tr>
+      <tr><td><code>approval_request_detail</code></td><td>GET؛ Summary، Stage Snapshot، Action History، can_act و Version</td></tr>
+      <tr><td><code>act_on_approval</code></td><td>POST؛ Idempotency، Optimistic Version، Digest سند، Schedule، Delegation، Self-approval و Audit</td></tr>
+      <tr><td><code>start_approval_request</code></td><td>POST؛ شروع مسیر واقعی برای سند موجود و انتقال UI به ارسالی‌ها</td></tr>
+    </table>
+
+    <h2>امنیت تاریخچه</h2>
+    <p>نمای تاریخچه فقط برای درخواست‌کننده، Actor ثبت‌شده یا نقش‌های System Manager و Accounts Manager قابل مشاهده است. ارسال Company/Branch، Search یا Status از PWA مجوز ایجاد نمی‌کند و Backend دسترسی را مستقل بررسی می‌کند.</p>
+
+    <h2>شواهد فنی</h2>
+    <ul>
+      <li><code>asoud_core 0.18.0</code>: چهل‌وهفت تست موفق.</li>
+      <li><code>asoud_pwa 0.18.0+18</code>: Flutter Analyze بدون Issue و بیست‌وپنج تست موفق.</li>
+      <li>Flutter Web Release Build موفق.</li>
+      <li>Gate واقعی ERPNext v15: سه View، شمارنده‌های کامل، Policy و Search/Status Passed؛ همه کانتینرها سالم.</li>
+      <li>مرجع SVG در <code>asoud_docs/ui/asoud-approval-inbox-v1.svg</code> نگهداری می‌شود.</li>
+    </ul>
+
+    <div class="future"><b>مرز UAT:</b> Site توسعه درخواست تأیید واقعی نداشت، بنابراین Gate عملی خواندن Viewها و فیلترها را روی داده خالی اجرا کرد و Detail/Action با تست‌های خودکار پوشش داده شدند. اجرای سناریوی چندکاربره با داده و Role واقعی بخشی از UAT سازمان مقصد است.</div>
+    <p class="footer-note">ASOUD ERP Architecture &amp; Execution Baseline v3.7 — BLoC Approval Cartable Technical Gate</p>
+  </section>
+</body>
+</html>

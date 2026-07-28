@@ -1,0 +1,20 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Communication View Log",
+  "module": "ASOUD HR",
+  "autoname": "hash",
+  "field_order": ["communication", "company", "user", "viewed_on", "ip_address"],
+  "fields": [
+    {"fieldname": "communication", "label": "Communication", "fieldtype": "Link", "options": "ASOUD Internal Communication", "reqd": 1, "read_only": 1, "in_list_view": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "read_only": 1},
+    {"fieldname": "user", "label": "User", "fieldtype": "Link", "options": "User", "reqd": 1, "read_only": 1, "in_list_view": 1},
+    {"fieldname": "viewed_on", "label": "Viewed On", "fieldtype": "Datetime", "reqd": 1, "read_only": 1, "in_list_view": 1},
+    {"fieldname": "ip_address", "label": "IP Address", "fieldtype": "Data", "read_only": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1},
+    {"role": "ASOUD HR Manager", "read": 1},
+    {"role": "ASOUD HR Auditor", "read": 1}
+  ]
+}
+

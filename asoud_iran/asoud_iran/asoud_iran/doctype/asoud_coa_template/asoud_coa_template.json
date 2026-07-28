@@ -1,0 +1,24 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD COA Template",
+  "module": "ASOUD Iran",
+  "autoname": "format:{template_code}-V{version}",
+  "title_field": "template_title",
+  "is_submittable": 1,
+  "track_changes": 1,
+  "field_order": ["template_title", "template_code", "version", "business_scope", "base_currency", "content_hash", "accounts"],
+  "fields": [
+    {"fieldname": "template_title", "label": "Template Title", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "template_code", "label": "Template Code", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "version", "label": "Version", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "business_scope", "label": "Business Scope", "fieldtype": "Select", "options": "General\nTrading\nServices\nManufacturing", "default": "General", "reqd": 1},
+    {"fieldname": "base_currency", "label": "Base Currency", "fieldtype": "Link", "options": "Currency", "default": "IRR", "reqd": 1, "read_only": 1},
+    {"fieldname": "content_hash", "label": "Content Hash", "fieldtype": "Data", "read_only": 1, "no_copy": 1},
+    {"fieldname": "accounts", "label": "Accounts", "fieldtype": "Table", "options": "ASOUD COA Template Account", "reqd": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1},
+    {"role": "Accounts Manager", "read": 1}
+  ]
+}
+

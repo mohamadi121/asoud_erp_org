@@ -1,0 +1,31 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Opening Balance Import",
+  "module": "ASOUD Iran",
+  "autoname": "naming_series:",
+  "is_submittable": 1,
+  "track_changes": 1,
+  "naming_rule": "By \"Naming Series\" field",
+  "field_order": ["naming_series", "company", "branch", "posting_date", "external_reference", "status", "entries_section", "entries", "control_section", "total_debit", "total_credit", "difference", "journal_entry", "remarks"],
+  "fields": [
+    {"fieldname": "naming_series", "label": "Series", "fieldtype": "Select", "options": "ASOUD-OPEN-.YYYY.-.#####", "default": "ASOUD-OPEN-.YYYY.-.#####", "reqd": 1, "hidden": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_standard_filter": 1, "in_list_view": 1},
+    {"fieldname": "branch", "label": "Branch", "fieldtype": "Link", "options": "ASOUD Branch", "reqd": 1, "in_standard_filter": 1, "in_list_view": 1},
+    {"fieldname": "posting_date", "label": "Opening Date", "fieldtype": "Date", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "external_reference", "label": "External Reference", "fieldtype": "Data", "reqd": 1, "in_standard_filter": 1, "in_list_view": 1},
+    {"fieldname": "status", "label": "Status", "fieldtype": "Select", "options": "Draft\nValidated\nImported\nCancelled", "default": "Draft", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "entries_section", "label": "Opening Entries", "fieldtype": "Section Break"},
+    {"fieldname": "entries", "label": "Entries", "fieldtype": "Table", "options": "ASOUD Opening Balance Row", "reqd": 1},
+    {"fieldname": "control_section", "label": "Control Totals", "fieldtype": "Section Break"},
+    {"fieldname": "total_debit", "label": "Total Debit", "fieldtype": "Currency", "read_only": 1},
+    {"fieldname": "total_credit", "label": "Total Credit", "fieldtype": "Currency", "read_only": 1},
+    {"fieldname": "difference", "label": "Difference", "fieldtype": "Currency", "read_only": 1},
+    {"fieldname": "journal_entry", "label": "Journal Entry", "fieldtype": "Link", "options": "Journal Entry", "read_only": 1},
+    {"fieldname": "remarks", "label": "Remarks", "fieldtype": "Small Text"}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1, "report": 1, "export": 1},
+    {"role": "Accounts Manager", "read": 1, "write": 1, "create": 1, "delete": 1, "submit": 1, "cancel": 1, "amend": 1, "report": 1, "export": 1},
+    {"role": "Accounts User", "read": 1, "report": 1, "export": 1}
+  ]
+}

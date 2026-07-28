@@ -1,0 +1,30 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Approval Request",
+  "module": "ASOUD Core",
+  "autoname": "format:APR-REQ-{YYYY}-{#####}",
+  "track_changes": 1,
+  "field_order": ["source_doctype", "source_name", "company", "branch", "policy", "amount", "requested_by", "requested_on", "status", "current_sequence", "completed_on", "source_digest", "policy_snapshot"],
+  "fields": [
+    {"fieldname": "source_doctype", "label": "Source Document Type", "fieldtype": "Link", "options": "DocType", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "source_name", "label": "Source Document", "fieldtype": "Dynamic Link", "options": "source_doctype", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "branch", "label": "Branch", "fieldtype": "Link", "options": "ASOUD Branch", "in_list_view": 1},
+    {"fieldname": "policy", "label": "Approval Policy", "fieldtype": "Link", "options": "ASOUD Approval Policy", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "amount", "label": "Amount", "fieldtype": "Currency", "read_only": 1},
+    {"fieldname": "requested_by", "label": "Requested By", "fieldtype": "Link", "options": "User", "reqd": 1, "read_only": 1, "in_list_view": 1},
+    {"fieldname": "requested_on", "label": "Requested On", "fieldtype": "Datetime", "reqd": 1, "read_only": 1},
+    {"fieldname": "status", "label": "Status", "fieldtype": "Select", "options": "Pending\nApproved\nRejected\nReturned\nCancelled\nInvalidated", "default": "Pending", "reqd": 1, "read_only": 1, "in_list_view": 1},
+    {"fieldname": "current_sequence", "label": "Current Sequence", "fieldtype": "Int", "default": "1", "read_only": 1},
+    {"fieldname": "completed_on", "label": "Completed On", "fieldtype": "Datetime", "read_only": 1},
+    {"fieldname": "source_digest", "label": "Source Digest", "fieldtype": "Data", "reqd": 1, "read_only": 1, "hidden": 1},
+    {"fieldname": "policy_snapshot", "label": "Policy Snapshot", "fieldtype": "Long Text", "reqd": 1, "read_only": 1, "hidden": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "report": 1, "export": 1},
+    {"role": "Accounts Manager", "read": 1, "report": 1},
+    {"role": "Accounts User", "read": 1},
+    {"role": "ASOUD HR Manager", "read": 1, "report": 1},
+    {"role": "ASOUD Employee", "read": 1}
+  ]
+}

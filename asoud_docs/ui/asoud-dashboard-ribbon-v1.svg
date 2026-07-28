@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-labelledby="title desc">
+  <title id="title">داشبورد مدیریتی آسود ERP با Ribbon دو سطحی</title>
+  <desc id="desc">مرجع برداری رابط وب فارسی شامل منوی اصلی، Ribbon، شاخص‌ها، نمودارها، کارتابل، اعلان‌ها و دو کشوی دسترسی سریع و ایجاد پیش‌نویس.</desc>
+  <defs>
+    <style>
+      text{font-family:"Vazirmatn","Tahoma","Segoe UI",sans-serif;fill:#12213d}
+      .muted{fill:#68758a}.primary{fill:#155bd7}.small{font-size:12px}.label{font-size:14px}.title{font-size:22px;font-weight:800}.subtitle{font-size:16px;font-weight:700}
+      .card{fill:#fff;stroke:#dfe5ee;stroke-width:1}.soft{fill:#f5f7fb}.line{stroke:#dfe5ee;stroke-width:1}.icon{fill:none;stroke:#12213d;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    </style>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#12213d" flood-opacity=".13"/>
+    </filter>
+    <clipPath id="donut"><circle cx="1372" cy="610" r="78"/></clipPath>
+  </defs>
+
+  <g id="background"><rect width="1920" height="1080" fill="#f5f7fb"/></g>
+
+  <g id="top-navigation">
+    <rect width="1920" height="72" fill="#fff"/>
+    <line x1="0" y1="71.5" x2="1920" y2="71.5" class="line"/>
+    <rect x="1848" y="18" width="38" height="38" rx="9" fill="#155bd7"/>
+    <path d="M1860 38l7-12 7 12-7 12z" fill="none" stroke="#fff" stroke-width="3"/>
+    <text x="1835" y="43" text-anchor="end" font-size="22" font-weight="900">آسود ERP</text>
+    <text x="1640" y="43" text-anchor="middle" class="primary" font-size="15" font-weight="800">داشبورد</text>
+    <text x="1535" y="43" text-anchor="middle" class="label">مالی</text>
+    <text x="1425" y="43" text-anchor="middle" class="label">خزانه‌داری</text>
+    <text x="1315" y="43" text-anchor="middle" class="label">فروش</text>
+    <text x="1210" y="43" text-anchor="middle" class="label">خرید</text>
+    <text x="1110" y="43" text-anchor="middle" class="label">انبار</text>
+    <text x="990" y="43" text-anchor="middle" class="label">منابع انسانی</text>
+    <text x="855" y="43" text-anchor="middle" class="label">گزارش‌ها</text>
+    <text x="735" y="43" text-anchor="middle" class="label">تنظیمات</text>
+    <rect x="1600" y="68" width="80" height="4" rx="2" fill="#155bd7"/>
+    <rect x="308" y="17" width="210" height="38" rx="8" fill="#fff" stroke="#dfe5ee"/>
+    <text x="480" y="41" text-anchor="end" class="muted small">جست‌وجو...</text>
+    <circle cx="333" cy="36" r="8" fill="none" stroke="#12213d" stroke-width="2"/><line x1="327" y1="42" x2="322" y2="47" class="icon"/>
+    <path d="M270 44h18l-3-5v-8a6 6 0 00-12 0v8z" class="icon"/><circle cx="287" cy="23" r="6" fill="#155bd7"/><text x="287" y="27" text-anchor="middle" font-size="9" fill="#fff">۳</text>
+    <circle cx="225" cy="36" r="10" class="icon"/><text x="225" y="41" text-anchor="middle" font-size="14">؟</text>
+    <circle cx="75" cy="36" r="20" fill="#e9f1ff"/><circle cx="75" cy="31" r="7" fill="#68758a"/><path d="M61 49c3-10 25-10 28 0" fill="#68758a"/>
+    <text x="105" y="32" class="small" font-weight="700">مدیر سیستم</text><text x="105" y="49" class="muted" font-size="10">آسود دمو</text>
+  </g>
+
+  <g id="context-ribbon">
+    <rect y="72" width="1920" height="128" fill="#fbfcfe"/>
+    <line x1="0" y1="199.5" x2="1920" y2="199.5" class="line"/>
+    <g id="overview-group">
+      <text x="1770" y="185" text-anchor="middle" class="muted small">نمای کلی</text>
+      <path d="M1842 123l18-16 18 16v24h-12v-16h-12v16h-12z" class="icon"/><text x="1860" y="168" text-anchor="middle" class="small">خانه</text>
+      <rect x="1765" y="111" width="34" height="28" rx="3" class="icon"/><path d="M1772 111v-6h20v6M1772 121h20" class="icon"/><text x="1782" y="168" text-anchor="middle" class="small">کارتابل</text>
+      <rect x="1688" y="107" width="32" height="36" rx="3" class="icon"/><path d="M1696 118h16M1696 126h16M1696 134h10" class="icon"/><text x="1704" y="168" text-anchor="middle" class="small">فعالیت‌ها</text>
+    </g>
+    <line x1="1645" y1="86" x2="1645" y2="184" class="line"/>
+    <g id="quick-create-group">
+      <text x="1440" y="185" text-anchor="middle" class="muted small">ایجاد سریع</text>
+      <path d="M1564 108h27l12 12v28h-39zM1591 108v13h12M1574 133h18" class="icon"/><text x="1582" y="168" text-anchor="middle" class="small">سند جدید</text>
+      <path d="M1496 118h35l-8-8M1531 118l-8 8M1531 139h-35l8-8M1496 139l8 8" class="icon"/><text x="1513" y="168" text-anchor="middle" class="small">دریافت/پرداخت</text>
+      <rect x="1421" y="108" width="34" height="40" rx="3" class="icon"/><path d="M1428 119h20M1428 128h20M1428 137h13" class="icon"/><text x="1438" y="168" text-anchor="middle" class="small">فاکتور</text>
+      <path d="M1348 109h34v39h-34zM1356 120h18M1356 130h18M1356 140h11" class="icon"/><text x="1365" y="168" text-anchor="middle" class="small">گزارش کار</text>
+    </g>
+    <line x1="1305" y1="86" x2="1305" y2="184" class="line"/>
+    <g id="context-filter-group">
+      <text x="1060" y="185" text-anchor="middle" class="muted small">فیلتر زمینه</text>
+      <rect x="1150" y="108" width="128" height="42" rx="7" class="card"/><text x="1262" y="134" text-anchor="end" class="small">آسود دمو</text><path d="M1164 125l6 6 6-6" class="icon"/>
+      <rect x="1005" y="108" width="132" height="42" rx="7" class="card"/><text x="1120" y="134" text-anchor="end" class="small">دفتر مرکزی</text><path d="M1019 125l6 6 6-6" class="icon"/>
+      <rect x="872" y="108" width="120" height="42" rx="7" class="card"/><text x="975" y="134" text-anchor="end" class="small">سال ۱۴۰۵</text><path d="M886 125l6 6 6-6" class="icon"/>
+    </g>
+    <line x1="845" y1="86" x2="845" y2="184" class="line"/>
+    <g id="view-group">
+      <text x="682" y="185" text-anchor="middle" class="muted small">نمایش</text>
+      <path d="M782 113a18 18 0 11-7-4M779 101v14h-14" class="icon"/><text x="775" y="168" text-anchor="middle" class="small">به‌روزرسانی</text>
+      <path d="M694 111v36M681 120h26M681 138h26" class="icon"/><circle cx="699" cy="120" r="4" fill="#fff" stroke="#12213d" stroke-width="2"/><circle cx="688" cy="138" r="4" fill="#fff" stroke="#12213d" stroke-width="2"/><text x="694" y="168" text-anchor="middle" class="small">شخصی‌سازی</text>
+      <path d="M605 119v-12h12M642 119v-12h-12M605 137v12h12M642 137v12h-12" class="icon"/><text x="623" y="168" text-anchor="middle" class="small">تمام‌صفحه</text>
+    </g>
+  </g>
+
+  <g id="dashboard-content">
+    <text x="1550" y="240" text-anchor="end" class="title">داشبورد مدیریتی</text>
+    <text x="1518" y="266" text-anchor="end" class="muted small">امروز، یکشنبه ۴ مرداد ۱۴۰۵</text>
+
+    <g id="kpi-cards">
+      <g transform="translate(285 286)"><rect width="220" height="132" rx="10" class="card"/><text x="194" y="30" text-anchor="end" class="muted small">مانده تنخواه</text><rect x="18" y="18" width="36" height="36" rx="8" fill="#e4f5f5"/><text x="194" y="73" text-anchor="end" font-size="22" font-weight="800">۷۵٬۰۰۰٬۰۰۰</text><text x="194" y="98" text-anchor="end" class="muted small">ریال</text></g>
+      <g transform="translate(517 286)"><rect width="220" height="132" rx="10" class="card"/><text x="194" y="30" text-anchor="end" class="muted small">مانده صندوق</text><rect x="18" y="18" width="36" height="36" rx="8" fill="#fff1dd"/><text x="194" y="73" text-anchor="end" font-size="22" font-weight="800">۳۲۵٬۴۵۰٬۰۰۰</text><text x="194" y="98" text-anchor="end" class="muted small">ریال</text></g>
+      <g transform="translate(749 286)"><rect width="220" height="132" rx="10" class="card"/><text x="194" y="30" text-anchor="end" class="muted small">مانده بانک</text><rect x="18" y="18" width="36" height="36" rx="8" fill="#f0eafb"/><text x="194" y="73" text-anchor="end" font-size="22" font-weight="800">۲٬۴۵۰٬۰۰۰٬۰۰۰</text><text x="194" y="98" text-anchor="end" class="muted small">ریال</text></g>
+      <g transform="translate(981 286)"><rect width="220" height="132" rx="10" class="card"/><text x="194" y="30" text-anchor="end" class="muted small">پرداخت امروز</text><rect x="18" y="18" width="36" height="36" rx="8" fill="#fde9eb"/><text x="194" y="73" text-anchor="end" font-size="22" font-weight="800">۴٬۲۱۰٬۰۰۰</text><text x="194" y="102" text-anchor="end" fill="#dc3545" class="small">▼ ۹٪</text></g>
+      <g transform="translate(1213 286)"><rect width="220" height="132" rx="10" class="card"/><text x="194" y="30" text-anchor="end" class="muted small">دریافت امروز</text><rect x="18" y="18" width="36" height="36" rx="8" fill="#e2f5eb"/><text x="194" y="73" text-anchor="end" font-size="22" font-weight="800">۸٬۷۳۰٬۰۰۰</text><text x="194" y="102" text-anchor="end" fill="#16a364" class="small">▲ ۲۳٪</text></g>
+      <g transform="translate(1445 286)"><rect width="220" height="132" rx="10" class="card"/><text x="194" y="30" text-anchor="end" class="muted small">فروش امروز</text><rect x="18" y="18" width="36" height="36" rx="8" fill="#e9f1ff"/><text x="194" y="73" text-anchor="end" font-size="22" font-weight="800">۱۲٬۵۶۰٬۰۰۰</text><text x="194" y="102" text-anchor="end" fill="#16a364" class="small">▲ ۱۸٪</text></g>
+    </g>
+
+    <g id="cash-flow-panel">
+      <rect x="285" y="432" width="830" height="290" rx="10" class="card"/>
+      <text x="1085" y="466" text-anchor="end" class="subtitle">جریان نقدی ماهانه</text><text x="1085" y="488" text-anchor="end" class="muted small">دریافت و پرداخت شش ماه اخیر</text>
+      <g stroke="#e7ebf1" stroke-width="1"><line x1="320" y1="520" x2="1085" y2="520"/><line x1="320" y1="570" x2="1085" y2="570"/><line x1="320" y1="620" x2="1085" y2="620"/><line x1="320" y1="670" x2="1085" y2="670"/></g>
+      <g fill="#16a364"><rect x="360" y="590" width="18" height="80"/><rect x="480" y="555" width="18" height="115"/><rect x="600" y="575" width="18" height="95"/><rect x="720" y="535" width="18" height="135"/><rect x="840" y="565" width="18" height="105"/><rect x="960" y="545" width="18" height="125"/></g>
+      <g fill="#dc3545"><rect x="383" y="625" width="18" height="45"/><rect x="503" y="605" width="18" height="65"/><rect x="623" y="615" width="18" height="55"/><rect x="743" y="595" width="18" height="75"/><rect x="863" y="610" width="18" height="60"/><rect x="983" y="600" width="18" height="70"/></g>
+      <path d="M390 606 C470 560 520 572 610 590 S760 542 850 580 S970 550 1000 565" fill="none" stroke="#155bd7" stroke-width="3"/>
+      <g class="muted small"><text x="390" y="699" text-anchor="middle">فروردین</text><text x="510" y="699" text-anchor="middle">اردیبهشت</text><text x="630" y="699" text-anchor="middle">خرداد</text><text x="750" y="699" text-anchor="middle">تیر</text><text x="870" y="699" text-anchor="middle">مرداد</text><text x="990" y="699" text-anchor="middle">شهریور</text></g>
+    </g>
+
+    <g id="income-mix-panel">
+      <rect x="1127" y="432" width="538" height="290" rx="10" class="card"/>
+      <text x="1635" y="466" text-anchor="end" class="subtitle">ترکیب درآمد</text><text x="1635" y="488" text-anchor="end" class="muted small">از ابتدای ماه تا امروز</text>
+      <circle cx="1372" cy="610" r="78" fill="none" stroke="#e7ebf1" stroke-width="34"/>
+      <path d="M1372 532a78 78 0 0111 155" fill="none" stroke="#155bd7" stroke-width="34"/>
+      <path d="M1383 687a78 78 0 01-87-48" fill="none" stroke="#16a364" stroke-width="34"/>
+      <path d="M1296 639a78 78 0 0120-91" fill="none" stroke="#ed8b00" stroke-width="34"/>
+      <text x="1372" y="603" text-anchor="middle" class="muted small">کل درآمد</text><text x="1372" y="629" text-anchor="middle" font-weight="800">۳۵٫۸ میلیون</text>
+      <circle cx="1534" cy="555" r="5" fill="#155bd7"/><text x="1550" y="560" class="small">فروش کالا ۵۵٪</text>
+      <circle cx="1534" cy="592" r="5" fill="#16a364"/><text x="1550" y="597" class="small">خدمات ۳۰٪</text>
+      <circle cx="1534" cy="629" r="5" fill="#ed8b00"/><text x="1550" y="634" class="small">سایر درآمدها ۱۵٪</text>
+    </g>
+
+    <g id="recent-operations">
+      <rect x="285" y="736" width="830" height="300" rx="10" class="card"/><text x="1085" y="772" text-anchor="end" class="subtitle">آخرین عملیات</text>
+      <rect x="305" y="790" width="790" height="38" fill="#f5f7fb"/><text x="1060" y="814" text-anchor="end" class="small">نوع عملیات</text><text x="880" y="814" text-anchor="end" class="small">شماره سند</text><text x="685" y="814" text-anchor="end" class="small">تاریخ</text><text x="505" y="814" text-anchor="end" class="small">مبلغ</text><text x="350" y="814" class="small">وضعیت</text>
+      <g class="small"><text x="1060" y="858" text-anchor="end">فاکتور فروش</text><text x="880" y="858" text-anchor="end">SINV-00012</text><text x="685" y="858" text-anchor="end">۱۴۰۵/۰۵/۰۴</text><text x="505" y="858" text-anchor="end">۱۲٬۵۶۰٬۰۰۰</text><rect x="322" y="840" width="82" height="26" rx="13" fill="#fff3dd"/><text x="363" y="858" text-anchor="middle" fill="#ed8b00">در انتظار تأیید</text></g>
+      <line x1="305" y1="878" x2="1095" y2="878" class="line"/>
+      <g class="small"><text x="1060" y="908" text-anchor="end">دریافت</text><text x="880" y="908" text-anchor="end">PAY-00029</text><text x="685" y="908" text-anchor="end">۱۴۰۵/۰۵/۰۴</text><text x="505" y="908" text-anchor="end">۸٬۷۳۰٬۰۰۰</text><rect x="330" y="890" width="70" height="26" rx="13" fill="#e2f5eb"/><text x="365" y="908" text-anchor="middle" fill="#16a364">ثبت‌شده</text></g>
+      <line x1="305" y1="928" x2="1095" y2="928" class="line"/>
+      <g class="small"><text x="1060" y="958" text-anchor="end">سند حسابداری</text><text x="880" y="958" text-anchor="end">JV-00054</text><text x="685" y="958" text-anchor="end">۱۴۰۵/۰۵/۰۳</text><text x="505" y="958" text-anchor="end">۲٬۳۰۰٬۰۰۰</text><rect x="330" y="940" width="70" height="26" rx="13" fill="#e9f1ff"/><text x="365" y="958" text-anchor="middle" fill="#155bd7">پیش‌نویس</text></g>
+    </g>
+
+    <g id="approval-inbox">
+      <rect x="1127" y="736" width="538" height="300" rx="10" class="card"/><text x="1635" y="772" text-anchor="end" class="subtitle">کارتابل من</text><text x="1635" y="795" text-anchor="end" class="muted small">۳ درخواست در انتظار</text>
+      <circle cx="1165" cy="846" r="15" fill="#fff3dd"/><text x="1200" y="842" class="label">فاکتور فروش در انتظار تأیید</text><text x="1200" y="862" class="muted small">درخواست‌کننده: سارا محمدی</text><line x1="1150" y1="880" x2="1640" y2="880" class="line"/>
+      <circle cx="1165" cy="916" r="15" fill="#fff3dd"/><text x="1200" y="912" class="label">درخواست پرداخت در انتظار تأیید</text><text x="1200" y="932" class="muted small">درخواست‌کننده: واحد خرید</text><line x1="1150" y1="950" x2="1640" y2="950" class="line"/>
+      <circle cx="1165" cy="986" r="15" fill="#fff3dd"/><text x="1200" y="982" class="label">سند حسابداری در انتظار تأیید</text><text x="1200" y="1002" class="muted small">درخواست‌کننده: حسابداری</text>
+    </g>
+  </g>
+
+  <g id="quick-access-drawer" filter="url(#shadow)">
+    <rect x="1678" y="212" width="230" height="850" rx="10" class="card"/>
+    <text x="1880" y="252" text-anchor="end" class="subtitle">دسترسی سریع</text><text x="1700" y="252" font-size="22">×</text><line x1="1678" y1="270" x2="1908" y2="270" class="line"/>
+    <text x="1880" y="302" text-anchor="end" class="muted small">داشبوردها</text>
+    <rect x="1692" y="316" width="202" height="48" rx="8" fill="#edf3ff" stroke="#9ebeff"/><text x="1874" y="346" text-anchor="end" class="primary label">داشبورد مدیریتی</text>
+    <text x="1874" y="398" text-anchor="end" class="label">داشبورد مالی</text><text x="1874" y="446" text-anchor="end" class="label">داشبورد شعب</text><text x="1874" y="494" text-anchor="end" class="label">داشبورد منابع انسانی</text>
+    <line x1="1692" y1="520" x2="1894" y2="520" class="line"/><text x="1880" y="552" text-anchor="end" class="muted small">نماهای ذخیره‌شده</text>
+    <g class="small"><text x="1874" y="594" text-anchor="end">☆ گزارش فروش ماهانه</text><text x="1874" y="640" text-anchor="end">☆ وضعیت دریافت‌ها</text><text x="1874" y="686" text-anchor="end">☆ تحلیل موجودی انبار</text><text x="1874" y="732" text-anchor="end">☆ عملکرد پرسنل</text></g>
+  </g>
+
+  <g id="quick-create-drawer" filter="url(#shadow)">
+    <rect x="12" y="212" width="258" height="850" rx="10" class="card"/>
+    <text x="240" y="252" text-anchor="end" class="subtitle">ایجاد سریع</text><text x="34" y="252" font-size="22">×</text><line x1="12" y1="270" x2="270" y2="270" class="line"/>
+    <text x="244" y="306" text-anchor="end" class="small">نوع عملیات *</text><rect x="28" y="316" width="226" height="44" rx="7" class="card"/><text x="236" y="344" text-anchor="end" class="label">فاکتور فروش</text>
+    <text x="244" y="395" text-anchor="end" class="small">شرکت *</text><rect x="28" y="405" width="226" height="44" rx="7" class="card"/><text x="236" y="433" text-anchor="end" class="label">آسود دمو</text>
+    <text x="244" y="484" text-anchor="end" class="small">شعبه *</text><rect x="28" y="494" width="226" height="44" rx="7" class="card"/><text x="236" y="522" text-anchor="end" class="label">دفتر مرکزی</text>
+    <text x="244" y="573" text-anchor="end" class="small">تاریخ *</text><rect x="28" y="583" width="226" height="44" rx="7" class="card"/><text x="236" y="611" text-anchor="end" class="label">۱۴۰۵/۰۵/۰۴</text>
+    <text x="244" y="662" text-anchor="end" class="small">مبلغ *</text><rect x="28" y="672" width="226" height="44" rx="7" class="card"/><text x="236" y="700" text-anchor="end" class="label">۱۲٬۵۰۰٬۰۰۰ ریال</text>
+    <text x="244" y="751" text-anchor="end" class="small">شرح</text><rect x="28" y="761" width="226" height="110" rx="7" class="card"/><text x="236" y="790" text-anchor="end" class="muted small">فروش کالا به مشتری</text>
+    <rect x="28" y="984" width="226" height="48" rx="8" fill="#155bd7"/><text x="141" y="1015" text-anchor="middle" fill="#fff" font-size="15" font-weight="700">ثبت پیش‌نویس</text>
+  </g>
+
+  <g id="notification-popover" filter="url(#shadow)">
+    <rect x="300" y="82" width="390" height="248" rx="10" class="card"/><text x="662" y="118" text-anchor="end" class="subtitle">اعلان‌ها</text><text x="326" y="118" class="primary small">خواندن همه</text>
+    <rect x="316" y="136" width="358" height="52" rx="7" fill="#f8faff"/><text x="650" y="157" text-anchor="end" class="small">درخواست تأیید فاکتور فروش</text><text x="650" y="177" text-anchor="end" class="muted" font-size="10">توسط سارا محمدی • ۱۸:۲۱</text>
+    <rect x="316" y="196" width="358" height="52" rx="7" fill="#fff"/><text x="650" y="217" text-anchor="end" class="small">دریافت مبلغ ۲۵٬۰۰۰٬۰۰۰ ریال</text><text x="650" y="237" text-anchor="end" class="muted" font-size="10">از شرکت نوین تجارت پارس • ۰۹:۱۵</text>
+    <rect x="316" y="256" width="358" height="52" rx="7" fill="#fff"/><text x="650" y="277" text-anchor="end" class="small">سررسید چک شماره ۱۳۴۵۶</text><text x="650" y="297" text-anchor="end" class="muted" font-size="10">فردا</text>
+  </g>
+</svg>

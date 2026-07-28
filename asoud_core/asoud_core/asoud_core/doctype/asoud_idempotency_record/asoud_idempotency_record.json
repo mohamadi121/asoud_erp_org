@@ -1,0 +1,18 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Idempotency Record",
+  "module": "ASOUD Core",
+  "autoname": "field:ledger_key",
+  "field_order": ["ledger_key", "request_key", "actor", "operation", "request_hash", "response_json"],
+  "fields": [
+    {"fieldname": "ledger_key", "label": "Ledger Key", "fieldtype": "Data", "reqd": 1, "unique": 1, "read_only": 1},
+    {"fieldname": "request_key", "label": "Request Key", "fieldtype": "Data", "reqd": 1, "read_only": 1},
+    {"fieldname": "actor", "label": "Actor", "fieldtype": "Link", "options": "User", "reqd": 1, "read_only": 1},
+    {"fieldname": "operation", "label": "Operation", "fieldtype": "Data", "reqd": 1, "read_only": 1},
+    {"fieldname": "request_hash", "label": "Request Hash", "fieldtype": "Data", "reqd": 1, "read_only": 1},
+    {"fieldname": "response_json", "label": "Response JSON", "fieldtype": "Long Text", "reqd": 1, "read_only": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1}
+  ]
+}

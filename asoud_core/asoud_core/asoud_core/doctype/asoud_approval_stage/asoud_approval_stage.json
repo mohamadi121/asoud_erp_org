@@ -1,0 +1,17 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Approval Stage",
+  "module": "ASOUD Core",
+  "istable": 1,
+  "editable_grid": 1,
+  "field_order": ["sequence", "stage_title", "approver_type", "user", "role", "due_hours"],
+  "fields": [
+    {"fieldname": "sequence", "label": "Sequence", "fieldtype": "Int", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "stage_title", "label": "Stage Title", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "approver_type", "label": "Approver Type", "fieldtype": "Select", "options": "User\nRole\nManager", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "user", "label": "User", "fieldtype": "Link", "options": "User", "depends_on": "eval:doc.approver_type=='User'", "mandatory_depends_on": "eval:doc.approver_type=='User'", "in_list_view": 1},
+    {"fieldname": "role", "label": "Role", "fieldtype": "Link", "options": "Role", "depends_on": "eval:doc.approver_type=='Role'", "mandatory_depends_on": "eval:doc.approver_type=='Role'", "in_list_view": 1},
+    {"fieldname": "due_hours", "label": "Due Hours", "fieldtype": "Int", "default": "0"}
+  ],
+  "permissions": []
+}

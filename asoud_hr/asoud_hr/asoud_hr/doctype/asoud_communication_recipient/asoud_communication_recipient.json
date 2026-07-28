@@ -1,0 +1,15 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Communication Recipient",
+  "module": "ASOUD HR",
+  "istable": 1,
+  "editable_grid": 1,
+  "field_order": ["recipient_type", "user", "department", "delivery_mode"],
+  "fields": [
+    {"fieldname": "recipient_type", "label": "Recipient Type", "fieldtype": "Select", "options": "User\nDepartment", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "user", "label": "User", "fieldtype": "Link", "options": "User", "in_list_view": 1},
+    {"fieldname": "department", "label": "Department", "fieldtype": "Link", "options": "Department", "in_list_view": 1},
+    {"fieldname": "delivery_mode", "label": "Mode", "fieldtype": "Select", "options": "To\nCC", "default": "To", "reqd": 1, "in_list_view": 1}
+  ]
+}
+

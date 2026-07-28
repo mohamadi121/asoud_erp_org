@@ -1,0 +1,24 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Communication Reply",
+  "module": "ASOUD HR",
+  "autoname": "HR-REP-.YYYY.-.#####",
+  "track_changes": 1,
+  "field_order": ["communication", "company", "author", "body", "created_on", "parent_reply"],
+  "fields": [
+    {"fieldname": "communication", "label": "Communication", "fieldtype": "Link", "options": "ASOUD Internal Communication", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "read_only": 1},
+    {"fieldname": "author", "label": "Author", "fieldtype": "Link", "options": "User", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "body", "label": "Reply", "fieldtype": "Text Editor", "reqd": 1},
+    {"fieldname": "created_on", "label": "Created On", "fieldtype": "Datetime", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "parent_reply", "label": "In Reply To", "fieldtype": "Link", "options": "ASOUD Communication Reply"}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "create": 1},
+    {"role": "ASOUD HR Manager", "read": 1, "create": 1},
+    {"role": "ASOUD HR User", "read": 1, "create": 1},
+    {"role": "ASOUD Employee", "read": 1, "create": 1},
+    {"role": "ASOUD HR Auditor", "read": 1}
+  ]
+}
+

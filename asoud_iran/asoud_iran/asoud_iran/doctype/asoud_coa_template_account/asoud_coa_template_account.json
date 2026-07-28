@@ -1,0 +1,18 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD COA Template Account",
+  "module": "ASOUD Iran",
+  "istable": 1,
+  "field_order": ["account_code", "account_name", "parent_account_code", "root_type", "is_group", "account_type", "requires_floating_detail"],
+  "fields": [
+    {"fieldname": "account_code", "label": "Account Code", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "account_name", "label": "Account Name", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "parent_account_code", "label": "Parent Account Code", "fieldtype": "Data", "in_list_view": 1},
+    {"fieldname": "root_type", "label": "Root Type", "fieldtype": "Select", "options": "Asset\nLiability\nEquity\nIncome\nExpense", "reqd": 1},
+    {"fieldname": "is_group", "label": "Is Group", "fieldtype": "Check", "default": "0"},
+    {"fieldname": "account_type", "label": "Account Type", "fieldtype": "Data"},
+    {"fieldname": "requires_floating_detail", "label": "Requires Floating Detail", "fieldtype": "Check", "default": "0"}
+  ],
+  "permissions": []
+}
+

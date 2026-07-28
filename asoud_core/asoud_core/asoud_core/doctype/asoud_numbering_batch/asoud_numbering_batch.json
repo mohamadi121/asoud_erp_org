@@ -1,0 +1,24 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Numbering Batch",
+  "module": "ASOUD Core",
+  "autoname": "ASOUD-NUM-.YYYY.-.#####",
+  "is_submittable": 1,
+  "track_changes": 1,
+  "field_order": ["company", "fiscal_year", "from_date", "to_date", "reason", "request_hash", "status", "document_count", "unit_count"],
+  "fields": [
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "fiscal_year", "label": "Fiscal Year", "fieldtype": "Link", "options": "Fiscal Year", "reqd": 1},
+    {"fieldname": "from_date", "label": "From Date", "fieldtype": "Date", "reqd": 1},
+    {"fieldname": "to_date", "label": "To Date", "fieldtype": "Date", "reqd": 1},
+    {"fieldname": "reason", "label": "Reason", "fieldtype": "Small Text", "reqd": 1},
+    {"fieldname": "request_hash", "label": "Request Hash", "fieldtype": "Data", "unique": 1, "read_only": 1, "no_copy": 1},
+    {"fieldname": "status", "label": "Status", "fieldtype": "Select", "options": "Running\nCompleted\nFailed", "read_only": 1},
+    {"fieldname": "document_count", "label": "Document Count", "fieldtype": "Int", "read_only": 1},
+    {"fieldname": "unit_count", "label": "Numbering Unit Count", "fieldtype": "Int", "read_only": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1, "submit": 1},
+    {"role": "Accounts Manager", "read": 1, "write": 1, "create": 1, "submit": 1}
+  ]
+}

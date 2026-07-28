@@ -1,0 +1,28 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Item Company Profile",
+  "module": "ASOUD Core",
+  "autoname": "field:profile_key",
+  "title_field": "item",
+  "track_changes": 1,
+  "field_order": ["profile_key", "item", "company", "enabled", "default_branch", "default_warehouse", "income_account", "expense_account"],
+  "fields": [
+    {"fieldname": "profile_key", "label": "Profile Key", "fieldtype": "Data", "hidden": 1, "unique": 1, "no_copy": 1},
+    {"fieldname": "item", "label": "Item", "fieldtype": "Link", "options": "Item", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "enabled", "label": "Enabled", "fieldtype": "Check", "default": "1", "in_list_view": 1},
+    {"fieldname": "default_branch", "label": "Default Branch", "fieldtype": "Link", "options": "ASOUD Branch"},
+    {"fieldname": "default_warehouse", "label": "Default Warehouse", "fieldtype": "Link", "options": "Warehouse"},
+    {"fieldname": "income_account", "label": "Income Account", "fieldtype": "Link", "options": "Account"},
+    {"fieldname": "expense_account", "label": "Expense Account", "fieldtype": "Link", "options": "Account"}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1},
+    {"role": "Stock Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "Sales Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "Purchase Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "Stock User", "read": 1},
+    {"role": "Sales User", "read": 1},
+    {"role": "Purchase User", "read": 1}
+  ]
+}

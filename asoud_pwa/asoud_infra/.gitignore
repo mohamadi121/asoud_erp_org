@@ -1,0 +1,4 @@
+.env
+artifacts/*.json
+*.log
+backups/

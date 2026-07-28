@@ -1,0 +1,17 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Migration Control",
+  "module": "ASOUD Core",
+  "istable": 1,
+  "field_order": ["control_code", "control_title", "source_value", "target_value", "tolerance", "difference", "status", "evidence"],
+  "fields": [
+    {"fieldname": "control_code", "label": "Control Code", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "control_title", "label": "Control Title", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "source_value", "label": "Source Value", "fieldtype": "Float", "reqd": 1},
+    {"fieldname": "target_value", "label": "Target Value", "fieldtype": "Float", "reqd": 1},
+    {"fieldname": "tolerance", "label": "Tolerance", "fieldtype": "Float", "default": 0},
+    {"fieldname": "difference", "label": "Difference", "fieldtype": "Float", "read_only": 1},
+    {"fieldname": "status", "label": "Status", "fieldtype": "Select", "options": "Pass\nFail", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "evidence", "label": "Evidence", "fieldtype": "Small Text", "reqd": 1}
+  ]
+}

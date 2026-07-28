@@ -1,0 +1,26 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Consolidation Adjustment",
+  "module": "ASOUD Core",
+  "autoname": "naming_series:",
+  "is_submittable": 1,
+  "track_changes": 1,
+  "field_order": ["naming_series", "holding", "posting_date", "consolidation_code", "consolidation_title", "root_type", "debit", "credit", "reason", "supporting_document"],
+  "fields": [
+    {"fieldname": "naming_series", "label": "Series", "fieldtype": "Select", "options": "ASOUD-CADJ-.YYYY.-.#####", "default": "ASOUD-CADJ-.YYYY.-.#####", "hidden": 1},
+    {"fieldname": "holding", "label": "Holding", "fieldtype": "Link", "options": "ASOUD Holding", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "posting_date", "label": "Posting Date", "fieldtype": "Date", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "consolidation_code", "label": "Consolidation Code", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "consolidation_title", "label": "Consolidation Title", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "root_type", "label": "Root Type", "fieldtype": "Select", "options": "Asset\nLiability\nEquity\nIncome\nExpense", "reqd": 1},
+    {"fieldname": "debit", "label": "Debit", "fieldtype": "Currency", "non_negative": 1},
+    {"fieldname": "credit", "label": "Credit", "fieldtype": "Currency", "non_negative": 1},
+    {"fieldname": "reason", "label": "Reason", "fieldtype": "Small Text", "reqd": 1},
+    {"fieldname": "supporting_document", "label": "Supporting Document", "fieldtype": "Attach", "reqd": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1},
+    {"role": "Accounts Manager", "read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1},
+    {"role": "Accounts User", "read": 1}
+  ]
+}

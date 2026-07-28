@@ -1,0 +1,11 @@
+{
+  "name": "ASOUD ERP",
+  "short_name": "ASOUD",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2457c5",
+  "description": "ASOUD ERP progressive web application",
+  "orientation": "any"
+}
+

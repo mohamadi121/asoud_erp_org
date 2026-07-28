@@ -1,0 +1,27 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Holding",
+  "module": "ASOUD Core",
+  "autoname": "field:holding_code",
+  "title_field": "holding_name",
+  "track_changes": 1,
+  "field_order": ["holding_name", "holding_code", "entity_type", "national_id", "economic_code", "registration_number", "legal_type", "consolidation_currency", "consolidation_method", "reporting_calendar", "eliminate_intercompany", "enabled"],
+  "fields": [
+    {"fieldname": "holding_name", "label": "Holding Name", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "holding_code", "label": "Holding Code", "fieldtype": "Data", "reqd": 1, "unique": 1, "in_list_view": 1},
+    {"fieldname": "entity_type", "label": "Entity Type", "fieldtype": "Select", "options": "Legal\nNatural", "default": "Legal"},
+    {"fieldname": "national_id", "label": "National ID", "fieldtype": "Data"},
+    {"fieldname": "economic_code", "label": "Economic Code", "fieldtype": "Data"},
+    {"fieldname": "registration_number", "label": "Registration Number", "fieldtype": "Data"},
+    {"fieldname": "legal_type", "label": "Legal Type", "fieldtype": "Data"},
+    {"fieldname": "consolidation_currency", "label": "Consolidation Currency", "fieldtype": "Link", "options": "Currency", "reqd": 1},
+    {"fieldname": "consolidation_method", "label": "Consolidation Method", "fieldtype": "Select", "options": "Full\nProportional\nEquity", "default": "Full"},
+    {"fieldname": "reporting_calendar", "label": "Reporting Calendar", "fieldtype": "Data"},
+    {"fieldname": "eliminate_intercompany", "label": "Eliminate Intercompany", "fieldtype": "Check", "default": "1"},
+    {"fieldname": "enabled", "label": "Enabled", "fieldtype": "Check", "default": "1"}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1},
+    {"role": "Accounts Manager", "read": 1}
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Closing Run",
+  "module": "ASOUD Iran",
+  "autoname": "ASOUD-CLOSE-.YYYY.-.#####",
+  "is_submittable": 1,
+  "track_changes": 1,
+  "field_order": ["company", "fiscal_year", "closing_date", "opening_date", "accounts_section", "retained_earnings_account", "closing_control_account", "opening_control_account", "preflight_section", "preflight_status", "preflight_report", "result_section", "status", "attempt_count", "closing_profit", "profit_loss_journal_entry", "permanent_closing_journal_entry", "opening_journal_entry", "reconciliation_status", "reconciliation_report"],
+  "fields": [
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "fiscal_year", "label": "Fiscal Year", "fieldtype": "Link", "options": "Fiscal Year", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "closing_date", "label": "Closing Date", "fieldtype": "Date", "reqd": 1},
+    {"fieldname": "opening_date", "label": "Opening Date", "fieldtype": "Date", "reqd": 1},
+    {"fieldname": "accounts_section", "label": "Control Accounts", "fieldtype": "Section Break"},
+    {"fieldname": "retained_earnings_account", "label": "Retained Earnings Account", "fieldtype": "Link", "options": "Account", "reqd": 1},
+    {"fieldname": "closing_control_account", "label": "Closing Control Account", "fieldtype": "Link", "options": "Account", "reqd": 1},
+    {"fieldname": "opening_control_account", "label": "Opening Control Account", "fieldtype": "Link", "options": "Account", "reqd": 1},
+    {"fieldname": "preflight_section", "label": "Preflight", "fieldtype": "Section Break"},
+    {"fieldname": "preflight_status", "label": "Preflight Status", "fieldtype": "Select", "options": "Not Run\nPassed\nFailed", "default": "Not Run", "read_only": 1},
+    {"fieldname": "preflight_report", "label": "Preflight Report", "fieldtype": "Long Text", "read_only": 1},
+    {"fieldname": "result_section", "label": "Generated Vouchers", "fieldtype": "Section Break"},
+    {"fieldname": "status", "label": "Status", "fieldtype": "Select", "options": "Pending\nPreflight Passed\nRunning\nCompleted\nFailed\nReversed", "default": "Pending", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "attempt_count", "label": "Attempt Count", "fieldtype": "Int", "default": "0", "read_only": 1},
+    {"fieldname": "closing_profit", "label": "Closing Profit", "fieldtype": "Currency", "read_only": 1},
+    {"fieldname": "profit_loss_journal_entry", "label": "Profit and Loss Closing", "fieldtype": "Link", "options": "Journal Entry", "read_only": 1},
+    {"fieldname": "permanent_closing_journal_entry", "label": "Permanent Closing", "fieldtype": "Link", "options": "Journal Entry", "read_only": 1},
+    {"fieldname": "opening_journal_entry", "label": "Opening", "fieldtype": "Link", "options": "Journal Entry", "read_only": 1},
+    {"fieldname": "reconciliation_status", "label": "Reconciliation Status", "fieldtype": "Select", "options": "Not Run\nPassed\nFailed", "default": "Not Run", "read_only": 1},
+    {"fieldname": "reconciliation_report", "label": "Reconciliation Report", "fieldtype": "Long Text", "read_only": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1, "submit": 1},
+    {"role": "Accounts Manager", "read": 1, "write": 1, "create": 1, "submit": 1},
+    {"role": "Accounts User", "read": 1}
+  ]
+}

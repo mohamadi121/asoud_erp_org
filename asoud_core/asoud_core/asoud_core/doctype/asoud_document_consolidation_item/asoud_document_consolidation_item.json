@@ -1,0 +1,13 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Document Consolidation Item",
+  "module": "ASOUD Core",
+  "istable": 1,
+  "field_order": ["accounting_document", "source_doctype", "source_name", "temporary_number"],
+  "fields": [
+    {"fieldname": "accounting_document", "label": "Accounting Document", "fieldtype": "Link", "options": "ASOUD Accounting Document", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "source_doctype", "label": "Source Type", "fieldtype": "Data", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "source_name", "label": "Source", "fieldtype": "Data", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "temporary_number", "label": "Temporary Number", "fieldtype": "Data", "read_only": 1}
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Sayad Operation",
+  "module": "ASOUD Core",
+  "autoname": "naming_series:",
+  "track_changes": 1,
+  "field_order": ["naming_series", "company", "branch", "cheque", "sayad_id", "operation_type", "state", "idempotency_key", "provider_reference", "request_checksum", "response_checksum", "last_error"],
+  "fields": [
+    {"fieldname": "naming_series", "label": "Series", "fieldtype": "Select", "options": "ASOUD-SAYAD-.YYYY.-.#####", "default": "ASOUD-SAYAD-.YYYY.-.#####", "hidden": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1},
+    {"fieldname": "branch", "label": "Branch", "fieldtype": "Link", "options": "ASOUD Branch", "reqd": 1},
+    {"fieldname": "cheque", "label": "Cheque", "fieldtype": "Link", "options": "ASOUD Cheque", "reqd": 1},
+    {"fieldname": "sayad_id", "label": "16-digit Sayad ID", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "operation_type", "label": "Operation", "fieldtype": "Select", "options": "Inquiry\nIssue\nConfirm\nReject\nTransfer\nCancel", "reqd": 1},
+    {"fieldname": "state", "label": "State", "fieldtype": "Select", "options": "Draft\nIssued\nConfirmed\nRejected\nTransferred\nSettled\nReturned\nCancelled", "default": "Draft", "read_only": 1},
+    {"fieldname": "idempotency_key", "label": "Idempotency Key", "fieldtype": "Data", "reqd": 1, "unique": 1},
+    {"fieldname": "provider_reference", "label": "Provider Reference", "fieldtype": "Data", "read_only": 1},
+    {"fieldname": "request_checksum", "label": "Request SHA-256", "fieldtype": "Data", "read_only": 1},
+    {"fieldname": "response_checksum", "label": "Response SHA-256", "fieldtype": "Data", "read_only": 1},
+    {"fieldname": "last_error", "label": "Last Error", "fieldtype": "Small Text", "read_only": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "create": 1},
+    {"role": "Accounts Manager", "read": 1, "create": 1},
+    {"role": "Accounts User", "read": 1}
+  ]
+}

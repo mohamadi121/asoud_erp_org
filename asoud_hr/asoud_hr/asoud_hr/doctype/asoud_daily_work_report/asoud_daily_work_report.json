@@ -1,0 +1,36 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Daily Work Report",
+  "module": "ASOUD HR",
+  "autoname": "HR-RPT-.YYYY.-.#####",
+  "title_field": "employee_name",
+  "is_submittable": 1,
+  "track_changes": 1,
+  "field_order": ["employee", "employee_name", "user", "company", "branch", "department", "report_date", "workflow_status", "total_minutes", "summary", "blockers", "help_required", "activities", "approval_section", "asoud_approval_request", "asoud_approval_status"],
+  "fields": [
+    {"fieldname": "employee", "label": "Employee", "fieldtype": "Link", "options": "Employee", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
+    {"fieldname": "employee_name", "label": "Employee Name", "fieldtype": "Data", "fetch_from": "employee.employee_name", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "user", "label": "User", "fieldtype": "Link", "options": "User", "read_only": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
+    {"fieldname": "branch", "label": "Branch", "fieldtype": "Link", "options": "ASOUD Branch", "in_list_view": 1},
+    {"fieldname": "department", "label": "Department", "fieldtype": "Link", "options": "Department", "in_list_view": 1},
+    {"fieldname": "report_date", "label": "Report Date", "fieldtype": "Date", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
+    {"fieldname": "workflow_status", "label": "Status", "fieldtype": "Select", "options": "Draft\nSubmitted\nUnder Review\nApproved\nReturned\nArchived", "default": "Draft", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "total_minutes", "label": "Total Minutes", "fieldtype": "Int", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "summary", "label": "Daily Summary", "fieldtype": "Small Text"},
+    {"fieldname": "blockers", "label": "Blockers", "fieldtype": "Small Text"},
+    {"fieldname": "help_required", "label": "Help Required", "fieldtype": "Small Text"},
+    {"fieldname": "activities", "label": "Activities", "fieldtype": "Table", "options": "ASOUD Work Report Activity", "reqd": 1},
+    {"fieldname": "approval_section", "label": "Approval", "fieldtype": "Section Break"},
+    {"fieldname": "asoud_approval_request", "label": "Approval Request", "fieldtype": "Link", "options": "ASOUD Approval Request", "read_only": 1, "no_copy": 1},
+    {"fieldname": "asoud_approval_status", "label": "Approval Status", "fieldtype": "Select", "options": "\nPending\nApproved\nRejected\nReturned\nCancelled\nInvalidated", "read_only": 1, "no_copy": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1},
+    {"role": "ASOUD HR Manager", "read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1},
+    {"role": "ASOUD HR User", "read": 1, "write": 1, "create": 1, "submit": 1},
+    {"role": "ASOUD Employee", "read": 1, "write": 1, "create": 1, "submit": 1},
+    {"role": "ASOUD HR Auditor", "read": 1}
+  ]
+}
+

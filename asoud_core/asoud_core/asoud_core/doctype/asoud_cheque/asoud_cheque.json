@@ -1,0 +1,35 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Cheque",
+  "module": "ASOUD Core",
+  "autoname": "field:cheque_key",
+  "title_field": "cheque_number",
+  "track_changes": 1,
+  "field_order": ["cheque_key", "cheque_type", "company", "branch", "cheque_number", "sayad_id", "bank_name", "account_number", "due_date", "amount", "party_type", "party", "party_account", "cheque_account", "bank_treasury_account", "floating_detail", "current_status", "last_event", "remarks"],
+  "fields": [
+    {"fieldname": "cheque_key", "label": "Cheque Key", "fieldtype": "Data", "hidden": 1, "unique": 1, "no_copy": 1},
+    {"fieldname": "cheque_type", "label": "Cheque Type", "fieldtype": "Select", "options": "Incoming\nOutgoing", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "branch", "label": "Branch", "fieldtype": "Link", "options": "ASOUD Branch", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "cheque_number", "label": "Cheque Number", "fieldtype": "Data", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "sayad_id", "label": "16-digit Sayad ID", "fieldtype": "Data", "unique": 1},
+    {"fieldname": "bank_name", "label": "Bank Name", "fieldtype": "Data", "reqd": 1},
+    {"fieldname": "account_number", "label": "Account Number", "fieldtype": "Data"},
+    {"fieldname": "due_date", "label": "Due Date", "fieldtype": "Date", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "amount", "label": "Amount", "fieldtype": "Currency", "reqd": 1, "non_negative": 1, "in_list_view": 1},
+    {"fieldname": "party_type", "label": "Party Type", "fieldtype": "Select", "options": "Customer\nSupplier", "reqd": 1},
+    {"fieldname": "party", "label": "Party", "fieldtype": "Dynamic Link", "options": "party_type", "reqd": 1},
+    {"fieldname": "party_account", "label": "Party Account", "fieldtype": "Link", "options": "Account", "reqd": 1},
+    {"fieldname": "cheque_account", "label": "Cheque Ledger Account", "fieldtype": "Link", "options": "Account", "reqd": 1},
+    {"fieldname": "bank_treasury_account", "label": "Bank Treasury Account", "fieldtype": "Link", "options": "ASOUD Treasury Account", "reqd": 1},
+    {"fieldname": "floating_detail", "label": "Floating Detail", "fieldtype": "Link", "options": "ASOUD Floating Detail"},
+    {"fieldname": "current_status", "label": "Current Status", "fieldtype": "Select", "options": "Draft\nReceived\nDeposited\nIssued\nCleared\nReturned\nCancelled", "default": "Draft", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "last_event", "label": "Last Event", "fieldtype": "Link", "options": "ASOUD Cheque Event", "read_only": 1},
+    {"fieldname": "remarks", "label": "Remarks", "fieldtype": "Small Text"}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "Accounts Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "Accounts User", "read": 1, "write": 1, "create": 1}
+  ]
+}
