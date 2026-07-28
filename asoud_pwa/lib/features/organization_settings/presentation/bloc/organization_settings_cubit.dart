@@ -8,6 +8,8 @@ enum OrganizationPhase { initial, loading, ready, saving, failure }
 
 enum SettingsView { dashboard, structure, financial }
 
+enum FinancialSection { general, chartOfAccounts, dimensions }
+
 class OrganizationSettingsState extends Equatable {
   const OrganizationSettingsState({
     this.phase = OrganizationPhase.initial,
@@ -15,6 +17,9 @@ class OrganizationSettingsState extends Equatable {
     this.snapshot = const OrganizationSnapshot(),
     this.financial,
     this.financialDraft,
+    this.accountRules,
+    this.accountDraft,
+    this.financialSection = FinancialSection.general,
     this.draft,
     this.error,
   });
@@ -24,6 +29,9 @@ class OrganizationSettingsState extends Equatable {
   final OrganizationSnapshot snapshot;
   final FinancialSettingsSnapshot? financial;
   final FinancialSettingsDraft? financialDraft;
+  final AccountRulesSnapshot? accountRules;
+  final ChartAccountDraft? accountDraft;
+  final FinancialSection financialSection;
   final OrganizationDraft? draft;
   final String? error;
 
@@ -33,9 +41,13 @@ class OrganizationSettingsState extends Equatable {
     OrganizationSnapshot? snapshot,
     FinancialSettingsSnapshot? financial,
     FinancialSettingsDraft? financialDraft,
+    AccountRulesSnapshot? accountRules,
+    ChartAccountDraft? accountDraft,
+    FinancialSection? financialSection,
     OrganizationDraft? draft,
     String? error,
     bool clearDraft = false,
+    bool clearAccountDraft = false,
     bool clearError = false,
   }) =>
       OrganizationSettingsState(
@@ -44,6 +56,10 @@ class OrganizationSettingsState extends Equatable {
         snapshot: snapshot ?? this.snapshot,
         financial: financial ?? this.financial,
         financialDraft: financialDraft ?? this.financialDraft,
+        accountRules: accountRules ?? this.accountRules,
+        accountDraft:
+            clearAccountDraft ? null : accountDraft ?? this.accountDraft,
+        financialSection: financialSection ?? this.financialSection,
         draft: clearDraft ? null : draft ?? this.draft,
         error: clearError ? null : error ?? this.error,
       );
@@ -55,6 +71,9 @@ class OrganizationSettingsState extends Equatable {
         snapshot,
         financial,
         financialDraft,
+        accountRules,
+        accountDraft,
+        financialSection,
         draft,
         error,
       ];
@@ -77,11 +96,15 @@ class OrganizationSettingsCubit extends Cubit<OrganizationSettingsState> {
       final financial = state.view == SettingsView.financial
           ? await _gateway.loadFinancial(_context)
           : state.financial;
+      final accountRules = state.view == SettingsView.financial
+          ? await _gateway.loadAccountRules(_context)
+          : state.accountRules;
       emit(state.copyWith(
         phase: OrganizationPhase.ready,
         snapshot: snapshot,
         financial: financial,
         financialDraft: financial?.toDraft(),
+        accountRules: accountRules,
       ));
     } on Object catch (error) {
       emit(state.copyWith(
@@ -97,16 +120,172 @@ class OrganizationSettingsCubit extends Cubit<OrganizationSettingsState> {
     emit(state.copyWith(phase: OrganizationPhase.loading));
     try {
       final financial = await _gateway.loadFinancial(_context);
+      final accountRules = await _gateway.loadAccountRules(_context);
       emit(state.copyWith(
         phase: OrganizationPhase.ready,
         financial: financial,
         financialDraft: financial.toDraft(),
+        accountRules: accountRules,
       ));
     } on Object catch (error) {
       emit(state.copyWith(
         phase: OrganizationPhase.failure,
         error: error.toString(),
       ));
+    }
+  }
+
+  Future<void> showFinancialSection(FinancialSection section) async {
+    emit(state.copyWith(financialSection: section, clearError: true));
+    if (section == FinancialSection.general || state.accountRules != null) {
+      return;
+    }
+    emit(state.copyWith(phase: OrganizationPhase.loading));
+    try {
+      final snapshot = await _gateway.loadAccountRules(_context);
+      emit(state.copyWith(
+        phase: OrganizationPhase.ready,
+        accountRules: snapshot,
+      ));
+    } on Object catch (error) {
+      emit(state.copyWith(
+        phase: OrganizationPhase.failure,
+        error: error.toString(),
+      ));
+    }
+  }
+
+  void startAccount([ChartAccount? account]) {
+    final snapshot = state.accountRules;
+    if (snapshot == null) return;
+    emit(state.copyWith(
+      accountDraft: account == null
+          ? const ChartAccountDraft()
+          : ChartAccountDraft.fromAccount(
+              account,
+              snapshot.rules[account.name] ?? const [],
+            ),
+      clearError: true,
+    ));
+  }
+
+  void cancelAccount() =>
+      emit(state.copyWith(clearAccountDraft: true, clearError: true));
+
+  void updateAccount({
+    String? accountName,
+    String? accountNumber,
+    String? parentAccount,
+    String? accountType,
+    bool? isGroup,
+    bool? disabled,
+  }) {
+    final draft = state.accountDraft;
+    if (draft == null) return;
+    emit(state.copyWith(
+      accountDraft: draft.copyWith(
+        accountName: accountName,
+        accountNumber: accountNumber,
+        parentAccount: parentAccount,
+        accountType: accountType,
+        isGroup: isGroup,
+        disabled: disabled,
+        rules: isGroup == true ? const [] : null,
+      ),
+      clearError: true,
+    ));
+  }
+
+  void addDetailRule(String detailType) {
+    final draft = state.accountDraft;
+    if (draft == null ||
+        detailType.isEmpty ||
+        draft.rules.any((rule) => rule.detailType == detailType)) {
+      return;
+    }
+    emit(state.copyWith(
+      accountDraft: draft.copyWith(
+        rules: [
+          ...draft.rules,
+          AccountDetailRuleDraft(detailType: detailType),
+        ],
+      ),
+      clearError: true,
+    ));
+  }
+
+  void updateDetailRule(
+    int index, {
+    bool? required,
+    bool? enabled,
+    String? defaultFloatingDetail,
+    String? validFrom,
+    String? validTo,
+  }) {
+    final draft = state.accountDraft;
+    if (draft == null || index < 0 || index >= draft.rules.length) return;
+    final rows = [...draft.rules];
+    if (required == true) {
+      for (var i = 0; i < rows.length; i++) {
+        rows[i] = rows[i].copyWith(required: i == index);
+      }
+    }
+    rows[index] = rows[index].copyWith(
+      required: required,
+      enabled: enabled,
+      defaultFloatingDetail: defaultFloatingDetail,
+      validFrom: validFrom,
+      validTo: validTo,
+    );
+    emit(state.copyWith(
+      accountDraft: draft.copyWith(rules: rows),
+      clearError: true,
+    ));
+  }
+
+  void removeDetailRule(int index) {
+    final draft = state.accountDraft;
+    if (draft == null || index < 0 || index >= draft.rules.length) return;
+    final rows = [...draft.rules]..removeAt(index);
+    emit(state.copyWith(
+      accountDraft: draft.copyWith(rules: rows),
+      clearError: true,
+    ));
+  }
+
+  Future<bool> saveChartAccount() async {
+    final draft = state.accountDraft;
+    if (draft == null) return false;
+    final missing = <String>[
+      if (draft.accountName.trim().isEmpty) 'عنوان حساب',
+      if (draft.accountNumber.trim().isEmpty) 'کد حساب',
+      if (draft.parentAccount.trim().isEmpty) 'حساب والد',
+    ];
+    if (missing.isNotEmpty) {
+      emit(state.copyWith(
+          error: 'فیلدهای الزامی را تکمیل کنید: ${missing.join('، ')}'));
+      return false;
+    }
+    if (draft.isGroup && draft.rules.isNotEmpty) {
+      emit(state.copyWith(
+          error: 'برای حساب گروه نمی‌توان قاعده تفصیلی تعریف کرد.'));
+      return false;
+    }
+    emit(state.copyWith(phase: OrganizationPhase.saving, clearError: true));
+    try {
+      final snapshot = await _gateway.saveChartAccount(_context, draft);
+      emit(state.copyWith(
+        phase: OrganizationPhase.ready,
+        accountRules: snapshot,
+        clearAccountDraft: true,
+      ));
+      return true;
+    } on Object catch (error) {
+      emit(state.copyWith(
+        phase: OrganizationPhase.ready,
+        error: error.toString(),
+      ));
+      return false;
     }
   }
 

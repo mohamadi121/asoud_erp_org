@@ -1,4 +1,4 @@
-$ErrorActionPreference = 'Stop'
+﻿$ErrorActionPreference = 'Stop'
 $dir = (Get-Location).Path
 $base = Get-Content -LiteralPath (Join-Path $dir 'asoud-financial-settings-general-v1.svg') -Raw -Encoding UTF8
 $shell = $base.Substring(0, $base.IndexOf('<!-- page header and local tabs -->'))
@@ -130,17 +130,14 @@ $dimensionBody = @"
  <rect x="1030" y="505" width="62" height="28" rx="14" fill="#155bd7"/><circle cx="1077" cy="519" r="11" fill="#fff"/><text x="1005" y="523" font-size="11" text-anchor="end">فعال • پیش‌فرض از Branch</text>
  <text x="1090" y="568" class="label" text-anchor="end">مقدار پیش‌فرض</text><rect x="640" y="580" width="450" height="36" rx="7" fill="#fff" stroke="#d6deea"/><text x="1060" y="603" class="value" text-anchor="end">مرکز هزینه دفتر مرکزی⌄</text>
 
- <rect x="1160" y="650" width="660" height="210" rx="10" fill="#f8fafd" stroke="#dfe5ee"/>
- <circle cx="1780" cy="688" r="19" fill="#edf3ff"/><text x="1780" y="694" fill="#155bd7" font-size="12" font-weight="800" text-anchor="middle">ش</text>
- <text x="1748" y="685" font-size="14" font-weight="800" text-anchor="end">شعبه</text><text x="1748" y="707" class="muted" font-size="10" text-anchor="end">بعد عملیاتی برای گزارش مستقل و تجمیعی</text>
- <rect x="1720" y="735" width="62" height="28" rx="14" fill="#155bd7"/><circle cx="1767" cy="749" r="11" fill="#fff"/><text x="1695" y="753" font-size="11" text-anchor="end">فعال • اجباری برای کاربران شعبه</text>
- <text x="1780" y="798" class="label" text-anchor="end">منبع مقدار</text><rect x="1330" y="810" width="450" height="36" rx="7" fill="#fff" stroke="#d6deea"/><text x="1750" y="833" class="value" text-anchor="end">Context فعال کاربر⌄</text>
-
- <rect x="470" y="650" width="660" height="210" rx="10" fill="#f8fafd" stroke="#dfe5ee"/>
- <circle cx="1090" cy="688" r="19" fill="#edf3ff"/><text x="1090" y="694" fill="#155bd7" font-size="12" font-weight="800" text-anchor="middle">پ</text>
- <text x="1058" y="685" font-size="14" font-weight="800" text-anchor="end">پروژه</text><text x="1058" y="707" class="muted" font-size="10" text-anchor="end">تحلیل درآمد و هزینه قرارداد یا پروژه</text>
- <rect x="1030" y="735" width="62" height="28" rx="14" fill="#cbd5e1"/><circle cx="1045" cy="749" r="11" fill="#fff"/><text x="1005" y="753" font-size="11" text-anchor="end">اختیاری • بر اساس نوع فعالیت</text>
- <text x="1090" y="798" class="label" text-anchor="end">حساب‌های مشمول</text><rect x="640" y="810" width="450" height="36" rx="7" fill="#fff" stroke="#d6deea"/><text x="1060" y="833" class="value" text-anchor="end">درآمد و هزینه پروژه⌄</text>
+ <rect x="470" y="650" width="1350" height="270" rx="10" fill="#f8fafd" stroke="#dfe5ee"/>
+ <text x="1780" y="687" font-size="14" font-weight="800" text-anchor="end">قواعد نگاشت حساب و تفصیلی</text>
+ <text x="1780" y="708" class="muted" font-size="10" text-anchor="end">نمای تجمیعی قواعد Company؛ ویرایش دقیق از فرم حساب انجام می‌شود</text>
+ <rect x="500" y="726" width="1290" height="38" rx="6" fill="#edf3ff"/>
+ <g font-size="10" font-weight="700" text-anchor="end"><text x="1760" y="750">حساب معین</text><text x="1420" y="750">نوع تفصیلی مجاز</text><text x="1080" y="750">الزام</text><text x="830" y="750">پیش‌فرض</text><text x="590" y="750">عملیات</text></g>
+ <rect x="500" y="772" width="1290" height="40" rx="5" fill="#fff" stroke="#e5eaf1"/><text x="1760" y="797" font-size="10" font-weight="700" text-anchor="end">۱۲۰۱۰۱ — دریافتنی تجاری</text><text x="1420" y="797" font-size="10" text-anchor="end">مشتری</text><text x="1080" y="797" font-size="10" fill="#168a56" text-anchor="end">اجباری</text><text x="830" y="797" font-size="10" class="muted" text-anchor="end">بدون پیش‌فرض</text><text x="590" y="797" font-size="10" fill="#155bd7" text-anchor="end">ویرایش</text>
+ <rect x="500" y="816" width="1290" height="40" rx="5" fill="#fff" stroke="#e5eaf1"/><text x="1760" y="841" font-size="10" font-weight="700" text-anchor="end">۲۱۰۱۰۱ — پرداختنی تجاری</text><text x="1420" y="841" font-size="10" text-anchor="end">تأمین‌کننده</text><text x="1080" y="841" font-size="10" fill="#168a56" text-anchor="end">اجباری</text><text x="830" y="841" font-size="10" class="muted" text-anchor="end">بدون پیش‌فرض</text><text x="590" y="841" font-size="10" fill="#155bd7" text-anchor="end">ویرایش</text>
+ <rect x="500" y="860" width="1290" height="40" rx="5" fill="#fff" stroke="#e5eaf1"/><text x="1760" y="885" font-size="10" font-weight="700" text-anchor="end">۱۱۱۰۰۳ — تنخواه دفتر مرکزی</text><text x="1420" y="885" font-size="10" text-anchor="end">کارمند / تنخواه‌دار</text><text x="1080" y="885" font-size="10" fill="#168a56" text-anchor="end">اجباری</text><text x="830" y="885" font-size="10" class="muted" text-anchor="end">بدون پیش‌فرض</text><text x="590" y="885" font-size="10" fill="#155bd7" text-anchor="end">ویرایش</text>
 </g>
 "@
 Save-Svg 'asoud-financial-settings-dimensions-v1.svg' 'dimensions' 'تعریف ابعاد تحلیلی و قواعد الزام آن‌ها در اسناد حسابداری' '+ بُعد جدید' $dimensionSidebar $dimensionBody
@@ -164,7 +161,7 @@ $defaultsBody = @"
 <text x="600" y="647" class="label" text-anchor="end">اسناد پرداختنی</text><rect x="495" y="659" width="105" height="40" rx="8" fill="#fff" stroke="#d6deea"/><text x="575" y="684" class="value" text-anchor="end">۲۱۲۰۰۱⌄</text>
 <rect x="470" y="756" width="1350" height="164" rx="9" fill="#fff8e8" stroke="#f0d49b"/>
 <text x="1785" y="787" class="t dark" font-size="13" font-weight="800" text-anchor="end">کنترل سال و تلفیق</text>
-<text x="1785" y="819" class="label" text-anchor="end">سود و زیان انباشته</text><rect x="1435" y="831" width="350" height="40" rx="8" fill="#fff" stroke="#d6deea"/><text x="1758" y="856" class="value" text-anchor="end">۳۱۰۰۰۱ — سود و زیان انباشته⌄</text>
+<text x="1785" y="819" class="label" text-anchor="end">مقصد نتیجه عملکرد</text><rect x="1435" y="831" width="350" height="40" rx="8" fill="#fff" stroke="#d6deea"/><text x="1758" y="856" class="value" text-anchor="end">۳۱۰۰۰۱ — سود و زیان انباشته⌄</text>
 <text x="1390" y="819" class="label" text-anchor="end">کنترل اختتامیه</text><rect x="1040" y="831" width="350" height="40" rx="8" fill="#fff" stroke="#d6deea"/><text x="1363" y="856" class="value" text-anchor="end">۹۱۰۰۰۱ — کنترل اختتامیه⌄</text>
 <text x="995" y="819" class="label" text-anchor="end">کنترل افتتاحیه</text><rect x="645" y="831" width="350" height="40" rx="8" fill="#fff" stroke="#e5a93d"/><text x="968" y="856" class="value" fill="#b54708" text-anchor="end">انتخاب نشده است⌄</text>
 <text x="600" y="819" class="label" text-anchor="end">اختلاف تلفیق</text><rect x="495" y="831" width="105" height="40" rx="8" fill="#fff" stroke="#e5a93d"/><text x="575" y="856" class="value" fill="#b54708" text-anchor="end">—⌄</text>
@@ -190,7 +187,7 @@ $closingBody = @"
 <text x="1785" y="553" class="t dark" font-size="13" font-weight="800" text-anchor="end">پارامترهای اجرا</text>
 <text x="1785" y="589" class="label" text-anchor="end">سال مالی</text><rect x="1435" y="601" width="350" height="38" rx="8" fill="#fff" stroke="#d6deea"/><text x="1758" y="626" class="value" text-anchor="end">سال مالی ۱۴۰۵⌄</text>
 <text x="1390" y="589" class="label" text-anchor="end">تاریخ افتتاحیه</text><rect x="1190" y="601" width="200" height="38" rx="8" fill="#fff" stroke="#d6deea"/><text x="1363" y="626" class="value" text-anchor="end">۱۴۰۶/۰۱/۰۱</text>
-<text x="1785" y="665" class="label" text-anchor="end">حساب سود و زیان انباشته</text><rect x="1435" y="677" width="350" height="38" rx="8" fill="#fff" stroke="#d6deea"/><text x="1758" y="702" class="value" text-anchor="end">۳۱۰۰۰۱ — سود و زیان انباشته⌄</text>
+<text x="1785" y="665" class="label" text-anchor="end">حساب مقصد نتیجه عملکرد</text><rect x="1435" y="677" width="350" height="38" rx="8" fill="#fff" stroke="#d6deea"/><text x="1758" y="702" class="value" text-anchor="end">۳۱۰۰۰۱ — سود و زیان انباشته (قابل تغییر)⌄</text>
 <text x="1390" y="665" class="label" text-anchor="end">روش اجرا</text><rect x="1190" y="677" width="200" height="38" rx="8" fill="#fff" stroke="#d6deea"/><text x="1363" y="702" class="value" text-anchor="end">واقعی و شماره‌دار⌄</text>
 <rect x="470" y="520" width="660" height="235" rx="9" fill="#f8fafd" stroke="#dfe5ee"/>
 <text x="1095" y="553" class="t dark" font-size="13" font-weight="800" text-anchor="end">نتیجه پیش‌بررسی</text>

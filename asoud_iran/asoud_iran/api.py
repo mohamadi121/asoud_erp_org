@@ -175,6 +175,67 @@ def company_chart_of_accounts(company: str) -> list[dict]:
 
 
 @_whitelist(methods=["GET"])
+def account_detail_rules_snapshot(company: str) -> dict:
+    from asoud_iran.services.account_detail_rules import snapshot
+
+    return snapshot(company)
+
+
+@_whitelist(methods=["POST"])
+def save_chart_account(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+) -> dict:
+    import json
+
+    from asoud_core.services.idempotency import execute_once
+    from asoud_iran.services.account_detail_rules import save_account
+
+    parsed = json.loads(payload)
+    return execute_once(
+        idempotency_key,
+        "chart_account.save",
+        {"company": company, **parsed},
+        lambda: save_account(company, parsed),
+    )
+
+
+@_whitelist(methods=["POST"])
+def save_account_detail_rules(
+    company: str,
+    account: str,
+    payload: str,
+    idempotency_key: str,
+) -> dict:
+    import json
+
+    from asoud_core.services.idempotency import execute_once
+    from asoud_iran.services.account_detail_rules import save_rules
+
+    parsed = json.loads(payload)
+    return execute_once(
+        idempotency_key,
+        "account_detail_rules.save",
+        {"company": company, "account": account, "rules": parsed},
+        lambda: save_rules(company, account, parsed),
+    )
+
+
+@_whitelist(methods=["GET"])
+def eligible_floating_details(
+    company: str,
+    account: str,
+    query: str = "",
+    limit: int = 20,
+) -> list[dict]:
+    from asoud_iran.services.account_detail_rules import eligible_details
+
+    _assert_company_read(company)
+    return eligible_details(company, account, query=query, limit=limit)
+
+
+@_whitelist(methods=["GET"])
 def convert_amount(value: str, input_unit: str, output_unit: str = "IRR") -> dict[str, str]:
     import frappe
 

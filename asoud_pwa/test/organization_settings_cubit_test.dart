@@ -51,6 +51,30 @@ void main() {
     await cubit.close();
   });
 
+  test('creates a postable account with one required detail rule', () async {
+    final gateway = _FakeGateway();
+    final cubit = OrganizationSettingsCubit(
+      gateway,
+      context,
+      initialView: SettingsView.financial,
+    );
+    await cubit.load();
+    cubit.startAccount();
+    cubit.updateAccount(
+      accountName: 'حساب‌های دریافتنی',
+      accountNumber: '120101',
+      parentAccount: 'Current Assets - ASOUD',
+      accountType: 'Receivable',
+    );
+    cubit.addDetailRule('Customer');
+    cubit.updateDetailRule(0, required: true);
+    expect(await cubit.saveChartAccount(), isTrue);
+    expect(gateway.savedAccounts.single.rules.single.detailType, 'Customer');
+    expect(gateway.savedAccounts.single.rules.single.required, isTrue);
+    expect(cubit.state.accountDraft, isNull);
+    await cubit.close();
+  });
+
   testWidgets('renders settings dashboard and opens unit selector',
       (tester) async {
     await tester.pumpWidget(
@@ -76,6 +100,7 @@ void main() {
 class _FakeGateway implements OrganizationGateway {
   final saved = <OrganizationDraft>[];
   final savedFinancial = <FinancialSettingsDraft>[];
+  final savedAccounts = <ChartAccountDraft>[];
 
   @override
   Future<OrganizationSnapshot> load(WorkContext context) async =>
@@ -130,5 +155,35 @@ class _FakeGateway implements OrganizationGateway {
       timezone: 'Asia/Tehran',
       setupStatus: 'Completed',
     );
+  }
+
+  @override
+  Future<AccountRulesSnapshot> loadAccountRules(WorkContext context) async =>
+      const AccountRulesSnapshot(
+        company: 'ASOUD',
+        detailTypes: ['Customer', 'Supplier', 'Employee'],
+        accounts: [
+          ChartAccount(
+            name: 'Current Assets - ASOUD',
+            accountName: 'دارایی‌های جاری',
+            accountNumber: '12',
+            parentAccount: 'Assets - ASOUD',
+            rootType: 'Asset',
+            reportType: 'Balance Sheet',
+            accountType: '',
+            accountCurrency: 'IRR',
+            isGroup: true,
+            disabled: false,
+          ),
+        ],
+      );
+
+  @override
+  Future<AccountRulesSnapshot> saveChartAccount(
+    WorkContext context,
+    ChartAccountDraft draft,
+  ) async {
+    savedAccounts.add(draft);
+    return loadAccountRules(context);
   }
 }

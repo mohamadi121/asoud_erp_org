@@ -9,4 +9,9 @@ abstract interface class OrganizationGateway {
     WorkContext context,
     FinancialSettingsDraft draft,
   );
+  Future<AccountRulesSnapshot> loadAccountRules(WorkContext context);
+  Future<AccountRulesSnapshot> saveChartAccount(
+    WorkContext context,
+    ChartAccountDraft draft,
+  );
 }

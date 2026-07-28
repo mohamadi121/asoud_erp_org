@@ -71,7 +71,7 @@
 <text x="1785" y="553" class="t dark" font-size="13" font-weight="800" text-anchor="end">پارامترهای اجرا</text>
 <text x="1785" y="589" class="label" text-anchor="end">سال مالی</text><rect x="1435" y="601" width="350" height="38" rx="8" fill="#fff" stroke="#d6deea"/><text x="1758" y="626" class="value" text-anchor="end">سال مالی ۱۴۰۵⌄</text>
 <text x="1390" y="589" class="label" text-anchor="end">تاریخ افتتاحیه</text><rect x="1190" y="601" width="200" height="38" rx="8" fill="#fff" stroke="#d6deea"/><text x="1363" y="626" class="value" text-anchor="end">۱۴۰۶/۰۱/۰۱</text>
-<text x="1785" y="665" class="label" text-anchor="end">حساب سود و زیان انباشته</text><rect x="1435" y="677" width="350" height="38" rx="8" fill="#fff" stroke="#d6deea"/><text x="1758" y="702" class="value" text-anchor="end">۳۱۰۰۰۱ — سود و زیان انباشته⌄</text>
+<text x="1785" y="665" class="label" text-anchor="end">حساب مقصد نتیجه عملکرد</text><rect x="1435" y="677" width="350" height="38" rx="8" fill="#fff" stroke="#d6deea"/><text x="1758" y="702" class="value" text-anchor="end">۳۱۰۰۰۱ — سود و زیان انباشته (قابل تغییر)⌄</text>
 <text x="1390" y="665" class="label" text-anchor="end">روش اجرا</text><rect x="1190" y="677" width="200" height="38" rx="8" fill="#fff" stroke="#d6deea"/><text x="1363" y="702" class="value" text-anchor="end">واقعی و شماره‌دار⌄</text>
 <rect x="470" y="520" width="660" height="235" rx="9" fill="#f8fafd" stroke="#dfe5ee"/>
 <text x="1095" y="553" class="t dark" font-size="13" font-weight="800" text-anchor="end">نتیجه پیش‌بررسی</text>

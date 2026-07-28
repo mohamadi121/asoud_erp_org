@@ -67,6 +67,22 @@ def floating_detail_permission(
     return None if holding_manager else False
 
 
+def account_detail_rule_query(user: str | None = None) -> str:
+    from asoud_core.permissions import company_profile_query
+
+    return company_profile_query("ASOUD Account Detail Rule", user)
+
+
+def account_detail_rule_permission(
+    doc,
+    user: str | None = None,
+    permission_type: str | None = None,
+) -> bool | None:
+    from asoud_core.permissions import company_profile_permission
+
+    return company_profile_permission(doc, user, permission_type)
+
+
 def opening_import_query(user: str | None = None) -> str:
     from asoud_core.permissions import treasury_document_query
 
