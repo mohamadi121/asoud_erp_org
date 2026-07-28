@@ -34,4 +34,38 @@ class FrappeOrganizationGateway implements OrganizationGateway {
       },
     );
   }
+
+  @override
+  Future<FinancialSettingsSnapshot> loadFinancial(WorkContext context) async {
+    final response = await _client.getQuery(
+      '/api/method/asoud_iran.api.financial_settings_snapshot',
+      {'company': context.company},
+    );
+    final message = response['message'];
+    if (message is! Map<String, dynamic>) {
+      throw const AsoudApiException('پاسخ تنظیمات مالی معتبر نیست.');
+    }
+    return FinancialSettingsSnapshot.fromJson(message);
+  }
+
+  @override
+  Future<FinancialSettingsSnapshot> saveFinancial(
+    WorkContext context,
+    FinancialSettingsDraft draft,
+  ) async {
+    final response = await _client.postForm(
+      '/api/method/asoud_iran.api.save_financial_settings',
+      {
+        'company': context.company,
+        'payload': jsonEncode(draft.toJson()),
+        'idempotency_key':
+            'financial-settings-${DateTime.now().microsecondsSinceEpoch}',
+      },
+    );
+    final message = response['message'];
+    if (message is! Map<String, dynamic>) {
+      throw const AsoudApiException('پاسخ ذخیره تنظیمات مالی معتبر نیست.');
+    }
+    return FinancialSettingsSnapshot.fromJson(message);
+  }
 }

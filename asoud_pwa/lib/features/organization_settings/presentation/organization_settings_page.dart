@@ -20,9 +20,11 @@ class OrganizationSettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BlocProvider(
-        create: (_) => OrganizationSettingsCubit(gateway, this.context)
-          ..show(initialView)
-          ..load(),
+        create: (_) => OrganizationSettingsCubit(
+          gateway,
+          this.context,
+          initialView: initialView,
+        )..load(),
         child: const _OrganizationSettingsView(),
       );
 }
@@ -58,7 +60,7 @@ class _OrganizationSettingsView extends StatelessWidget {
                     child: switch (state.view) {
                       SettingsView.dashboard => _Dashboard(state.snapshot),
                       SettingsView.structure => _Structure(state.snapshot),
-                      SettingsView.financial => const _FinancialSettings(),
+                      SettingsView.financial => _FinancialSettings(state),
                     },
                   ),
                 ],
@@ -327,35 +329,322 @@ class _Structure extends StatelessWidget {
 }
 
 class _FinancialSettings extends StatelessWidget {
-  const _FinancialSettings();
+  const _FinancialSettings(this.state);
+
+  final OrganizationSettingsState state;
+
   @override
-  Widget build(BuildContext context) => ListView(
-        padding: const EdgeInsets.all(24),
-        children: [
-          Text('تنظیمات عمومی حسابداری',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.w900)),
-          const SizedBox(height: 12),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Wrap(
-                spacing: 16,
-                runSpacing: 16,
-                children: const [
-                  _ReadOnlyField('ارز پایه', 'ریال ایران (IRR)'),
-                  _ReadOnlyField('سال مالی', 'سال مالی ۱۴۰۵'),
-                  _ReadOnlyField('نمودار حساب‌ها', 'استاندارد حسابداری ایران'),
-                  _ReadOnlyField('دوره‌ها', '۱۲ دوره ماهانه'),
-                  _ReadOnlyField('روش بستن سال', 'اختتامیه و افتتاحیه واقعی'),
-                  _ReadOnlyField('گزارش هلدینگ', 'مستقل و تلفیقی'),
+  Widget build(BuildContext context) {
+    final settings = state.financial;
+    final draft = state.financialDraft;
+    if (settings == null || draft == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    return ListView(
+      padding: const EdgeInsets.all(24),
+      children: [
+        _FinancialStatus(settings: settings),
+        const SizedBox(height: 16),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'تنظیمات عمومی حسابداری',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontWeight: FontWeight.w900),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'این تنظیمات در سطح شرکت فعال ذخیره می‌شوند و روی دفاتر سایر شرکت‌ها اثری ندارند.',
+                  style: TextStyle(color: AsoudColors.muted),
+                ),
+                const SizedBox(height: 18),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final width = constraints.maxWidth >= 900
+                        ? (constraints.maxWidth - 16) / 2
+                        : constraints.maxWidth;
+                    return Wrap(
+                      spacing: 16,
+                      runSpacing: 16,
+                      children: [
+                        SizedBox(
+                          width: width,
+                          child: _ReadOnlyField(
+                            'شرکت فعال',
+                            settings.companyName.isEmpty
+                                ? settings.company
+                                : settings.companyName,
+                          ),
+                        ),
+                        SizedBox(
+                          width: width,
+                          child: const _ReadOnlyField(
+                            'ارز دفتر کل',
+                            'ریال ایران (IRR)',
+                          ),
+                        ),
+                        SizedBox(
+                          width: width,
+                          child: DropdownButtonFormField<String>(
+                            value: draft.coaTemplate.isEmpty
+                                ? null
+                                : draft.coaTemplate,
+                            decoration: const InputDecoration(
+                              labelText: 'الگوی نمودار حساب‌ها *',
+                            ),
+                            items: [
+                              for (final template in settings.templates)
+                                DropdownMenuItem(
+                                  value: template['name']?.toString(),
+                                  child: Text(
+                                    '${template['template_title'] ?? template['name']}'
+                                    ' — نسخه ${template['version'] ?? '-'}',
+                                  ),
+                                ),
+                            ],
+                            onChanged: (value) => context
+                                .read<OrganizationSettingsCubit>()
+                                .updateFinancial(coaTemplate: value ?? ''),
+                          ),
+                        ),
+                        SizedBox(
+                          width: width,
+                          child: DropdownButtonFormField<String>(
+                            value: draft.amountInputUnit,
+                            decoration: const InputDecoration(
+                              labelText: 'واحد ورود مبلغ',
+                            ),
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'IRR',
+                                child: Text('ریال'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'TOMAN',
+                                child: Text('تومان؛ ذخیره در دفتر کل به ریال'),
+                              ),
+                            ],
+                            onChanged: (value) => context
+                                .read<OrganizationSettingsCubit>()
+                                .updateFinancial(amountInputUnit: value),
+                          ),
+                        ),
+                        SizedBox(
+                          width: width,
+                          child: DropdownButtonFormField<String>(
+                            value: draft.calendarDisplay,
+                            decoration: const InputDecoration(
+                              labelText: 'نمایش تقویم',
+                            ),
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'Jalali',
+                                child: Text('شمسی'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'Gregorian',
+                                child: Text('میلادی'),
+                              ),
+                            ],
+                            onChanged: (value) => context
+                                .read<OrganizationSettingsCubit>()
+                                .updateFinancial(calendarDisplay: value),
+                          ),
+                        ),
+                        SizedBox(
+                          width: width,
+                          child: _ReadOnlyField(
+                            'منطقه زمانی',
+                            settings.timezone,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                const SizedBox(height: 20),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: FilledButton.icon(
+                    onPressed: state.phase == OrganizationPhase.saving
+                        ? null
+                        : context
+                            .read<OrganizationSettingsCubit>()
+                            .saveFinancial,
+                    icon: state.phase == OrganizationPhase.saving
+                        ? const SizedBox.square(
+                            dimension: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.save_outlined),
+                    label: const Text('ذخیره تنظیمات مالی'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final width = constraints.maxWidth >= 900
+                ? (constraints.maxWidth - 16) / 2
+                : constraints.maxWidth;
+            return Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              children: [
+                SizedBox(
+                  width: width,
+                  child: _FiscalYearsCard(rows: settings.fiscalYears),
+                ),
+                SizedBox(
+                  width: width,
+                  child: _PeriodLocksCard(rows: settings.periodLocks),
+                ),
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _FinancialStatus extends StatelessWidget {
+  const _FinancialStatus({required this.settings});
+
+  final FinancialSettingsSnapshot settings;
+
+  @override
+  Widget build(BuildContext context) {
+    final completed = settings.setupStatus == 'Completed';
+    return Card(
+      color: completed ? const Color(0xffecfdf3) : const Color(0xfffff8e8),
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor:
+                  completed ? const Color(0xffd1fadf) : const Color(0xffffedc2),
+              child: Icon(
+                completed ? Icons.verified_outlined : Icons.pending_actions,
+                color: completed
+                    ? const Color(0xff067647)
+                    : const Color(0xffb54708),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    completed
+                        ? 'پایه حسابداری ایران فعال است'
+                        : 'راه‌اندازی حسابداری ایران تکمیل نشده است',
+                    style: const TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                  Text(
+                    completed
+                        ? 'تنظیمات این شرکت مستقل و آماده استفاده عملیاتی است.'
+                        : 'الگوی حساب‌ها را انتخاب و تنظیمات را ذخیره کنید.',
+                  ),
                 ],
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FiscalYearsCard extends StatelessWidget {
+  const _FiscalYearsCard({required this.rows});
+
+  final List<Map<String, dynamic>> rows;
+
+  @override
+  Widget build(BuildContext context) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: CircleAvatar(child: Icon(Icons.calendar_month)),
+                title: Text(
+                  'سال‌های مالی',
+                  style: TextStyle(fontWeight: FontWeight.w900),
+                ),
+                subtitle: Text('سال‌های قابل استفاده برای شرکت فعال'),
+              ),
+              if (rows.isEmpty)
+                const Text('سال مالی تعریف نشده است.')
+              else
+                for (final row in rows)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(row['name']?.toString() ?? '-'),
+                    subtitle: Text(
+                      '${row['year_start_date'] ?? '-'} تا '
+                      '${row['year_end_date'] ?? '-'}',
+                    ),
+                    trailing: row['disabled'] == 1
+                        ? const Chip(label: Text('غیرفعال'))
+                        : const Chip(label: Text('فعال')),
+                  ),
+            ],
           ),
-        ],
+        ),
+      );
+}
+
+class _PeriodLocksCard extends StatelessWidget {
+  const _PeriodLocksCard({required this.rows});
+
+  final List<Map<String, dynamic>> rows;
+
+  @override
+  Widget build(BuildContext context) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: CircleAvatar(child: Icon(Icons.lock_outline)),
+                title: Text(
+                  'قفل‌های دوره',
+                  style: TextStyle(fontWeight: FontWeight.w900),
+                ),
+                subtitle: Text('بازه‌های بسته‌شده در شرکت فعال'),
+              ),
+              if (rows.isEmpty)
+                const Text('هیچ دوره‌ای قفل نشده است.')
+              else
+                for (final row in rows)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(row['fiscal_year']?.toString() ?? '-'),
+                    subtitle: Text(
+                      '${row['from_date'] ?? '-'} تا ${row['to_date'] ?? '-'}',
+                    ),
+                    trailing: const Icon(Icons.lock, size: 18),
+                  ),
+            ],
+          ),
+        ),
       );
 }
 

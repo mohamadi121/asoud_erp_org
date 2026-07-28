@@ -33,6 +33,24 @@ void main() {
     await cubit.close();
   });
 
+  test('loads and saves company financial settings', () async {
+    final gateway = _FakeGateway();
+    final cubit = OrganizationSettingsCubit(
+      gateway,
+      context,
+      initialView: SettingsView.financial,
+    );
+    await cubit.load();
+    expect(cubit.state.financial?.baseCurrency, 'IRR');
+    cubit.updateFinancial(
+      coaTemplate: 'GENERAL-V1',
+      amountInputUnit: 'TOMAN',
+    );
+    expect(await cubit.saveFinancial(), isTrue);
+    expect(gateway.savedFinancial.single.amountInputUnit, 'TOMAN');
+    await cubit.close();
+  });
+
   testWidgets('renders settings dashboard and opens unit selector',
       (tester) async {
     await tester.pumpWidget(
@@ -57,6 +75,7 @@ void main() {
 
 class _FakeGateway implements OrganizationGateway {
   final saved = <OrganizationDraft>[];
+  final savedFinancial = <FinancialSettingsDraft>[];
 
   @override
   Future<OrganizationSnapshot> load(WorkContext context) async =>
@@ -72,4 +91,44 @@ class _FakeGateway implements OrganizationGateway {
 
   @override
   Future<void> save(OrganizationDraft draft) async => saved.add(draft);
+
+  @override
+  Future<FinancialSettingsSnapshot> loadFinancial(
+    WorkContext context,
+  ) async =>
+      const FinancialSettingsSnapshot(
+        company: 'ASOUD',
+        companyName: 'شرکت آسود',
+        baseCurrency: 'IRR',
+        coaTemplate: 'GENERAL-V1',
+        amountInputUnit: 'IRR',
+        calendarDisplay: 'Jalali',
+        timezone: 'Asia/Tehran',
+        setupStatus: 'Completed',
+        templates: [
+          {
+            'name': 'GENERAL-V1',
+            'template_title': 'استاندارد عمومی',
+            'version': '1',
+          },
+        ],
+      );
+
+  @override
+  Future<FinancialSettingsSnapshot> saveFinancial(
+    WorkContext context,
+    FinancialSettingsDraft draft,
+  ) async {
+    savedFinancial.add(draft);
+    return FinancialSettingsSnapshot(
+      company: context.company,
+      companyName: 'شرکت آسود',
+      baseCurrency: 'IRR',
+      coaTemplate: draft.coaTemplate,
+      amountInputUnit: draft.amountInputUnit,
+      calendarDisplay: draft.calendarDisplay,
+      timezone: 'Asia/Tehran',
+      setupStatus: 'Completed',
+    );
+  }
 }

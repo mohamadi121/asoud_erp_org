@@ -109,3 +109,111 @@ class OrganizationDraft extends Equatable {
   @override
   List<Object?> get props => [kind, step, values];
 }
+
+class FinancialSettingsSnapshot extends Equatable {
+  const FinancialSettingsSnapshot({
+    required this.company,
+    required this.companyName,
+    required this.baseCurrency,
+    required this.coaTemplate,
+    required this.amountInputUnit,
+    required this.calendarDisplay,
+    required this.timezone,
+    required this.setupStatus,
+    this.templates = const [],
+    this.fiscalYears = const [],
+    this.periodLocks = const [],
+  });
+
+  factory FinancialSettingsSnapshot.fromJson(Map<String, dynamic> json) {
+    final settings =
+        json['settings'] as Map<String, dynamic>? ?? const <String, dynamic>{};
+    List<Map<String, dynamic>> rows(String key) =>
+        (json[key] as List<dynamic>? ?? const [])
+            .whereType<Map<String, dynamic>>()
+            .map(Map<String, dynamic>.unmodifiable)
+            .toList(growable: false);
+    return FinancialSettingsSnapshot(
+      company: settings['company']?.toString() ?? '',
+      companyName: settings['company_name']?.toString() ?? '',
+      baseCurrency: settings['base_currency']?.toString() ?? 'IRR',
+      coaTemplate: settings['coa_template']?.toString() ?? '',
+      amountInputUnit: settings['amount_input_unit']?.toString() ?? 'IRR',
+      calendarDisplay: settings['calendar_display']?.toString() ?? 'Jalali',
+      timezone: settings['timezone']?.toString() ?? 'Asia/Tehran',
+      setupStatus: settings['setup_status']?.toString() ?? 'Pending',
+      templates: rows('coa_templates'),
+      fiscalYears: rows('fiscal_years'),
+      periodLocks: rows('period_locks'),
+    );
+  }
+
+  final String company;
+  final String companyName;
+  final String baseCurrency;
+  final String coaTemplate;
+  final String amountInputUnit;
+  final String calendarDisplay;
+  final String timezone;
+  final String setupStatus;
+  final List<Map<String, dynamic>> templates;
+  final List<Map<String, dynamic>> fiscalYears;
+  final List<Map<String, dynamic>> periodLocks;
+
+  FinancialSettingsDraft toDraft() => FinancialSettingsDraft(
+        coaTemplate: coaTemplate,
+        amountInputUnit: amountInputUnit,
+        calendarDisplay: calendarDisplay,
+      );
+
+  @override
+  List<Object?> get props => [
+        company,
+        companyName,
+        baseCurrency,
+        coaTemplate,
+        amountInputUnit,
+        calendarDisplay,
+        timezone,
+        setupStatus,
+        templates,
+        fiscalYears,
+        periodLocks,
+      ];
+}
+
+class FinancialSettingsDraft extends Equatable {
+  const FinancialSettingsDraft({
+    this.coaTemplate = '',
+    this.amountInputUnit = 'IRR',
+    this.calendarDisplay = 'Jalali',
+  });
+
+  final String coaTemplate;
+  final String amountInputUnit;
+  final String calendarDisplay;
+
+  FinancialSettingsDraft copyWith({
+    String? coaTemplate,
+    String? amountInputUnit,
+    String? calendarDisplay,
+  }) =>
+      FinancialSettingsDraft(
+        coaTemplate: coaTemplate ?? this.coaTemplate,
+        amountInputUnit: amountInputUnit ?? this.amountInputUnit,
+        calendarDisplay: calendarDisplay ?? this.calendarDisplay,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'coa_template': coaTemplate,
+        'amount_input_unit': amountInputUnit,
+        'calendar_display': calendarDisplay,
+      };
+
+  @override
+  List<Object?> get props => [
+        coaTemplate,
+        amountInputUnit,
+        calendarDisplay,
+      ];
+}

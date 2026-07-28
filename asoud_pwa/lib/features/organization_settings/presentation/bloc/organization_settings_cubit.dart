@@ -13,6 +13,8 @@ class OrganizationSettingsState extends Equatable {
     this.phase = OrganizationPhase.initial,
     this.view = SettingsView.dashboard,
     this.snapshot = const OrganizationSnapshot(),
+    this.financial,
+    this.financialDraft,
     this.draft,
     this.error,
   });
@@ -20,6 +22,8 @@ class OrganizationSettingsState extends Equatable {
   final OrganizationPhase phase;
   final SettingsView view;
   final OrganizationSnapshot snapshot;
+  final FinancialSettingsSnapshot? financial;
+  final FinancialSettingsDraft? financialDraft;
   final OrganizationDraft? draft;
   final String? error;
 
@@ -27,6 +31,8 @@ class OrganizationSettingsState extends Equatable {
     OrganizationPhase? phase,
     SettingsView? view,
     OrganizationSnapshot? snapshot,
+    FinancialSettingsSnapshot? financial,
+    FinancialSettingsDraft? financialDraft,
     OrganizationDraft? draft,
     String? error,
     bool clearDraft = false,
@@ -36,17 +42,30 @@ class OrganizationSettingsState extends Equatable {
         phase: phase ?? this.phase,
         view: view ?? this.view,
         snapshot: snapshot ?? this.snapshot,
+        financial: financial ?? this.financial,
+        financialDraft: financialDraft ?? this.financialDraft,
         draft: clearDraft ? null : draft ?? this.draft,
         error: clearError ? null : error ?? this.error,
       );
 
   @override
-  List<Object?> get props => [phase, view, snapshot, draft, error];
+  List<Object?> get props => [
+        phase,
+        view,
+        snapshot,
+        financial,
+        financialDraft,
+        draft,
+        error,
+      ];
 }
 
 class OrganizationSettingsCubit extends Cubit<OrganizationSettingsState> {
-  OrganizationSettingsCubit(this._gateway, this._context)
-      : super(const OrganizationSettingsState());
+  OrganizationSettingsCubit(
+    this._gateway,
+    this._context, {
+    SettingsView initialView = SettingsView.dashboard,
+  }) : super(OrganizationSettingsState(view: initialView));
 
   final OrganizationGateway _gateway;
   final WorkContext _context;
@@ -54,9 +73,15 @@ class OrganizationSettingsCubit extends Cubit<OrganizationSettingsState> {
   Future<void> load() async {
     emit(state.copyWith(phase: OrganizationPhase.loading, clearError: true));
     try {
+      final snapshot = await _gateway.load(_context);
+      final financial = state.view == SettingsView.financial
+          ? await _gateway.loadFinancial(_context)
+          : state.financial;
       emit(state.copyWith(
         phase: OrganizationPhase.ready,
-        snapshot: await _gateway.load(_context),
+        snapshot: snapshot,
+        financial: financial,
+        financialDraft: financial?.toDraft(),
       ));
     } on Object catch (error) {
       emit(state.copyWith(
@@ -66,7 +91,66 @@ class OrganizationSettingsCubit extends Cubit<OrganizationSettingsState> {
     }
   }
 
-  void show(SettingsView view) => emit(state.copyWith(view: view));
+  Future<void> show(SettingsView view) async {
+    emit(state.copyWith(view: view, clearError: true));
+    if (view != SettingsView.financial || state.financial != null) return;
+    emit(state.copyWith(phase: OrganizationPhase.loading));
+    try {
+      final financial = await _gateway.loadFinancial(_context);
+      emit(state.copyWith(
+        phase: OrganizationPhase.ready,
+        financial: financial,
+        financialDraft: financial.toDraft(),
+      ));
+    } on Object catch (error) {
+      emit(state.copyWith(
+        phase: OrganizationPhase.failure,
+        error: error.toString(),
+      ));
+    }
+  }
+
+  void updateFinancial({
+    String? coaTemplate,
+    String? amountInputUnit,
+    String? calendarDisplay,
+  }) {
+    final draft = state.financialDraft;
+    if (draft == null) return;
+    emit(state.copyWith(
+      financialDraft: draft.copyWith(
+        coaTemplate: coaTemplate,
+        amountInputUnit: amountInputUnit,
+        calendarDisplay: calendarDisplay,
+      ),
+      clearError: true,
+    ));
+  }
+
+  Future<bool> saveFinancial() async {
+    final draft = state.financialDraft;
+    if (draft == null) return false;
+    if (draft.coaTemplate.trim().isEmpty) {
+      emit(state.copyWith(error: 'الگوی نمودار حساب‌ها را انتخاب کنید.'));
+      return false;
+    }
+    emit(state.copyWith(phase: OrganizationPhase.saving, clearError: true));
+    try {
+      final financial = await _gateway.saveFinancial(_context, draft);
+      emit(state.copyWith(
+        phase: OrganizationPhase.ready,
+        financial: financial,
+        financialDraft: financial.toDraft(),
+      ));
+      return true;
+    } on Object catch (error) {
+      emit(state.copyWith(
+        phase: OrganizationPhase.ready,
+        error: error.toString(),
+      ));
+      return false;
+    }
+  }
 
   void start(OrganizationUnitKind kind) => emit(state.copyWith(
         draft: OrganizationDraft(kind: kind),

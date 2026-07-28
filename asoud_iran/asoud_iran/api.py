@@ -109,6 +109,33 @@ def company_accounting_settings(company: str) -> dict:
 
 
 @_whitelist(methods=["GET"])
+def financial_settings_snapshot(company: str) -> dict:
+    from asoud_iran.services.financial_settings import snapshot
+
+    return snapshot(company)
+
+
+@_whitelist(methods=["POST"])
+def save_financial_settings(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+) -> dict:
+    import json
+
+    from asoud_core.services.idempotency import execute_once
+    from asoud_iran.services.financial_settings import save
+
+    parsed = json.loads(payload)
+    return execute_once(
+        idempotency_key,
+        "financial_settings.save",
+        {"company": company, **parsed},
+        lambda: save(company, parsed),
+    )
+
+
+@_whitelist(methods=["GET"])
 def company_chart_of_accounts(company: str) -> list[dict]:
     import frappe
 
