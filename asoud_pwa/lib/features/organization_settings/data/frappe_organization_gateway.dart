@@ -102,4 +102,61 @@ class FrappeOrganizationGateway implements OrganizationGateway {
     }
     return AccountRulesSnapshot.fromJson(message);
   }
+
+  @override
+  Future<FloatingDetailManagementSnapshot> loadFloatingDetails(
+    WorkContext context,
+  ) async {
+    final response = await _client.getQuery(
+      '/api/method/asoud_iran.api.floating_detail_management_snapshot',
+      {'company': context.company},
+    );
+    return FloatingDetailManagementSnapshot.fromJson(
+      response['message'] as Map<String, dynamic>,
+    );
+  }
+
+  @override
+  Future<FloatingDetailManagementSnapshot> saveFloatingDetailGroup(
+    WorkContext context,
+    FloatingDetailGroupDraft draft,
+  ) =>
+      _saveFloating(
+        context,
+        'save_floating_detail_group',
+        'floating-detail-group',
+        draft.toJson(),
+      );
+
+  @override
+  Future<FloatingDetailManagementSnapshot> saveFloatingDetail(
+    WorkContext context,
+    FloatingDetailDraft draft,
+  ) =>
+      _saveFloating(
+        context,
+        'save_floating_detail',
+        'floating-detail',
+        draft.toJson(),
+      );
+
+  Future<FloatingDetailManagementSnapshot> _saveFloating(
+    WorkContext context,
+    String method,
+    String keyPrefix,
+    Map<String, dynamic> payload,
+  ) async {
+    final response = await _client.postForm(
+      '/api/method/asoud_iran.api.$method',
+      {
+        'company': context.company,
+        'payload': jsonEncode(payload),
+        'idempotency_key':
+            '$keyPrefix-${DateTime.now().microsecondsSinceEpoch}',
+      },
+    );
+    return FloatingDetailManagementSnapshot.fromJson(
+      response['message'] as Map<String, dynamic>,
+    );
+  }
 }

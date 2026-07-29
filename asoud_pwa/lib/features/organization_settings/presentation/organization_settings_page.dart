@@ -72,6 +72,18 @@ class _OrganizationSettingsView extends StatelessWidget {
                   snapshot: state.accountRules!,
                   saving: state.phase == OrganizationPhase.saving,
                 ),
+              if (state.detailGroupDraft != null)
+                _FloatingDetailGroupDrawer(
+                  draft: state.detailGroupDraft!,
+                  snapshot: state.detailManagement!,
+                  saving: state.phase == OrganizationPhase.saving,
+                ),
+              if (state.floatingDetailDraft != null)
+                _FloatingDetailDrawer(
+                  draft: state.floatingDetailDraft!,
+                  snapshot: state.detailManagement!,
+                  saving: state.phase == OrganizationPhase.saving,
+                ),
             ],
           );
         },
@@ -525,6 +537,8 @@ class _FinancialSettings extends StatelessWidget {
         ],
         if (state.financialSection == FinancialSection.chartOfAccounts)
           _ChartOfAccountsPanel(snapshot: state.accountRules),
+        if (state.financialSection == FinancialSection.floatingDetails)
+          _FloatingDetailsPanel(snapshot: state.detailManagement),
         if (state.financialSection == FinancialSection.dimensions)
           _AccountDimensionsPanel(snapshot: state.accountRules),
       ],
@@ -551,6 +565,11 @@ class _FinancialSectionSelector extends StatelessWidget {
               value: FinancialSection.chartOfAccounts,
               label: Text('نمودار حساب‌ها'),
               icon: Icon(Icons.account_tree_outlined),
+            ),
+            ButtonSegment(
+              value: FinancialSection.floatingDetails,
+              label: Text('تفصیلی‌های شناور'),
+              icon: Icon(Icons.badge_outlined),
             ),
             ButtonSegment(
               value: FinancialSection.dimensions,
@@ -1313,6 +1332,397 @@ class _DetailRuleEditor extends StatelessWidget {
       ),
     );
   }
+}
+
+class _FloatingDetailsPanel extends StatelessWidget {
+  const _FloatingDetailsPanel({required this.snapshot});
+  final FloatingDetailManagementSnapshot? snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    final data = snapshot;
+    if (data == null) return const Center(child: CircularProgressIndicator());
+    return LayoutBuilder(builder: (context, constraints) {
+      final width = constraints.maxWidth >= 900
+          ? (constraints.maxWidth - 16) / 2
+          : constraints.maxWidth;
+      return Wrap(
+        spacing: 16,
+        runSpacing: 16,
+        children: [
+          SizedBox(
+            width: width,
+            child: _DetailListCard(
+              title: 'گروه‌های تفصیلی',
+              actionLabel: 'گروه جدید',
+              onAdd: () =>
+                  context.read<OrganizationSettingsCubit>().startDetailGroup(),
+              children: [
+                for (final group in data.groups)
+                  ListTile(
+                    leading: const CircleAvatar(
+                      child: Icon(Icons.folder_outlined),
+                    ),
+                    title: Text(group.title),
+                    subtitle: Text('${group.code} • ${group.detailType}'),
+                    trailing: Icon(
+                      group.enabled ? Icons.check_circle : Icons.block,
+                      color: group.enabled ? Colors.green : Colors.grey,
+                    ),
+                    onTap: () => context
+                        .read<OrganizationSettingsCubit>()
+                        .startDetailGroup(group),
+                  ),
+              ],
+            ),
+          ),
+          SizedBox(
+            width: width,
+            child: _DetailListCard(
+              title: 'تفصیلی‌های شرکت فعال',
+              actionLabel: 'تفصیلی جدید',
+              onAdd: data.groups.isEmpty
+                  ? null
+                  : () => context
+                      .read<OrganizationSettingsCubit>()
+                      .startFloatingDetail(),
+              children: [
+                for (final detail in data.details)
+                  ListTile(
+                    leading:
+                        const CircleAvatar(child: Icon(Icons.badge_outlined)),
+                    title: Text(detail.title),
+                    subtitle: Text(
+                      '${detail.code.isEmpty ? "بدون کد شرکت" : detail.code} • ${detail.detailType}',
+                    ),
+                    trailing: Icon(
+                      detail.enabled && detail.companyEnabled
+                          ? Icons.check_circle
+                          : Icons.block,
+                      color: detail.enabled && detail.companyEnabled
+                          ? Colors.green
+                          : Colors.grey,
+                    ),
+                    onTap: () => context
+                        .read<OrganizationSettingsCubit>()
+                        .startFloatingDetail(detail),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      );
+    });
+  }
+}
+
+class _DetailListCard extends StatelessWidget {
+  const _DetailListCard({
+    required this.title,
+    required this.actionLabel,
+    required this.onAdd,
+    required this.children,
+  });
+  final String title;
+  final String actionLabel;
+  final VoidCallback? onAdd;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge
+                          ?.copyWith(fontWeight: FontWeight.w900),
+                    ),
+                  ),
+                  FilledButton.icon(
+                    onPressed: onAdd,
+                    icon: const Icon(Icons.add),
+                    label: Text(actionLabel),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              if (children.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Text(
+                    'هنوز رکوردی ثبت نشده است.',
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              else
+                ...children,
+            ],
+          ),
+        ),
+      );
+}
+
+class _FloatingDetailGroupDrawer extends StatelessWidget {
+  const _FloatingDetailGroupDrawer({
+    required this.draft,
+    required this.snapshot,
+    required this.saving,
+  });
+  final FloatingDetailGroupDraft draft;
+  final FloatingDetailManagementSnapshot snapshot;
+  final bool saving;
+
+  @override
+  Widget build(BuildContext context) => _SettingsDrawer(
+        title: draft.name.isEmpty ? 'ایجاد گروه تفصیلی' : 'ویرایش گروه تفصیلی',
+        onClose: context.read<OrganizationSettingsCubit>().cancelDetailGroup,
+        onSave: saving
+            ? null
+            : context.read<OrganizationSettingsCubit>().saveDetailGroup,
+        saving: saving,
+        children: [
+          TextFormField(
+            key: ValueKey('group-title-${draft.name}'),
+            initialValue: draft.title,
+            decoration: const InputDecoration(labelText: 'عنوان گروه *'),
+            onChanged: (value) => context
+                .read<OrganizationSettingsCubit>()
+                .updateDetailGroup(title: value),
+          ),
+          TextFormField(
+            key: ValueKey('group-code-${draft.name}'),
+            initialValue: draft.code,
+            decoration: const InputDecoration(labelText: 'کد گروه *'),
+            onChanged: (value) => context
+                .read<OrganizationSettingsCubit>()
+                .updateDetailGroup(code: value),
+          ),
+          DropdownButtonFormField<String>(
+            value: snapshot.detailTypes.contains(draft.detailType)
+                ? draft.detailType
+                : snapshot.detailTypes.isEmpty
+                    ? null
+                    : snapshot.detailTypes.first,
+            decoration: const InputDecoration(labelText: 'نوع تفصیلی *'),
+            items: [
+              for (final type in snapshot.detailTypes)
+                DropdownMenuItem(
+                    value: type, child: Text(_detailTypeLabel(type))),
+            ],
+            onChanged: (value) => context
+                .read<OrganizationSettingsCubit>()
+                .updateDetailGroup(detailType: value),
+          ),
+          DropdownButtonFormField<String>(
+            value: draft.parentGroup.isEmpty ? '' : draft.parentGroup,
+            decoration: const InputDecoration(labelText: 'گروه والد'),
+            items: [
+              const DropdownMenuItem(value: '', child: Text('بدون گروه والد')),
+              for (final group in snapshot.groups.where(
+                (value) =>
+                    value.name != draft.name &&
+                    value.detailType == draft.detailType,
+              ))
+                DropdownMenuItem(value: group.name, child: Text(group.title)),
+            ],
+            onChanged: (value) => context
+                .read<OrganizationSettingsCubit>()
+                .updateDetailGroup(parentGroup: value ?? ''),
+          ),
+          SwitchListTile(
+            value: draft.enabled,
+            title: const Text('گروه فعال باشد'),
+            onChanged: (value) => context
+                .read<OrganizationSettingsCubit>()
+                .updateDetailGroup(enabled: value),
+          ),
+        ],
+      );
+}
+
+class _FloatingDetailDrawer extends StatelessWidget {
+  const _FloatingDetailDrawer({
+    required this.draft,
+    required this.snapshot,
+    required this.saving,
+  });
+  final FloatingDetailDraft draft;
+  final FloatingDetailManagementSnapshot snapshot;
+  final bool saving;
+
+  @override
+  Widget build(BuildContext context) => _SettingsDrawer(
+        title:
+            draft.name.isEmpty ? 'ایجاد تفصیلی شناور' : 'ویرایش تفصیلی شناور',
+        onClose: context.read<OrganizationSettingsCubit>().cancelFloatingDetail,
+        onSave: saving
+            ? null
+            : context.read<OrganizationSettingsCubit>().saveFloatingDetail,
+        saving: saving,
+        children: [
+          TextFormField(
+            key: ValueKey('detail-title-${draft.name}'),
+            initialValue: draft.title,
+            decoration: const InputDecoration(labelText: 'عنوان تفصیلی *'),
+            onChanged: (value) => context
+                .read<OrganizationSettingsCubit>()
+                .updateFloatingDetail(title: value),
+          ),
+          DropdownButtonFormField<String>(
+            value: draft.group.isEmpty ? null : draft.group,
+            decoration: const InputDecoration(labelText: 'گروه تفصیلی *'),
+            items: [
+              for (final group
+                  in snapshot.groups.where((value) => value.enabled))
+                DropdownMenuItem(
+                  value: group.name,
+                  child: Text(
+                      '${group.title} — ${_detailTypeLabel(group.detailType)}'),
+                ),
+            ],
+            onChanged: (value) => context
+                .read<OrganizationSettingsCubit>()
+                .updateFloatingDetail(group: value ?? ''),
+          ),
+          TextFormField(
+            key: ValueKey('detail-code-${draft.name}'),
+            initialValue: draft.code,
+            decoration:
+                const InputDecoration(labelText: 'کد تفصیلی در شرکت فعال *'),
+            onChanged: (value) => context
+                .read<OrganizationSettingsCubit>()
+                .updateFloatingDetail(code: value),
+          ),
+          TextFormField(
+            key: ValueKey('reference-type-${draft.name}'),
+            initialValue: draft.referenceDoctype,
+            decoration: const InputDecoration(
+              labelText: 'نوع مرجع (اختیاری)',
+              hintText: 'Customer / Supplier / Employee',
+            ),
+            onChanged: (value) => context
+                .read<OrganizationSettingsCubit>()
+                .updateFloatingDetail(referenceDoctype: value),
+          ),
+          TextFormField(
+            key: ValueKey('reference-name-${draft.name}'),
+            initialValue: draft.referenceName,
+            decoration:
+                const InputDecoration(labelText: 'رکورد مرجع (اختیاری)'),
+            onChanged: (value) => context
+                .read<OrganizationSettingsCubit>()
+                .updateFloatingDetail(referenceName: value),
+          ),
+          SwitchListTile(
+            value: draft.enabled,
+            title: const Text('فعال در سطح هلدینگ'),
+            onChanged: (value) => context
+                .read<OrganizationSettingsCubit>()
+                .updateFloatingDetail(enabled: value),
+          ),
+          SwitchListTile(
+            value: draft.companyEnabled,
+            title: const Text('فعال در شرکت انتخاب‌شده'),
+            onChanged: (value) => context
+                .read<OrganizationSettingsCubit>()
+                .updateFloatingDetail(companyEnabled: value),
+          ),
+        ],
+      );
+}
+
+class _SettingsDrawer extends StatelessWidget {
+  const _SettingsDrawer({
+    required this.title,
+    required this.onClose,
+    required this.onSave,
+    required this.saving,
+    required this.children,
+  });
+  final String title;
+  final VoidCallback onClose;
+  final VoidCallback? onSave;
+  final bool saving;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => Positioned.fill(
+        child: ColoredBox(
+          color: Colors.black38,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Material(
+              elevation: 16,
+              child: SizedBox(
+                width: 560,
+                height: double.infinity,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              title,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(fontWeight: FontWeight.w900),
+                            ),
+                          ),
+                          IconButton(
+                              onPressed: onClose,
+                              icon: const Icon(Icons.close)),
+                        ],
+                      ),
+                    ),
+                    const Divider(height: 1),
+                    Expanded(
+                      child: ListView.separated(
+                        padding: const EdgeInsets.all(20),
+                        itemBuilder: (_, index) => children[index],
+                        separatorBuilder: (_, __) => const SizedBox(height: 16),
+                        itemCount: children.length,
+                      ),
+                    ),
+                    const Divider(height: 1),
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Row(
+                        children: [
+                          OutlinedButton(
+                              onPressed: onClose, child: const Text('انصراف')),
+                          const Spacer(),
+                          FilledButton.icon(
+                            onPressed: onSave,
+                            icon: saving
+                                ? const SizedBox.square(
+                                    dimension: 18,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2),
+                                  )
+                                : const Icon(Icons.save_outlined),
+                            label: const Text('ذخیره'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
 }
 
 class _Wizard extends StatelessWidget {

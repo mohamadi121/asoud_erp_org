@@ -18,8 +18,8 @@ void main() {
         baseUrl: 'https://erp.example.test',
         client: MockClient((request) async {
           captured = request;
-          return http.Response(
-            jsonEncode({
+          return http.Response.bytes(
+            utf8.encode(jsonEncode({
               'message': {
                 'company': 'ASOUD',
                 'detail_types': ['Customer'],
@@ -53,7 +53,7 @@ void main() {
                   }
                 ],
               }
-            }),
+            })),
             200,
             headers: {'content-type': 'application/json; charset=utf-8'},
           );
@@ -82,16 +82,17 @@ void main() {
         baseUrl: 'https://erp.example.test',
         client: MockClient((request) async {
           captured = request;
-          return http.Response(
-            jsonEncode({
+          return http.Response.bytes(
+            utf8.encode(jsonEncode({
               'message': {
                 'company': 'ASOUD',
                 'detail_types': ['Employee'],
                 'accounts': [],
                 'rules': [],
               }
-            }),
+            })),
             200,
+            headers: {'content-type': 'application/json; charset=utf-8'},
           );
         }),
       ),
@@ -125,5 +126,59 @@ void main() {
     expect(payload['account_number'], '111003');
     expect((payload['rules'] as List).single['detail_type'], 'Employee');
     expect((payload['rules'] as List).single['required'], isTrue);
+  });
+
+  test('loads and saves floating detail management data', () async {
+    final requests = <http.Request>[];
+    final gateway = FrappeOrganizationGateway(
+      AsoudApiClient(
+        baseUrl: 'https://erp.example.test',
+        client: MockClient((request) async {
+          requests.add(request);
+          return http.Response.bytes(
+            utf8.encode(jsonEncode({
+              'message': {
+                'company': 'ASOUD',
+                'holding': 'ASOUD Holding',
+                'detail_types': ['Customer'],
+                'groups': [
+                  {
+                    'name': 'CUSTOMERS',
+                    'group_title': 'مشتریان',
+                    'group_code': 'CUS',
+                    'detail_type': 'Customer',
+                    'enabled': 1,
+                  }
+                ],
+                'details': [],
+              }
+            })),
+            200,
+            headers: {'content-type': 'application/json; charset=utf-8'},
+          );
+        }),
+      ),
+    );
+
+    final snapshot = await gateway.loadFloatingDetails(workContext);
+    await gateway.saveFloatingDetailGroup(
+      workContext,
+      const FloatingDetailGroupDraft(
+        title: 'مشتریان',
+        code: 'CUS',
+        detailType: 'Customer',
+      ),
+    );
+
+    expect(snapshot.groups.single.code, 'CUS');
+    expect(
+      requests.first.url.path,
+      '/api/method/asoud_iran.api.floating_detail_management_snapshot',
+    );
+    expect(
+      requests.last.url.path,
+      '/api/method/asoud_iran.api.save_floating_detail_group',
+    );
+    expect(requests.last.bodyFields['idempotency_key'], isNotEmpty);
   });
 }

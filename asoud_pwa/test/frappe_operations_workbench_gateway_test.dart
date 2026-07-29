@@ -128,4 +128,39 @@ void main() {
     expect(captured.url.queryParameters['fieldname'], 'customer');
     expect(captured.url.queryParameters['search'], 'CUST');
   });
+
+  test('loads only eligible floating details for the row account', () async {
+    late http.Request captured;
+    final gateway = FrappeOperationsGateway(
+      AsoudApiClient(
+        baseUrl: 'https://erp.example.test',
+        client: MockClient((request) async {
+          captured = request;
+          return http.Response.bytes(
+            utf8.encode(jsonEncode({
+              'message': [
+                {'name': 'FD-1', 'detail_title': 'مشتری نمونه'}
+              ]
+            })),
+            200,
+            headers: {'content-type': 'application/json; charset=utf-8'},
+          );
+        }),
+      ),
+    );
+
+    final options = await gateway.eligibleFloatingDetails(
+      context: const WorkContext(company: 'ASOUD'),
+      account: 'Receivable - ASOUD',
+      search: 'نمونه',
+    );
+
+    expect(options, ['FD-1']);
+    expect(
+      captured.url.path,
+      '/api/method/asoud_iran.api.eligible_floating_details',
+    );
+    expect(captured.url.queryParameters['company'], 'ASOUD');
+    expect(captured.url.queryParameters['account'], 'Receivable - ASOUD');
+  });
 }

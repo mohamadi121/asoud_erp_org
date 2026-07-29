@@ -24,6 +24,7 @@ doc_events = {
 permission_query_conditions = {
     "ASOUD Account Detail Rule": "asoud_iran.permissions.account_detail_rule_query",
     "ASOUD Floating Detail": "asoud_iran.permissions.floating_detail_query",
+    "ASOUD Floating Detail Group": "asoud_iran.permissions.floating_detail_group_query",
     "ASOUD Opening Balance Import": "asoud_iran.permissions.opening_import_query",
     "ASOUD Tax Settings": "asoud_iran.permissions.tax_settings_query",
     "ASOUD Tax Submission": "asoud_iran.permissions.tax_submission_query",
@@ -33,6 +34,7 @@ permission_query_conditions = {
 has_permission = {
     "ASOUD Account Detail Rule": "asoud_iran.permissions.account_detail_rule_permission",
     "ASOUD Floating Detail": "asoud_iran.permissions.floating_detail_permission",
+    "ASOUD Floating Detail Group": "asoud_iran.permissions.floating_detail_group_permission",
     "ASOUD Opening Balance Import": "asoud_iran.permissions.opening_import_permission",
     "ASOUD Tax Settings": "asoud_iran.permissions.tax_document_permission",
     "ASOUD Tax Submission": "asoud_iran.permissions.tax_document_permission",

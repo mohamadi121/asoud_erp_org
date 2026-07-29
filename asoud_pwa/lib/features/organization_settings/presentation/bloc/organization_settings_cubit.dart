@@ -8,7 +8,7 @@ enum OrganizationPhase { initial, loading, ready, saving, failure }
 
 enum SettingsView { dashboard, structure, financial }
 
-enum FinancialSection { general, chartOfAccounts, dimensions }
+enum FinancialSection { general, chartOfAccounts, floatingDetails, dimensions }
 
 class OrganizationSettingsState extends Equatable {
   const OrganizationSettingsState({
@@ -19,6 +19,9 @@ class OrganizationSettingsState extends Equatable {
     this.financialDraft,
     this.accountRules,
     this.accountDraft,
+    this.detailManagement,
+    this.detailGroupDraft,
+    this.floatingDetailDraft,
     this.financialSection = FinancialSection.general,
     this.draft,
     this.error,
@@ -31,6 +34,9 @@ class OrganizationSettingsState extends Equatable {
   final FinancialSettingsDraft? financialDraft;
   final AccountRulesSnapshot? accountRules;
   final ChartAccountDraft? accountDraft;
+  final FloatingDetailManagementSnapshot? detailManagement;
+  final FloatingDetailGroupDraft? detailGroupDraft;
+  final FloatingDetailDraft? floatingDetailDraft;
   final FinancialSection financialSection;
   final OrganizationDraft? draft;
   final String? error;
@@ -43,11 +49,16 @@ class OrganizationSettingsState extends Equatable {
     FinancialSettingsDraft? financialDraft,
     AccountRulesSnapshot? accountRules,
     ChartAccountDraft? accountDraft,
+    FloatingDetailManagementSnapshot? detailManagement,
+    FloatingDetailGroupDraft? detailGroupDraft,
+    FloatingDetailDraft? floatingDetailDraft,
     FinancialSection? financialSection,
     OrganizationDraft? draft,
     String? error,
     bool clearDraft = false,
     bool clearAccountDraft = false,
+    bool clearDetailGroupDraft = false,
+    bool clearFloatingDetailDraft = false,
     bool clearError = false,
   }) =>
       OrganizationSettingsState(
@@ -59,6 +70,13 @@ class OrganizationSettingsState extends Equatable {
         accountRules: accountRules ?? this.accountRules,
         accountDraft:
             clearAccountDraft ? null : accountDraft ?? this.accountDraft,
+        detailManagement: detailManagement ?? this.detailManagement,
+        detailGroupDraft: clearDetailGroupDraft
+            ? null
+            : detailGroupDraft ?? this.detailGroupDraft,
+        floatingDetailDraft: clearFloatingDetailDraft
+            ? null
+            : floatingDetailDraft ?? this.floatingDetailDraft,
         financialSection: financialSection ?? this.financialSection,
         draft: clearDraft ? null : draft ?? this.draft,
         error: clearError ? null : error ?? this.error,
@@ -73,6 +91,9 @@ class OrganizationSettingsState extends Equatable {
         financialDraft,
         accountRules,
         accountDraft,
+        detailManagement,
+        detailGroupDraft,
+        floatingDetailDraft,
         financialSection,
         draft,
         error,
@@ -99,12 +120,16 @@ class OrganizationSettingsCubit extends Cubit<OrganizationSettingsState> {
       final accountRules = state.view == SettingsView.financial
           ? await _gateway.loadAccountRules(_context)
           : state.accountRules;
+      final detailManagement = state.view == SettingsView.financial
+          ? await _gateway.loadFloatingDetails(_context)
+          : state.detailManagement;
       emit(state.copyWith(
         phase: OrganizationPhase.ready,
         snapshot: snapshot,
         financial: financial,
         financialDraft: financial?.toDraft(),
         accountRules: accountRules,
+        detailManagement: detailManagement,
       ));
     } on Object catch (error) {
       emit(state.copyWith(
@@ -121,11 +146,13 @@ class OrganizationSettingsCubit extends Cubit<OrganizationSettingsState> {
     try {
       final financial = await _gateway.loadFinancial(_context);
       final accountRules = await _gateway.loadAccountRules(_context);
+      final detailManagement = await _gateway.loadFloatingDetails(_context);
       emit(state.copyWith(
         phase: OrganizationPhase.ready,
         financial: financial,
         financialDraft: financial.toDraft(),
         accountRules: accountRules,
+        detailManagement: detailManagement,
       ));
     } on Object catch (error) {
       emit(state.copyWith(
@@ -137,21 +164,154 @@ class OrganizationSettingsCubit extends Cubit<OrganizationSettingsState> {
 
   Future<void> showFinancialSection(FinancialSection section) async {
     emit(state.copyWith(financialSection: section, clearError: true));
-    if (section == FinancialSection.general || state.accountRules != null) {
+    if (section == FinancialSection.general ||
+        (section == FinancialSection.floatingDetails &&
+            state.detailManagement != null) ||
+        (section != FinancialSection.floatingDetails &&
+            state.accountRules != null)) {
       return;
     }
     emit(state.copyWith(phase: OrganizationPhase.loading));
     try {
-      final snapshot = await _gateway.loadAccountRules(_context);
-      emit(state.copyWith(
-        phase: OrganizationPhase.ready,
-        accountRules: snapshot,
-      ));
+      if (section == FinancialSection.floatingDetails) {
+        final snapshot = await _gateway.loadFloatingDetails(_context);
+        emit(state.copyWith(
+          phase: OrganizationPhase.ready,
+          detailManagement: snapshot,
+        ));
+      } else {
+        final snapshot = await _gateway.loadAccountRules(_context);
+        emit(state.copyWith(
+          phase: OrganizationPhase.ready,
+          accountRules: snapshot,
+        ));
+      }
     } on Object catch (error) {
       emit(state.copyWith(
         phase: OrganizationPhase.failure,
         error: error.toString(),
       ));
+    }
+  }
+
+  void startDetailGroup([FloatingDetailGroup? group]) => emit(state.copyWith(
+        detailGroupDraft: group == null
+            ? const FloatingDetailGroupDraft()
+            : FloatingDetailGroupDraft.fromGroup(group),
+        clearError: true,
+      ));
+
+  void updateDetailGroup({
+    String? title,
+    String? code,
+    String? detailType,
+    String? parentGroup,
+    bool? enabled,
+  }) {
+    final draft = state.detailGroupDraft;
+    if (draft == null) return;
+    emit(state.copyWith(
+      detailGroupDraft: draft.copyWith(
+        title: title,
+        code: code,
+        detailType: detailType,
+        parentGroup: parentGroup,
+        enabled: enabled,
+      ),
+      clearError: true,
+    ));
+  }
+
+  void cancelDetailGroup() =>
+      emit(state.copyWith(clearDetailGroupDraft: true, clearError: true));
+
+  Future<bool> saveDetailGroup() async {
+    final draft = state.detailGroupDraft;
+    if (draft == null) return false;
+    if (draft.title.trim().isEmpty || draft.code.trim().isEmpty) {
+      emit(state.copyWith(error: 'عنوان و کد گروه تفصیلی الزامی است.'));
+      return false;
+    }
+    emit(state.copyWith(phase: OrganizationPhase.saving, clearError: true));
+    try {
+      final snapshot = await _gateway.saveFloatingDetailGroup(_context, draft);
+      emit(state.copyWith(
+        phase: OrganizationPhase.ready,
+        detailManagement: snapshot,
+        clearDetailGroupDraft: true,
+      ));
+      return true;
+    } on Object catch (error) {
+      emit(state.copyWith(
+        phase: OrganizationPhase.ready,
+        error: error.toString(),
+      ));
+      return false;
+    }
+  }
+
+  void startFloatingDetail([FloatingDetailRecord? detail]) =>
+      emit(state.copyWith(
+        floatingDetailDraft: detail == null
+            ? const FloatingDetailDraft()
+            : FloatingDetailDraft.fromDetail(detail),
+        clearError: true,
+      ));
+
+  void updateFloatingDetail({
+    String? title,
+    String? group,
+    String? code,
+    String? referenceDoctype,
+    String? referenceName,
+    bool? enabled,
+    bool? companyEnabled,
+  }) {
+    final draft = state.floatingDetailDraft;
+    if (draft == null) return;
+    emit(state.copyWith(
+      floatingDetailDraft: draft.copyWith(
+        title: title,
+        group: group,
+        code: code,
+        referenceDoctype: referenceDoctype,
+        referenceName: referenceName,
+        enabled: enabled,
+        companyEnabled: companyEnabled,
+      ),
+      clearError: true,
+    ));
+  }
+
+  void cancelFloatingDetail() =>
+      emit(state.copyWith(clearFloatingDetailDraft: true, clearError: true));
+
+  Future<bool> saveFloatingDetail() async {
+    final draft = state.floatingDetailDraft;
+    if (draft == null) return false;
+    if (draft.title.trim().isEmpty ||
+        draft.group.trim().isEmpty ||
+        draft.code.trim().isEmpty) {
+      emit(state.copyWith(error: 'عنوان، گروه و کد تفصیلی الزامی است.'));
+      return false;
+    }
+    emit(state.copyWith(phase: OrganizationPhase.saving, clearError: true));
+    try {
+      final snapshot = await _gateway.saveFloatingDetail(_context, draft);
+      final accountRules = await _gateway.loadAccountRules(_context);
+      emit(state.copyWith(
+        phase: OrganizationPhase.ready,
+        detailManagement: snapshot,
+        accountRules: accountRules,
+        clearFloatingDetailDraft: true,
+      ));
+      return true;
+    } on Object catch (error) {
+      emit(state.copyWith(
+        phase: OrganizationPhase.ready,
+        error: error.toString(),
+      ));
+      return false;
     }
   }
 

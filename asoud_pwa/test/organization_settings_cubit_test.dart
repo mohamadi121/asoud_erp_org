@@ -186,4 +186,28 @@ class _FakeGateway implements OrganizationGateway {
     savedAccounts.add(draft);
     return loadAccountRules(context);
   }
+
+  @override
+  Future<FloatingDetailManagementSnapshot> loadFloatingDetails(
+    WorkContext context,
+  ) async =>
+      FloatingDetailManagementSnapshot(
+        company: context.company,
+        holding: 'ASOUD Holding',
+        detailTypes: const ['Customer', 'Supplier', 'Employee'],
+      );
+
+  @override
+  Future<FloatingDetailManagementSnapshot> saveFloatingDetailGroup(
+    WorkContext context,
+    FloatingDetailGroupDraft draft,
+  ) =>
+      loadFloatingDetails(context);
+
+  @override
+  Future<FloatingDetailManagementSnapshot> saveFloatingDetail(
+    WorkContext context,
+    FloatingDetailDraft draft,
+  ) =>
+      loadFloatingDetails(context);
 }

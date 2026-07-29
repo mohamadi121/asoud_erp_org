@@ -94,6 +94,14 @@ class FakeAccountingGateway implements IranAccountingGateway {
 
 class FakeOperationsGateway implements OperationsGateway {
   @override
+  Future<List<String>> eligibleFloatingDetails({
+    required WorkContext context,
+    required String account,
+    String search = '',
+  }) async =>
+      const [];
+
+  @override
   Future<List<String>> linkOptions({
     required String documentType,
     required String fieldname,

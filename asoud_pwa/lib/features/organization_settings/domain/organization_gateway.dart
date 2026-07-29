@@ -14,4 +14,15 @@ abstract interface class OrganizationGateway {
     WorkContext context,
     ChartAccountDraft draft,
   );
+  Future<FloatingDetailManagementSnapshot> loadFloatingDetails(
+    WorkContext context,
+  );
+  Future<FloatingDetailManagementSnapshot> saveFloatingDetailGroup(
+    WorkContext context,
+    FloatingDetailGroupDraft draft,
+  );
+  Future<FloatingDetailManagementSnapshot> saveFloatingDetail(
+    WorkContext context,
+    FloatingDetailDraft draft,
+  );
 }

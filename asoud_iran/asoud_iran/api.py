@@ -236,6 +236,53 @@ def eligible_floating_details(
 
 
 @_whitelist(methods=["GET"])
+def floating_detail_management_snapshot(company: str) -> dict:
+    from asoud_iran.services.floating_detail_management import snapshot
+
+    return snapshot(company)
+
+
+@_whitelist(methods=["POST"])
+def save_floating_detail_group(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+) -> dict:
+    import json
+
+    from asoud_core.services.idempotency import execute_once
+    from asoud_iran.services.floating_detail_management import save_group
+
+    parsed = json.loads(payload)
+    return execute_once(
+        idempotency_key,
+        "floating_detail_group.save",
+        {"company": company, **parsed},
+        lambda: save_group(company, parsed),
+    )
+
+
+@_whitelist(methods=["POST"])
+def save_floating_detail(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+) -> dict:
+    import json
+
+    from asoud_core.services.idempotency import execute_once
+    from asoud_iran.services.floating_detail_management import save_detail
+
+    parsed = json.loads(payload)
+    return execute_once(
+        idempotency_key,
+        "floating_detail.save",
+        {"company": company, **parsed},
+        lambda: save_detail(company, parsed),
+    )
+
+
+@_whitelist(methods=["GET"])
 def convert_amount(value: str, input_unit: str, output_unit: str = "IRR") -> dict[str, str]:
     import frappe
 

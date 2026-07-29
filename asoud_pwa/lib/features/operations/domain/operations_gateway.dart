@@ -14,6 +14,12 @@ abstract interface class OperationsGateway {
     bool child = false,
   });
 
+  Future<List<String>> eligibleFloatingDetails({
+    required WorkContext context,
+    required String account,
+    String search = '',
+  });
+
   Future<String> createDraft({
     required WorkContext context,
     required String documentType,

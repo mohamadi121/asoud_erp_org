@@ -475,3 +475,258 @@ class ChartAccountDraft extends Equatable {
         rules,
       ];
 }
+
+class FloatingDetailGroup extends Equatable {
+  const FloatingDetailGroup({
+    required this.name,
+    required this.title,
+    required this.code,
+    required this.detailType,
+    this.parentGroup = '',
+    this.enabled = true,
+  });
+
+  factory FloatingDetailGroup.fromJson(Map<String, dynamic> json) =>
+      FloatingDetailGroup(
+        name: json['name']?.toString() ?? '',
+        title: json['group_title']?.toString() ?? '',
+        code: json['group_code']?.toString() ?? '',
+        detailType: json['detail_type']?.toString() ?? '',
+        parentGroup: json['parent_group']?.toString() ?? '',
+        enabled: json['enabled'] == 1 || json['enabled'] == true,
+      );
+
+  final String name;
+  final String title;
+  final String code;
+  final String detailType;
+  final String parentGroup;
+  final bool enabled;
+
+  @override
+  List<Object?> get props =>
+      [name, title, code, detailType, parentGroup, enabled];
+}
+
+class FloatingDetailRecord extends Equatable {
+  const FloatingDetailRecord({
+    required this.name,
+    required this.title,
+    required this.detailType,
+    required this.group,
+    required this.code,
+    this.referenceDoctype = '',
+    this.referenceName = '',
+    this.enabled = true,
+    this.companyEnabled = true,
+  });
+
+  factory FloatingDetailRecord.fromJson(Map<String, dynamic> json) =>
+      FloatingDetailRecord(
+        name: json['name']?.toString() ?? '',
+        title: json['detail_title']?.toString() ?? '',
+        detailType: json['detail_type']?.toString() ?? '',
+        group: json['detail_group']?.toString() ?? '',
+        code: json['detail_code']?.toString() ?? '',
+        referenceDoctype: json['reference_doctype']?.toString() ?? '',
+        referenceName: json['reference_name']?.toString() ?? '',
+        enabled: json['enabled'] == 1 || json['enabled'] == true,
+        companyEnabled:
+            json['company_enabled'] == 1 || json['company_enabled'] == true,
+      );
+
+  final String name;
+  final String title;
+  final String detailType;
+  final String group;
+  final String code;
+  final String referenceDoctype;
+  final String referenceName;
+  final bool enabled;
+  final bool companyEnabled;
+
+  @override
+  List<Object?> get props => [
+        name,
+        title,
+        detailType,
+        group,
+        code,
+        referenceDoctype,
+        referenceName,
+        enabled,
+        companyEnabled,
+      ];
+}
+
+class FloatingDetailManagementSnapshot extends Equatable {
+  const FloatingDetailManagementSnapshot({
+    required this.company,
+    required this.holding,
+    this.detailTypes = const [],
+    this.groups = const [],
+    this.details = const [],
+  });
+
+  factory FloatingDetailManagementSnapshot.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      FloatingDetailManagementSnapshot(
+        company: json['company']?.toString() ?? '',
+        holding: json['holding']?.toString() ?? '',
+        detailTypes: (json['detail_types'] as List<dynamic>? ?? const [])
+            .map((value) => value.toString())
+            .toList(growable: false),
+        groups: (json['groups'] as List<dynamic>? ?? const [])
+            .whereType<Map<String, dynamic>>()
+            .map(FloatingDetailGroup.fromJson)
+            .toList(growable: false),
+        details: (json['details'] as List<dynamic>? ?? const [])
+            .whereType<Map<String, dynamic>>()
+            .map(FloatingDetailRecord.fromJson)
+            .toList(growable: false),
+      );
+
+  final String company;
+  final String holding;
+  final List<String> detailTypes;
+  final List<FloatingDetailGroup> groups;
+  final List<FloatingDetailRecord> details;
+
+  @override
+  List<Object?> get props => [company, holding, detailTypes, groups, details];
+}
+
+class FloatingDetailGroupDraft extends Equatable {
+  const FloatingDetailGroupDraft({
+    this.name = '',
+    this.title = '',
+    this.code = '',
+    this.detailType = 'Customer',
+    this.parentGroup = '',
+    this.enabled = true,
+  });
+
+  factory FloatingDetailGroupDraft.fromGroup(FloatingDetailGroup value) =>
+      FloatingDetailGroupDraft(
+        name: value.name,
+        title: value.title,
+        code: value.code,
+        detailType: value.detailType,
+        parentGroup: value.parentGroup,
+        enabled: value.enabled,
+      );
+
+  final String name;
+  final String title;
+  final String code;
+  final String detailType;
+  final String parentGroup;
+  final bool enabled;
+
+  FloatingDetailGroupDraft copyWith({
+    String? title,
+    String? code,
+    String? detailType,
+    String? parentGroup,
+    bool? enabled,
+  }) =>
+      FloatingDetailGroupDraft(
+        name: name,
+        title: title ?? this.title,
+        code: code ?? this.code,
+        detailType: detailType ?? this.detailType,
+        parentGroup: parentGroup ?? this.parentGroup,
+        enabled: enabled ?? this.enabled,
+      );
+
+  Map<String, dynamic> toJson() => {
+        if (name.isNotEmpty) 'name': name,
+        'group_title': title,
+        'group_code': code,
+        'detail_type': detailType,
+        'parent_group': parentGroup.isEmpty ? null : parentGroup,
+        'enabled': enabled,
+      };
+
+  @override
+  List<Object?> get props =>
+      [name, title, code, detailType, parentGroup, enabled];
+}
+
+class FloatingDetailDraft extends Equatable {
+  const FloatingDetailDraft({
+    this.name = '',
+    this.title = '',
+    this.group = '',
+    this.code = '',
+    this.referenceDoctype = '',
+    this.referenceName = '',
+    this.enabled = true,
+    this.companyEnabled = true,
+  });
+
+  factory FloatingDetailDraft.fromDetail(FloatingDetailRecord value) =>
+      FloatingDetailDraft(
+        name: value.name,
+        title: value.title,
+        group: value.group,
+        code: value.code,
+        referenceDoctype: value.referenceDoctype,
+        referenceName: value.referenceName,
+        enabled: value.enabled,
+        companyEnabled: value.companyEnabled,
+      );
+
+  final String name;
+  final String title;
+  final String group;
+  final String code;
+  final String referenceDoctype;
+  final String referenceName;
+  final bool enabled;
+  final bool companyEnabled;
+
+  FloatingDetailDraft copyWith({
+    String? title,
+    String? group,
+    String? code,
+    String? referenceDoctype,
+    String? referenceName,
+    bool? enabled,
+    bool? companyEnabled,
+  }) =>
+      FloatingDetailDraft(
+        name: name,
+        title: title ?? this.title,
+        group: group ?? this.group,
+        code: code ?? this.code,
+        referenceDoctype: referenceDoctype ?? this.referenceDoctype,
+        referenceName: referenceName ?? this.referenceName,
+        enabled: enabled ?? this.enabled,
+        companyEnabled: companyEnabled ?? this.companyEnabled,
+      );
+
+  Map<String, dynamic> toJson() => {
+        if (name.isNotEmpty) 'name': name,
+        'detail_title': title,
+        'detail_group': group,
+        'detail_code': code,
+        'reference_doctype': referenceDoctype.isEmpty ? null : referenceDoctype,
+        'reference_name': referenceName.isEmpty ? null : referenceName,
+        'enabled': enabled,
+        'company_enabled': companyEnabled,
+      };
+
+  @override
+  List<Object?> get props => [
+        name,
+        title,
+        group,
+        code,
+        referenceDoctype,
+        referenceName,
+        enabled,
+        companyEnabled,
+      ];
+}

@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900">
+  <defs>
+    <filter id="s"><feDropShadow dx="0" dy="4" stdDeviation="10" flood-opacity=".08"/></filter>
+    <style>
+      .t{font-family:Tahoma,Arial,sans-serif}.muted{fill:#64748b}.label{font-size:14px}.title{font-size:22px;font-weight:700}.h{font-size:18px;font-weight:700}
+    </style>
+  </defs>
+  <rect width="1440" height="900" fill="#f5f7fb"/>
+  <rect width="1440" height="62" fill="#fff"/>
+  <text x="1388" y="39" text-anchor="end" class="t title" fill="#15213a">آسود ERP</text>
+  <text x="1225" y="38" text-anchor="end" class="t label muted">خانه</text>
+  <text x="1145" y="38" text-anchor="end" class="t label" fill="#2563eb">تنظیمات</text>
+  <rect y="62" width="1440" height="76" fill="#fff"/>
+  <text x="1388" y="94" text-anchor="end" class="t label" fill="#2563eb">تنظیمات مالی</text>
+  <text x="1275" y="94" text-anchor="end" class="t label muted">ساختار سازمانی</text>
+  <text x="1388" y="124" text-anchor="end" class="t label muted">عمومی</text>
+  <text x="1290" y="124" text-anchor="end" class="t label muted">نمودار حساب‌ها</text>
+  <text x="1138" y="124" text-anchor="end" class="t label" fill="#2563eb">تفصیلی‌های شناور</text>
+  <rect x="1010" y="133" width="145" height="3" rx="2" fill="#2563eb"/>
+  <g class="t">
+    <text x="1380" y="185" text-anchor="end" class="title" fill="#172033">مدیریت تفصیلی‌های شناور</text>
+    <text x="1380" y="211" text-anchor="end" class="label muted">گروه‌ها در سطح هلدینگ و کد استفاده در سطح شرکت فعال نگهداری می‌شود.</text>
+  </g>
+  <g filter="url(#s)">
+    <rect x="735" y="245" width="645" height="570" rx="14" fill="#fff"/>
+    <rect x="60" y="245" width="645" height="570" rx="14" fill="#fff"/>
+  </g>
+  <text x="1348" y="290" text-anchor="end" class="t h" fill="#172033">گروه‌های تفصیلی</text>
+  <rect x="765" y="263" width="120" height="42" rx="9" fill="#2563eb"/>
+  <text x="825" y="289" text-anchor="middle" class="t label" fill="#fff">+ گروه جدید</text>
+  <text x="673" y="290" text-anchor="end" class="t h" fill="#172033">تفصیلی‌های شرکت فعال</text>
+  <rect x="90" y="263" width="130" height="42" rx="9" fill="#2563eb"/>
+  <text x="155" y="289" text-anchor="middle" class="t label" fill="#fff">+ تفصیلی جدید</text>
+  <g class="t">
+    <g transform="translate(760 330)">
+      <rect width="590" height="82" rx="10" fill="#f8fafc" stroke="#e5eaf2"/>
+      <circle cx="555" cy="41" r="22" fill="#e8f0ff"/><text x="555" y="47" text-anchor="middle" fill="#2563eb">گ</text>
+      <text x="515" y="33" text-anchor="end" class="label" font-weight="700">مشتریان</text>
+      <text x="515" y="57" text-anchor="end" class="label muted">CUS • مشتری</text>
+      <circle cx="28" cy="41" r="7" fill="#22c55e"/>
+    </g>
+    <g transform="translate(760 425)">
+      <rect width="590" height="82" rx="10" fill="#f8fafc" stroke="#e5eaf2"/>
+      <circle cx="555" cy="41" r="22" fill="#f3e8ff"/><text x="555" y="47" text-anchor="middle" fill="#9333ea">گ</text>
+      <text x="515" y="33" text-anchor="end" class="label" font-weight="700">تأمین‌کنندگان</text>
+      <text x="515" y="57" text-anchor="end" class="label muted">SUP • تأمین‌کننده</text>
+      <circle cx="28" cy="41" r="7" fill="#22c55e"/>
+    </g>
+    <g transform="translate(85 330)">
+      <rect width="590" height="82" rx="10" fill="#f8fafc" stroke="#e5eaf2"/>
+      <circle cx="555" cy="41" r="22" fill="#dcfce7"/><text x="555" y="47" text-anchor="middle" fill="#16a34a">ت</text>
+      <text x="515" y="33" text-anchor="end" class="label" font-weight="700">شرکت نمونه پارس</text>
+      <text x="515" y="57" text-anchor="end" class="label muted">10021 • مشتری</text>
+      <circle cx="28" cy="41" r="7" fill="#22c55e"/>
+    </g>
+    <g transform="translate(85 425)">
+      <rect width="590" height="82" rx="10" fill="#f8fafc" stroke="#e5eaf2"/>
+      <circle cx="555" cy="41" r="22" fill="#fef3c7"/><text x="555" y="47" text-anchor="middle" fill="#d97706">ت</text>
+      <text x="515" y="33" text-anchor="end" class="label" font-weight="700">فروشگاه مرکزی</text>
+      <text x="515" y="57" text-anchor="end" class="label muted">10022 • مشتری</text>
+      <circle cx="28" cy="41" r="7" fill="#22c55e"/>
+    </g>
+  </g>
+  <rect x="0" y="862" width="1440" height="38" fill="#fff"/>
+  <text x="1380" y="887" text-anchor="end" class="t label muted">شرکت فعال: آسود نمونه  •  شعبه: دفتر مرکزی</text>
+</svg>

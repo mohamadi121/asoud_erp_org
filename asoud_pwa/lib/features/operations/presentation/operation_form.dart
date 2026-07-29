@@ -1,23 +1,34 @@
 import 'package:asoud_pwa/features/operations/domain/operational_workbench.dart';
 import 'package:asoud_pwa/features/operations/domain/operations_gateway.dart';
+import 'package:asoud_pwa/features/session/domain/work_context.dart';
 import 'package:flutter/material.dart';
 
 Future<Map<String, dynamic>?> showOperationForm(
   BuildContext context, {
   required OperationContract contract,
   required OperationsGateway gateway,
+  required WorkContext workContext,
 }) =>
     showDialog<Map<String, dynamic>>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => _OperationForm(contract: contract, gateway: gateway),
+      builder: (_) => _OperationForm(
+        contract: contract,
+        gateway: gateway,
+        workContext: workContext,
+      ),
     );
 
 class _OperationForm extends StatefulWidget {
-  const _OperationForm({required this.contract, required this.gateway});
+  const _OperationForm({
+    required this.contract,
+    required this.gateway,
+    required this.workContext,
+  });
 
   final OperationContract contract;
   final OperationsGateway gateway;
+  final WorkContext workContext;
 
   @override
   State<_OperationForm> createState() => _OperationFormState();
@@ -123,6 +134,8 @@ class _OperationFormState extends State<_OperationForm> {
                           controller: controllers[spec.fieldname]!,
                           contract: widget.contract,
                           gateway: widget.gateway,
+                          workContext: widget.workContext,
+                          dependentControllers: controllers,
                         ),
                       ),
                   if (widget.contract.childTable != null) ...[
@@ -186,6 +199,8 @@ class _OperationFormState extends State<_OperationForm> {
                                     controller: rows[index][spec.fieldname]!,
                                     contract: widget.contract,
                                     gateway: widget.gateway,
+                                    workContext: widget.workContext,
+                                    dependentControllers: rows[index],
                                     child: true,
                                   ),
                                 ),
@@ -219,6 +234,8 @@ class _Field extends StatefulWidget {
     required this.controller,
     required this.contract,
     required this.gateway,
+    required this.workContext,
+    required this.dependentControllers,
     this.child = false,
   });
 
@@ -226,6 +243,8 @@ class _Field extends StatefulWidget {
   final TextEditingController controller;
   final OperationContract contract;
   final OperationsGateway gateway;
+  final WorkContext workContext;
+  final Map<String, TextEditingController> dependentControllers;
   final bool child;
 
   @override
@@ -261,16 +280,32 @@ class _FieldState extends State<_Field> {
   }
 
   Future<void> _pickLink() async {
+    final isFloatingDetail = widget.contract.documentType == 'Journal Entry' &&
+        widget.child &&
+        widget.spec.fieldname == 'asoud_floating_detail';
+    final account = widget.dependentControllers['account']?.text.trim() ?? '';
+    if (isFloatingDetail && account.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('ابتدا حساب این ردیف را انتخاب کنید.')),
+      );
+      return;
+    }
     final value = await showDialog<String>(
       context: context,
       builder: (context) => _LinkPicker(
         title: _label(widget.spec),
-        loader: (search) => widget.gateway.linkOptions(
-          documentType: widget.contract.documentType,
-          fieldname: widget.spec.fieldname,
-          search: search,
-          child: widget.child,
-        ),
+        loader: (search) => isFloatingDetail
+            ? widget.gateway.eligibleFloatingDetails(
+                context: widget.workContext,
+                account: account,
+                search: search,
+              )
+            : widget.gateway.linkOptions(
+                documentType: widget.contract.documentType,
+                fieldname: widget.spec.fieldname,
+                search: search,
+                child: widget.child,
+              ),
       ),
     );
     if (value != null) widget.controller.text = value;
@@ -429,6 +464,7 @@ class _LinkPickerState extends State<_LinkPicker> {
 }
 
 String _label(OperationFieldSpec spec) {
+  if (spec.fieldname == 'asoud_floating_detail') return 'تفصیلی شناور';
   if (spec.label.isNotEmpty && spec.label != spec.fieldname) return spec.label;
   return const {
         'customer': 'مشتری',

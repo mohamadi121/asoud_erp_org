@@ -8,6 +8,16 @@ class ASOUDFloatingDetail(Document):
     def validate(self) -> None:
         import frappe
 
+        group = frappe.db.get_value(
+            "ASOUD Floating Detail Group",
+            self.detail_group,
+            ["holding", "detail_type", "enabled"],
+            as_dict=True,
+        )
+        if not group or not group.enabled:
+            frappe.throw("Floating detail group is missing or disabled")
+        if group.holding != self.holding or group.detail_type != self.detail_type:
+            frappe.throw("Floating detail group must match holding and detail type")
         reference_by_type = {
             "Customer": "Customer",
             "Supplier": "Supplier",

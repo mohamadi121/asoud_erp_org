@@ -73,6 +73,45 @@ def account_detail_rule_query(user: str | None = None) -> str:
     return company_profile_query("ASOUD Account Detail Rule", user)
 
 
+def floating_detail_group_query(user: str | None = None) -> str:
+    import frappe
+
+    user = user or frappe.session.user
+    if _is_privileged(user):
+        return ""
+    escaped = frappe.db.escape(user)
+    return (
+        "exists (select 1 from `tabASOUD User Access` ua "
+        "join `tabCompany` company on company.`name`=ua.`company` "
+        f"where ua.`user`={escaped} and ua.`enabled`=1 "
+        "and company.`asoud_holding`=`tabASOUD Floating Detail Group`.`holding`)"
+    )
+
+
+def floating_detail_group_permission(
+    doc,
+    user: str | None = None,
+    permission_type: str | None = None,
+) -> bool | None:
+    import frappe
+
+    user = user or frappe.session.user
+    if _is_privileged(user):
+        return None
+    allowed = frappe.db.sql(
+        """
+        SELECT ua.name
+          FROM `tabASOUD User Access` ua
+          JOIN `tabCompany` company ON company.name=ua.company
+         WHERE ua.user=%s AND ua.enabled=1
+           AND company.asoud_holding=%s
+         LIMIT 1
+        """,
+        (user, doc.holding),
+    )
+    return None if allowed else False
+
+
 def account_detail_rule_permission(
     doc,
     user: str | None = None,

@@ -111,6 +111,27 @@ class FrappeOperationsGateway implements OperationsGateway {
   }
 
   @override
+  Future<List<String>> eligibleFloatingDetails({
+    required WorkContext context,
+    required String account,
+    String search = '',
+  }) async {
+    final response = await _client.getQuery(
+      '/api/method/asoud_iran.api.eligible_floating_details',
+      {'company': context.company, 'account': account, 'query': search},
+    );
+    final message = response['message'];
+    if (message is! List) {
+      throw const AsoudApiException('پاسخ تفصیلی‌های مجاز معتبر نیست.');
+    }
+    return message
+        .whereType<Map>()
+        .map((item) => item['name']?.toString() ?? '')
+        .where((item) => item.isNotEmpty)
+        .toList(growable: false);
+  }
+
+  @override
   Future<void> transition({
     required String documentType,
     required String name,

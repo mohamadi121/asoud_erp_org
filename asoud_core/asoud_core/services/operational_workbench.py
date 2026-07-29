@@ -73,6 +73,7 @@ CONTRACTS: dict[str, OperationContract] = {
             "credit_in_account_currency",
             "cost_center",
             "project",
+            "asoud_floating_detail",
         ),
         True,
     ),

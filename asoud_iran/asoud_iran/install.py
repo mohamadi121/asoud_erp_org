@@ -44,7 +44,7 @@ def sync_custom_fields() -> None:
                 },
                 {
                     "fieldname": "asoud_floating_detail",
-                    "label": "Floating Detail",
+                    "label": "تفصیلی شناور",
                     "fieldtype": "Link",
                     "options": "ASOUD Floating Detail",
                     "insert_after": "asoud_branch",
@@ -147,6 +147,11 @@ def after_install() -> None:
     from asoud_iran.services.iran_setup import ensure_default_template
 
     ensure_default_template()
+    from asoud_iran.services.floating_detail_management import (
+        ensure_groups_for_existing_details,
+    )
+
+    ensure_groups_for_existing_details()
 
 
 def after_migrate() -> None:
@@ -154,3 +159,8 @@ def after_migrate() -> None:
     from asoud_iran.services.iran_setup import ensure_default_template
 
     ensure_default_template()
+    from asoud_iran.services.floating_detail_management import (
+        ensure_groups_for_existing_details,
+    )
+
+    ensure_groups_for_existing_details()
