@@ -159,6 +159,35 @@ class _FakeGateway implements OrganizationGateway {
   }
 
   @override
+  Future<FinancialSettingsSnapshot> saveFiscalYear(
+    WorkContext context,
+    FiscalYearDraft draft,
+  ) =>
+      loadFinancial(context);
+
+  @override
+  Future<FinancialSettingsSnapshot> saveFiscalPeriod(
+    WorkContext context,
+    FiscalPeriodDraft draft,
+  ) =>
+      loadFinancial(context);
+
+  @override
+  Future<FinancialSettingsSnapshot> lockFinancialPeriod(
+    WorkContext context,
+    PeriodLockDraft draft,
+  ) =>
+      loadFinancial(context);
+
+  @override
+  Future<FinancialSettingsSnapshot> unlockFinancialPeriod(
+    WorkContext context,
+    String lockName,
+    String reason,
+  ) =>
+      loadFinancial(context);
+
+  @override
   Future<AccountRulesSnapshot> loadAccountRules(WorkContext context) async =>
       const AccountRulesSnapshot(
         company: 'ASOUD',

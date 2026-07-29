@@ -9,6 +9,23 @@ abstract interface class OrganizationGateway {
     WorkContext context,
     FinancialSettingsDraft draft,
   );
+  Future<FinancialSettingsSnapshot> saveFiscalYear(
+    WorkContext context,
+    FiscalYearDraft draft,
+  );
+  Future<FinancialSettingsSnapshot> saveFiscalPeriod(
+    WorkContext context,
+    FiscalPeriodDraft draft,
+  );
+  Future<FinancialSettingsSnapshot> lockFinancialPeriod(
+    WorkContext context,
+    PeriodLockDraft draft,
+  );
+  Future<FinancialSettingsSnapshot> unlockFinancialPeriod(
+    WorkContext context,
+    String lockName,
+    String reason,
+  );
   Future<AccountRulesSnapshot> loadAccountRules(WorkContext context);
   Future<AccountRulesSnapshot> saveChartAccount(
     WorkContext context,

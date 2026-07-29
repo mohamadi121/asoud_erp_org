@@ -122,6 +122,7 @@ class FinancialSettingsSnapshot extends Equatable {
     required this.setupStatus,
     this.templates = const [],
     this.fiscalYears = const [],
+    this.fiscalPeriods = const [],
     this.periodLocks = const [],
   });
 
@@ -144,6 +145,7 @@ class FinancialSettingsSnapshot extends Equatable {
       setupStatus: settings['setup_status']?.toString() ?? 'Pending',
       templates: rows('coa_templates'),
       fiscalYears: rows('fiscal_years'),
+      fiscalPeriods: rows('fiscal_periods'),
       periodLocks: rows('period_locks'),
     );
   }
@@ -158,6 +160,7 @@ class FinancialSettingsSnapshot extends Equatable {
   final String setupStatus;
   final List<Map<String, dynamic>> templates;
   final List<Map<String, dynamic>> fiscalYears;
+  final List<Map<String, dynamic>> fiscalPeriods;
   final List<Map<String, dynamic>> periodLocks;
 
   FinancialSettingsDraft toDraft() => FinancialSettingsDraft(
@@ -178,8 +181,178 @@ class FinancialSettingsSnapshot extends Equatable {
         setupStatus,
         templates,
         fiscalYears,
+        fiscalPeriods,
         periodLocks,
       ];
+}
+
+class FiscalYearDraft extends Equatable {
+  const FiscalYearDraft({
+    this.name = '',
+    this.yearName = '',
+    this.fromDate = '',
+    this.toDate = '',
+    this.disabled = false,
+  });
+
+  factory FiscalYearDraft.fromJson(Map<String, dynamic> json) =>
+      FiscalYearDraft(
+        name: json['name']?.toString() ?? '',
+        yearName: json['name']?.toString() ?? json['year']?.toString() ?? '',
+        fromDate: json['year_start_date']?.toString() ?? '',
+        toDate: json['year_end_date']?.toString() ?? '',
+        disabled: json['disabled'] == 1 || json['disabled'] == true,
+      );
+
+  final String name;
+  final String yearName;
+  final String fromDate;
+  final String toDate;
+  final bool disabled;
+
+  FiscalYearDraft copyWith({
+    String? yearName,
+    String? fromDate,
+    String? toDate,
+    bool? disabled,
+  }) =>
+      FiscalYearDraft(
+        name: name,
+        yearName: yearName ?? this.yearName,
+        fromDate: fromDate ?? this.fromDate,
+        toDate: toDate ?? this.toDate,
+        disabled: disabled ?? this.disabled,
+      );
+
+  Map<String, dynamic> toJson() => {
+        if (name.isNotEmpty) 'name': name,
+        'year_name': yearName,
+        'from_date': fromDate,
+        'to_date': toDate,
+        'disabled': disabled,
+      };
+
+  @override
+  List<Object?> get props => [name, yearName, fromDate, toDate, disabled];
+}
+
+class FiscalPeriodDraft extends Equatable {
+  const FiscalPeriodDraft({
+    this.name = '',
+    this.fiscalYear = '',
+    this.periodName = '',
+    this.periodType = 'Standard',
+    this.fromDate = '',
+    this.toDate = '',
+    this.enabled = true,
+  });
+
+  factory FiscalPeriodDraft.fromJson(Map<String, dynamic> json) =>
+      FiscalPeriodDraft(
+        name: json['name']?.toString() ?? '',
+        fiscalYear: json['fiscal_year']?.toString() ?? '',
+        periodName: json['period_name']?.toString() ?? '',
+        periodType: json['period_type']?.toString() ?? 'Standard',
+        fromDate: json['from_date']?.toString() ?? '',
+        toDate: json['to_date']?.toString() ?? '',
+        enabled: json['enabled'] == 1 || json['enabled'] == true,
+      );
+
+  final String name;
+  final String fiscalYear;
+  final String periodName;
+  final String periodType;
+  final String fromDate;
+  final String toDate;
+  final bool enabled;
+
+  FiscalPeriodDraft copyWith({
+    String? fiscalYear,
+    String? periodName,
+    String? periodType,
+    String? fromDate,
+    String? toDate,
+    bool? enabled,
+  }) =>
+      FiscalPeriodDraft(
+        name: name,
+        fiscalYear: fiscalYear ?? this.fiscalYear,
+        periodName: periodName ?? this.periodName,
+        periodType: periodType ?? this.periodType,
+        fromDate: fromDate ?? this.fromDate,
+        toDate: toDate ?? this.toDate,
+        enabled: enabled ?? this.enabled,
+      );
+
+  Map<String, dynamic> toJson() => {
+        if (name.isNotEmpty) 'name': name,
+        'fiscal_year': fiscalYear,
+        'period_name': periodName,
+        'period_type': periodType,
+        'from_date': fromDate,
+        'to_date': toDate,
+        'enabled': enabled,
+      };
+
+  @override
+  List<Object?> get props =>
+      [name, fiscalYear, periodName, periodType, fromDate, toDate, enabled];
+}
+
+class PeriodLockDraft extends Equatable {
+  const PeriodLockDraft({
+    this.fiscalYear = '',
+    this.fiscalPeriod = '',
+    this.fromDate = '',
+    this.toDate = '',
+    this.reason = '',
+  });
+
+  final String fiscalYear;
+  final String fiscalPeriod;
+  final String fromDate;
+  final String toDate;
+  final String reason;
+
+  PeriodLockDraft copyWith({
+    String? fiscalYear,
+    String? fiscalPeriod,
+    String? fromDate,
+    String? toDate,
+    String? reason,
+  }) =>
+      PeriodLockDraft(
+        fiscalYear: fiscalYear ?? this.fiscalYear,
+        fiscalPeriod: fiscalPeriod ?? this.fiscalPeriod,
+        fromDate: fromDate ?? this.fromDate,
+        toDate: toDate ?? this.toDate,
+        reason: reason ?? this.reason,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'fiscal_year': fiscalYear,
+        'fiscal_period': fiscalPeriod.isEmpty ? null : fiscalPeriod,
+        'from_date': fromDate,
+        'to_date': toDate,
+        'reason': reason,
+      };
+
+  @override
+  List<Object?> get props =>
+      [fiscalYear, fiscalPeriod, fromDate, toDate, reason];
+}
+
+class PeriodUnlockDraft extends Equatable {
+  const PeriodUnlockDraft({required this.lockName, this.reason = ''});
+
+  final String lockName;
+  final String reason;
+
+  PeriodUnlockDraft copyWith({String? reason}) =>
+      PeriodUnlockDraft(lockName: lockName, reason: reason ?? this.reason);
+
+  @override
+  List<Object?> get props => [lockName, reason];
 }
 
 class FinancialSettingsDraft extends Equatable {

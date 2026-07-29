@@ -181,4 +181,47 @@ void main() {
     );
     expect(requests.last.bodyFields['idempotency_key'], isNotEmpty);
   });
+
+  test('saves a fiscal period through an idempotent endpoint', () async {
+    late http.Request captured;
+    final gateway = FrappeOrganizationGateway(
+      AsoudApiClient(
+        baseUrl: 'https://erp.example.test',
+        client: MockClient((request) async {
+          captured = request;
+          return http.Response.bytes(
+            utf8.encode(jsonEncode({
+              'message': {
+                'settings': {'company': 'ASOUD'},
+                'fiscal_years': [],
+                'fiscal_periods': [],
+                'period_locks': [],
+              }
+            })),
+            200,
+            headers: {'content-type': 'application/json; charset=utf-8'},
+          );
+        }),
+      ),
+    );
+
+    await gateway.saveFiscalPeriod(
+      workContext,
+      const FiscalPeriodDraft(
+        fiscalYear: '1406',
+        periodName: 'فروردین',
+        fromDate: '2027-03-21',
+        toDate: '2027-04-20',
+      ),
+    );
+
+    expect(
+      captured.url.path,
+      '/api/method/asoud_iran.api.save_fiscal_period',
+    );
+    expect(captured.bodyFields['idempotency_key'], isNotEmpty);
+    final payload =
+        jsonDecode(captured.bodyFields['payload']!) as Map<String, dynamic>;
+    expect(payload['period_name'], 'فروردین');
+  });
 }

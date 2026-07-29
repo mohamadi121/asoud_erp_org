@@ -24,6 +24,10 @@ class OrganizationSettingsState extends Equatable {
     this.detailManagement,
     this.detailGroupDraft,
     this.floatingDetailDraft,
+    this.fiscalYearDraft,
+    this.fiscalPeriodDraft,
+    this.periodLockDraft,
+    this.periodUnlockDraft,
     this.financialSection = FinancialSection.general,
     this.draft,
     this.error,
@@ -41,6 +45,10 @@ class OrganizationSettingsState extends Equatable {
   final FloatingDetailManagementSnapshot? detailManagement;
   final FloatingDetailGroupDraft? detailGroupDraft;
   final FloatingDetailDraft? floatingDetailDraft;
+  final FiscalYearDraft? fiscalYearDraft;
+  final FiscalPeriodDraft? fiscalPeriodDraft;
+  final PeriodLockDraft? periodLockDraft;
+  final PeriodUnlockDraft? periodUnlockDraft;
   final FinancialSection financialSection;
   final OrganizationDraft? draft;
   final String? error;
@@ -58,6 +66,10 @@ class OrganizationSettingsState extends Equatable {
     FloatingDetailManagementSnapshot? detailManagement,
     FloatingDetailGroupDraft? detailGroupDraft,
     FloatingDetailDraft? floatingDetailDraft,
+    FiscalYearDraft? fiscalYearDraft,
+    FiscalPeriodDraft? fiscalPeriodDraft,
+    PeriodLockDraft? periodLockDraft,
+    PeriodUnlockDraft? periodUnlockDraft,
     FinancialSection? financialSection,
     OrganizationDraft? draft,
     String? error,
@@ -66,6 +78,10 @@ class OrganizationSettingsState extends Equatable {
     bool clearDetailRuleDraft = false,
     bool clearDetailGroupDraft = false,
     bool clearFloatingDetailDraft = false,
+    bool clearFiscalYearDraft = false,
+    bool clearFiscalPeriodDraft = false,
+    bool clearPeriodLockDraft = false,
+    bool clearPeriodUnlockDraft = false,
     bool clearError = false,
   }) =>
       OrganizationSettingsState(
@@ -90,6 +106,18 @@ class OrganizationSettingsState extends Equatable {
         floatingDetailDraft: clearFloatingDetailDraft
             ? null
             : floatingDetailDraft ?? this.floatingDetailDraft,
+        fiscalYearDraft: clearFiscalYearDraft
+            ? null
+            : fiscalYearDraft ?? this.fiscalYearDraft,
+        fiscalPeriodDraft: clearFiscalPeriodDraft
+            ? null
+            : fiscalPeriodDraft ?? this.fiscalPeriodDraft,
+        periodLockDraft: clearPeriodLockDraft
+            ? null
+            : periodLockDraft ?? this.periodLockDraft,
+        periodUnlockDraft: clearPeriodUnlockDraft
+            ? null
+            : periodUnlockDraft ?? this.periodUnlockDraft,
         financialSection: financialSection ?? this.financialSection,
         draft: clearDraft ? null : draft ?? this.draft,
         error: clearError ? null : error ?? this.error,
@@ -109,6 +137,10 @@ class OrganizationSettingsState extends Equatable {
         detailManagement,
         detailGroupDraft,
         floatingDetailDraft,
+        fiscalYearDraft,
+        fiscalPeriodDraft,
+        periodLockDraft,
+        periodUnlockDraft,
         financialSection,
         draft,
         error,
@@ -550,6 +582,234 @@ class OrganizationSettingsCubit extends Cubit<OrganizationSettingsState> {
         phase: OrganizationPhase.ready,
         financial: financial,
         financialDraft: financial.toDraft(),
+      ));
+      return true;
+    } on Object catch (error) {
+      emit(state.copyWith(
+        phase: OrganizationPhase.ready,
+        error: error.toString(),
+      ));
+      return false;
+    }
+  }
+
+  void startFiscalYear([Map<String, dynamic>? row]) => emit(state.copyWith(
+        fiscalYearDraft: row == null
+            ? const FiscalYearDraft()
+            : FiscalYearDraft.fromJson(row),
+        clearError: true,
+      ));
+
+  void updateFiscalYear({
+    String? yearName,
+    String? fromDate,
+    String? toDate,
+    bool? disabled,
+  }) {
+    final draft = state.fiscalYearDraft;
+    if (draft == null) return;
+    emit(state.copyWith(
+      fiscalYearDraft: draft.copyWith(
+        yearName: yearName,
+        fromDate: fromDate,
+        toDate: toDate,
+        disabled: disabled,
+      ),
+      clearError: true,
+    ));
+  }
+
+  void cancelFiscalYear() =>
+      emit(state.copyWith(clearFiscalYearDraft: true, clearError: true));
+
+  Future<bool> saveFiscalYear() async {
+    final draft = state.fiscalYearDraft;
+    if (draft == null) return false;
+    if (draft.yearName.trim().isEmpty ||
+        draft.fromDate.trim().isEmpty ||
+        draft.toDate.trim().isEmpty) {
+      emit(state.copyWith(error: 'نام سال مالی و بازه تاریخ الزامی است.'));
+      return false;
+    }
+    return _saveFinancialChild(
+      () => _gateway.saveFiscalYear(_context, draft),
+      clearFiscalYearDraft: true,
+    );
+  }
+
+  void startFiscalPeriod([Map<String, dynamic>? row]) {
+    final years = state.financial?.fiscalYears ?? const [];
+    emit(state.copyWith(
+      fiscalPeriodDraft: row == null
+          ? FiscalPeriodDraft(
+              fiscalYear:
+                  years.isEmpty ? '' : years.first['name']?.toString() ?? '',
+            )
+          : FiscalPeriodDraft.fromJson(row),
+      clearError: true,
+    ));
+  }
+
+  void updateFiscalPeriod({
+    String? fiscalYear,
+    String? periodName,
+    String? periodType,
+    String? fromDate,
+    String? toDate,
+    bool? enabled,
+  }) {
+    final draft = state.fiscalPeriodDraft;
+    if (draft == null) return;
+    emit(state.copyWith(
+      fiscalPeriodDraft: draft.copyWith(
+        fiscalYear: fiscalYear,
+        periodName: periodName,
+        periodType: periodType,
+        fromDate: fromDate,
+        toDate: toDate,
+        enabled: enabled,
+      ),
+      clearError: true,
+    ));
+  }
+
+  void cancelFiscalPeriod() =>
+      emit(state.copyWith(clearFiscalPeriodDraft: true, clearError: true));
+
+  Future<bool> saveFiscalPeriod() async {
+    final draft = state.fiscalPeriodDraft;
+    if (draft == null) return false;
+    if (draft.fiscalYear.trim().isEmpty ||
+        draft.periodName.trim().isEmpty ||
+        draft.fromDate.trim().isEmpty ||
+        draft.toDate.trim().isEmpty) {
+      emit(
+          state.copyWith(error: 'سال مالی، نام دوره و بازه تاریخ الزامی است.'));
+      return false;
+    }
+    return _saveFinancialChild(
+      () => _gateway.saveFiscalPeriod(_context, draft),
+      clearFiscalPeriodDraft: true,
+    );
+  }
+
+  void startPeriodLock([Map<String, dynamic>? period]) {
+    final years = state.financial?.fiscalYears ?? const [];
+    emit(state.copyWith(
+      periodLockDraft: PeriodLockDraft(
+        fiscalYear: period?['fiscal_year']?.toString() ??
+            (years.isEmpty ? '' : years.first['name']?.toString() ?? ''),
+        fiscalPeriod: period?['name']?.toString() ?? '',
+        fromDate: period?['from_date']?.toString() ?? '',
+        toDate: period?['to_date']?.toString() ?? '',
+      ),
+      clearError: true,
+    ));
+  }
+
+  void updatePeriodLock({
+    String? fiscalYear,
+    String? fiscalPeriod,
+    String? fromDate,
+    String? toDate,
+    String? reason,
+  }) {
+    final draft = state.periodLockDraft;
+    if (draft == null) return;
+    var next = draft.copyWith(
+      fiscalYear: fiscalYear,
+      fiscalPeriod: fiscalPeriod,
+      fromDate: fromDate,
+      toDate: toDate,
+      reason: reason,
+    );
+    if (fiscalPeriod != null && fiscalPeriod.isNotEmpty) {
+      final rows = state.financial?.fiscalPeriods ?? const [];
+      final matches =
+          rows.where((row) => row['name']?.toString() == fiscalPeriod);
+      if (matches.isNotEmpty) {
+        final row = matches.first;
+        next = next.copyWith(
+          fiscalYear: row['fiscal_year']?.toString() ?? '',
+          fromDate: row['from_date']?.toString() ?? '',
+          toDate: row['to_date']?.toString() ?? '',
+        );
+      }
+    }
+    emit(state.copyWith(periodLockDraft: next, clearError: true));
+  }
+
+  void cancelPeriodLock() =>
+      emit(state.copyWith(clearPeriodLockDraft: true, clearError: true));
+
+  Future<bool> savePeriodLock() async {
+    final draft = state.periodLockDraft;
+    if (draft == null) return false;
+    if (draft.fiscalYear.trim().isEmpty ||
+        draft.fromDate.trim().isEmpty ||
+        draft.toDate.trim().isEmpty ||
+        draft.reason.trim().isEmpty) {
+      emit(state.copyWith(error: 'سال مالی، بازه و دلیل قفل الزامی است.'));
+      return false;
+    }
+    return _saveFinancialChild(
+      () => _gateway.lockFinancialPeriod(_context, draft),
+      clearPeriodLockDraft: true,
+    );
+  }
+
+  void startPeriodUnlock(String lockName) => emit(state.copyWith(
+        periodUnlockDraft: PeriodUnlockDraft(lockName: lockName),
+        clearError: true,
+      ));
+
+  void updatePeriodUnlock(String reason) {
+    final draft = state.periodUnlockDraft;
+    if (draft == null) return;
+    emit(state.copyWith(
+      periodUnlockDraft: draft.copyWith(reason: reason),
+      clearError: true,
+    ));
+  }
+
+  void cancelPeriodUnlock() =>
+      emit(state.copyWith(clearPeriodUnlockDraft: true, clearError: true));
+
+  Future<bool> savePeriodUnlock() async {
+    final draft = state.periodUnlockDraft;
+    if (draft == null) return false;
+    if (draft.reason.trim().isEmpty) {
+      emit(state.copyWith(error: 'دلیل بازگشایی الزامی است.'));
+      return false;
+    }
+    return _saveFinancialChild(
+      () => _gateway.unlockFinancialPeriod(
+        _context,
+        draft.lockName,
+        draft.reason,
+      ),
+      clearPeriodUnlockDraft: true,
+    );
+  }
+
+  Future<bool> _saveFinancialChild(
+    Future<FinancialSettingsSnapshot> Function() action, {
+    bool clearFiscalYearDraft = false,
+    bool clearFiscalPeriodDraft = false,
+    bool clearPeriodLockDraft = false,
+    bool clearPeriodUnlockDraft = false,
+  }) async {
+    emit(state.copyWith(phase: OrganizationPhase.saving, clearError: true));
+    try {
+      final financial = await action();
+      emit(state.copyWith(
+        phase: OrganizationPhase.ready,
+        financial: financial,
+        financialDraft: financial.toDraft(),
+        clearFiscalYearDraft: clearFiscalYearDraft,
+        clearFiscalPeriodDraft: clearFiscalPeriodDraft,
+        clearPeriodLockDraft: clearPeriodLockDraft,
+        clearPeriodUnlockDraft: clearPeriodUnlockDraft,
       ));
       return true;
     } on Object catch (error) {

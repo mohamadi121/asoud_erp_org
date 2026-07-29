@@ -308,6 +308,14 @@ def item_profile_query(user: str | None = None) -> str:
     return company_profile_query("ASOUD Item Company Profile", user)
 
 
+def fiscal_period_query(user: str | None = None) -> str:
+    return company_profile_query("ASOUD Fiscal Period", user)
+
+
+def period_lock_query(user: str | None = None) -> str:
+    return company_profile_query("ASOUD Period Lock", user)
+
+
 def company_profile_query(doctype: str, user: str | None = None) -> str:
     import frappe
 

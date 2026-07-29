@@ -135,6 +135,84 @@ def save_financial_settings(
     )
 
 
+@_whitelist(methods=["POST"])
+def save_fiscal_year(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+) -> dict:
+    import json
+
+    from asoud_core.services.idempotency import execute_once
+    from asoud_iran.services.fiscal_period_management import save_fiscal_year as save
+
+    parsed = json.loads(payload)
+    return execute_once(
+        idempotency_key,
+        "fiscal_year.save",
+        {"company": company, **parsed},
+        lambda: save(company, parsed),
+    )
+
+
+@_whitelist(methods=["POST"])
+def save_fiscal_period(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+) -> dict:
+    import json
+
+    from asoud_core.services.idempotency import execute_once
+    from asoud_iran.services.fiscal_period_management import save_fiscal_period as save
+
+    parsed = json.loads(payload)
+    return execute_once(
+        idempotency_key,
+        "fiscal_period.save",
+        {"company": company, **parsed},
+        lambda: save(company, parsed),
+    )
+
+
+@_whitelist(methods=["POST"])
+def lock_financial_period(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+) -> dict:
+    import json
+
+    from asoud_core.services.idempotency import execute_once
+    from asoud_iran.services.fiscal_period_management import lock_financial_period
+
+    parsed = json.loads(payload)
+    return execute_once(
+        idempotency_key,
+        "fiscal_period.lock",
+        {"company": company, **parsed},
+        lambda: lock_financial_period(company, parsed),
+    )
+
+
+@_whitelist(methods=["POST"])
+def unlock_financial_period(
+    company: str,
+    lock_name: str,
+    reason: str,
+    idempotency_key: str,
+) -> dict:
+    from asoud_core.services.idempotency import execute_once
+    from asoud_iran.services.fiscal_period_management import unlock_financial_period
+
+    return execute_once(
+        idempotency_key,
+        "fiscal_period.unlock",
+        {"company": company, "lock_name": lock_name, "reason": reason},
+        lambda: unlock_financial_period(company, lock_name, reason),
+    )
+
+
 @_whitelist(methods=["GET"])
 def company_chart_of_accounts(company: str) -> list[dict]:
     import frappe

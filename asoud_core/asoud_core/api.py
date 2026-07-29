@@ -164,7 +164,14 @@ def final_number(company: str, fiscal_year: str, from_date: str, to_date: str, r
 
 
 @_whitelist(methods=["POST"])
-def lock_period(company: str, fiscal_year: str, from_date: str, to_date: str) -> str:
+def lock_period(
+    company: str,
+    fiscal_year: str,
+    from_date: str,
+    to_date: str,
+    reason: str = "Manual period lock",
+    fiscal_period: str | None = None,
+) -> str:
     import frappe
 
     frappe.only_for(("Accounts Manager", "System Manager"))
@@ -175,7 +182,19 @@ def lock_period(company: str, fiscal_year: str, from_date: str, to_date: str) ->
         fiscal_year=fiscal_year,
         from_date=from_date,
         to_date=to_date,
+        reason=reason,
+        fiscal_period=fiscal_period,
     )
+
+
+@_whitelist(methods=["POST"])
+def unlock_period(lock_name: str, reason: str) -> str:
+    import frappe
+
+    frappe.only_for(("Accounts Manager", "System Manager"))
+    from asoud_core.services.journal_numbering import unlock_period as reopen
+
+    return reopen(lock_name=lock_name, reason=reason)
 
 
 @_whitelist(methods=["GET"])

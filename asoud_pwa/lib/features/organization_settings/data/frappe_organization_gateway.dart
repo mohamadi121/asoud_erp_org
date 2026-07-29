@@ -70,6 +70,77 @@ class FrappeOrganizationGateway implements OrganizationGateway {
   }
 
   @override
+  Future<FinancialSettingsSnapshot> saveFiscalYear(
+    WorkContext context,
+    FiscalYearDraft draft,
+  ) =>
+      _saveFinancialOperation(
+        context,
+        'save_fiscal_year',
+        'fiscal-year',
+        {'payload': jsonEncode(draft.toJson())},
+      );
+
+  @override
+  Future<FinancialSettingsSnapshot> saveFiscalPeriod(
+    WorkContext context,
+    FiscalPeriodDraft draft,
+  ) =>
+      _saveFinancialOperation(
+        context,
+        'save_fiscal_period',
+        'fiscal-period',
+        {'payload': jsonEncode(draft.toJson())},
+      );
+
+  @override
+  Future<FinancialSettingsSnapshot> lockFinancialPeriod(
+    WorkContext context,
+    PeriodLockDraft draft,
+  ) =>
+      _saveFinancialOperation(
+        context,
+        'lock_financial_period',
+        'period-lock',
+        {'payload': jsonEncode(draft.toJson())},
+      );
+
+  @override
+  Future<FinancialSettingsSnapshot> unlockFinancialPeriod(
+    WorkContext context,
+    String lockName,
+    String reason,
+  ) =>
+      _saveFinancialOperation(
+        context,
+        'unlock_financial_period',
+        'period-unlock',
+        {'lock_name': lockName, 'reason': reason},
+      );
+
+  Future<FinancialSettingsSnapshot> _saveFinancialOperation(
+    WorkContext context,
+    String method,
+    String keyPrefix,
+    Map<String, String> fields,
+  ) async {
+    final response = await _client.postForm(
+      '/api/method/asoud_iran.api.$method',
+      {
+        'company': context.company,
+        ...fields,
+        'idempotency_key':
+            '$keyPrefix-${DateTime.now().microsecondsSinceEpoch}',
+      },
+    );
+    final message = response['message'];
+    if (message is! Map<String, dynamic>) {
+      throw const AsoudApiException('پاسخ عملیات دوره مالی معتبر نیست.');
+    }
+    return FinancialSettingsSnapshot.fromJson(message);
+  }
+
+  @override
   Future<AccountRulesSnapshot> loadAccountRules(WorkContext context) async {
     final response = await _client.getQuery(
       '/api/method/asoud_iran.api.account_detail_rules_snapshot',

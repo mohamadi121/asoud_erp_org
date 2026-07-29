@@ -89,6 +89,28 @@ class _OrganizationSettingsView extends StatelessWidget {
                   draft: state.detailRuleDraft!,
                   snapshot: state.accountRules!,
                 ),
+              if (state.fiscalYearDraft != null)
+                _FiscalYearDrawer(
+                  draft: state.fiscalYearDraft!,
+                  saving: state.phase == OrganizationPhase.saving,
+                ),
+              if (state.fiscalPeriodDraft != null)
+                _FiscalPeriodDrawer(
+                  draft: state.fiscalPeriodDraft!,
+                  financial: state.financial!,
+                  saving: state.phase == OrganizationPhase.saving,
+                ),
+              if (state.periodLockDraft != null)
+                _PeriodLockDrawer(
+                  draft: state.periodLockDraft!,
+                  financial: state.financial!,
+                  saving: state.phase == OrganizationPhase.saving,
+                ),
+              if (state.periodUnlockDraft != null)
+                _PeriodUnlockDrawer(
+                  draft: state.periodUnlockDraft!,
+                  saving: state.phase == OrganizationPhase.saving,
+                ),
             ],
           );
         },
@@ -584,9 +606,11 @@ class _FinancialSettings extends StatelessWidget {
           const SizedBox(height: 16),
           LayoutBuilder(
             builder: (context, constraints) {
-              final width = constraints.maxWidth >= 900
-                  ? (constraints.maxWidth - 16) / 2
-                  : constraints.maxWidth;
+              final width = constraints.maxWidth >= 1200
+                  ? (constraints.maxWidth - 32) / 3
+                  : constraints.maxWidth >= 760
+                      ? (constraints.maxWidth - 16) / 2
+                      : constraints.maxWidth;
               return Wrap(
                 spacing: 16,
                 runSpacing: 16,
@@ -594,6 +618,10 @@ class _FinancialSettings extends StatelessWidget {
                   SizedBox(
                     width: width,
                     child: _FiscalYearsCard(rows: settings.fiscalYears),
+                  ),
+                  SizedBox(
+                    width: width,
+                    child: _FiscalPeriodsCard(rows: settings.fiscalPeriods),
                   ),
                   SizedBox(
                     width: width,
@@ -934,15 +962,20 @@ class _FiscalYearsCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const ListTile(
+              ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: CircleAvatar(child: Icon(Icons.calendar_month)),
-                title: Text(
+                leading: const CircleAvatar(child: Icon(Icons.calendar_month)),
+                title: const Text(
                   'سال‌های مالی',
                   style: TextStyle(fontWeight: FontWeight.w900),
                 ),
-                subtitle: Text('سال‌های قابل استفاده برای شرکت فعال'),
-                trailing: Chip(label: Text('فقط مشاهده')),
+                subtitle: const Text('سال‌های قابل استفاده برای شرکت فعال'),
+                trailing: IconButton.filled(
+                  tooltip: 'سال مالی جدید',
+                  onPressed:
+                      context.read<OrganizationSettingsCubit>().startFiscalYear,
+                  icon: const Icon(Icons.add),
+                ),
               ),
               if (rows.isEmpty)
                 const Text('سال مالی تعریف نشده است.')
@@ -955,9 +988,79 @@ class _FiscalYearsCard extends StatelessWidget {
                       '${row['year_start_date'] ?? '-'} تا '
                       '${row['year_end_date'] ?? '-'}',
                     ),
-                    trailing: row['disabled'] == 1
-                        ? const Chip(label: Text('غیرفعال'))
-                        : const Chip(label: Text('فعال')),
+                    trailing: IconButton(
+                      tooltip: row['is_global'] == true
+                          ? 'سال مالی عمومی از این صفحه ویرایش نمی‌شود'
+                          : 'ویرایش',
+                      onPressed: row['is_global'] == true
+                          ? null
+                          : () => context
+                              .read<OrganizationSettingsCubit>()
+                              .startFiscalYear(row),
+                      icon: Icon(
+                        row['is_global'] == true
+                            ? Icons.public
+                            : Icons.edit_outlined,
+                      ),
+                    ),
+                  ),
+            ],
+          ),
+        ),
+      );
+}
+
+class _FiscalPeriodsCard extends StatelessWidget {
+  const _FiscalPeriodsCard({required this.rows});
+
+  final List<Map<String, dynamic>> rows;
+
+  @override
+  Widget build(BuildContext context) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading:
+                    const CircleAvatar(child: Icon(Icons.date_range_outlined)),
+                title: const Text(
+                  'دوره‌های مالی',
+                  style: TextStyle(fontWeight: FontWeight.w900),
+                ),
+                subtitle: const Text('بازه‌های استاندارد یا تعدیلاتی'),
+                trailing: IconButton.filled(
+                  tooltip: 'دوره مالی جدید',
+                  onPressed: context
+                      .read<OrganizationSettingsCubit>()
+                      .startFiscalPeriod,
+                  icon: const Icon(Icons.add),
+                ),
+              ),
+              if (rows.isEmpty)
+                const Text('دوره مالی تعریف نشده است.')
+              else
+                for (final row in rows)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(row['period_name']?.toString() ?? '-'),
+                    subtitle: Text(
+                      '${row['from_date'] ?? '-'} تا ${row['to_date'] ?? '-'}',
+                    ),
+                    onTap: () => context
+                        .read<OrganizationSettingsCubit>()
+                        .startFiscalPeriod(row),
+                    trailing: IconButton(
+                      tooltip: 'قفل این دوره',
+                      onPressed: row['enabled'] == 1 || row['enabled'] == true
+                          ? () => context
+                              .read<OrganizationSettingsCubit>()
+                              .startPeriodLock(row)
+                          : null,
+                      icon: const Icon(Icons.lock_outline),
+                    ),
                   ),
             ],
           ),
@@ -977,15 +1080,20 @@ class _PeriodLocksCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const ListTile(
+              ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: CircleAvatar(child: Icon(Icons.lock_outline)),
-                title: Text(
+                leading: const CircleAvatar(child: Icon(Icons.lock_outline)),
+                title: const Text(
                   'قفل‌های دوره',
                   style: TextStyle(fontWeight: FontWeight.w900),
                 ),
-                subtitle: Text('بازه‌های بسته‌شده در شرکت فعال'),
-                trailing: Chip(label: Text('فقط مشاهده')),
+                subtitle: const Text('قفل و بازگشایی کنترل‌شده'),
+                trailing: IconButton.filled(
+                  tooltip: 'قفل بازه جدید',
+                  onPressed:
+                      context.read<OrganizationSettingsCubit>().startPeriodLock,
+                  icon: const Icon(Icons.lock),
+                ),
               ),
               if (rows.isEmpty)
                 const Text('هیچ دوره‌ای قفل نشده است.')
@@ -997,7 +1105,17 @@ class _PeriodLocksCard extends StatelessWidget {
                     subtitle: Text(
                       '${row['from_date'] ?? '-'} تا ${row['to_date'] ?? '-'}',
                     ),
-                    trailing: const Icon(Icons.lock, size: 18),
+                    trailing: row['docstatus'] == 1
+                        ? IconButton(
+                            tooltip: 'بازگشایی کنترل‌شده',
+                            onPressed: () => context
+                                .read<OrganizationSettingsCubit>()
+                                .startPeriodUnlock(
+                                  row['name']?.toString() ?? '',
+                                ),
+                            icon: const Icon(Icons.lock_open_outlined),
+                          )
+                        : const Chip(label: Text('بازگشایی‌شده')),
                   ),
             ],
           ),
@@ -1018,6 +1136,292 @@ class _ReadOnlyField extends StatelessWidget {
           decoration: InputDecoration(labelText: label),
         ),
       );
+}
+
+class _FiscalYearDrawer extends StatelessWidget {
+  const _FiscalYearDrawer({required this.draft, required this.saving});
+  final FiscalYearDraft draft;
+  final bool saving;
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<OrganizationSettingsCubit>();
+    return _SettingsDrawer(
+      title: draft.name.isEmpty ? 'ایجاد سال مالی' : 'ویرایش سال مالی',
+      onClose: cubit.cancelFiscalYear,
+      onSave: saving ? null : cubit.saveFiscalYear,
+      saving: saving,
+      children: [
+        TextFormField(
+          key: ValueKey('year-${draft.name}'),
+          initialValue: draft.yearName,
+          readOnly: draft.name.isNotEmpty,
+          decoration: const InputDecoration(
+            labelText: 'نام سال مالی *',
+            hintText: 'مثلاً ۱۴۰۶',
+          ),
+          onChanged: (value) => cubit.updateFiscalYear(yearName: value),
+        ),
+        TextFormField(
+          key: ValueKey('year-from-${draft.name}'),
+          initialValue: draft.fromDate,
+          decoration: const InputDecoration(
+            labelText: 'تاریخ شروع *',
+            hintText: 'YYYY-MM-DD',
+          ),
+          onChanged: (value) => cubit.updateFiscalYear(fromDate: value),
+        ),
+        TextFormField(
+          key: ValueKey('year-to-${draft.name}'),
+          initialValue: draft.toDate,
+          decoration: const InputDecoration(
+            labelText: 'تاریخ پایان *',
+            hintText: 'YYYY-MM-DD',
+          ),
+          onChanged: (value) => cubit.updateFiscalYear(toDate: value),
+        ),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          value: draft.disabled,
+          title: const Text('سال مالی غیرفعال باشد'),
+          onChanged: (value) => cubit.updateFiscalYear(disabled: value),
+        ),
+        const Card(
+          color: Color(0xffeff6ff),
+          child: Padding(
+            padding: EdgeInsets.all(14),
+            child: Text(
+              'سال مالی جدید فقط به Company فعال اختصاص می‌یابد. سال مالی عمومی از این فرم قابل ویرایش نیست.',
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _FiscalPeriodDrawer extends StatelessWidget {
+  const _FiscalPeriodDrawer({
+    required this.draft,
+    required this.financial,
+    required this.saving,
+  });
+  final FiscalPeriodDraft draft;
+  final FinancialSettingsSnapshot financial;
+  final bool saving;
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<OrganizationSettingsCubit>();
+    return _SettingsDrawer(
+      title: draft.name.isEmpty ? 'ایجاد دوره مالی' : 'ویرایش دوره مالی',
+      onClose: cubit.cancelFiscalPeriod,
+      onSave: saving ? null : cubit.saveFiscalPeriod,
+      saving: saving,
+      children: [
+        DropdownButtonFormField<String>(
+          value: draft.fiscalYear.isEmpty ? null : draft.fiscalYear,
+          decoration: const InputDecoration(labelText: 'سال مالی *'),
+          items: [
+            for (final year in financial.fiscalYears)
+              DropdownMenuItem(
+                value: year['name']?.toString(),
+                child: Text(year['name']?.toString() ?? '-'),
+              ),
+          ],
+          onChanged: (value) =>
+              cubit.updateFiscalPeriod(fiscalYear: value ?? ''),
+        ),
+        TextFormField(
+          key: ValueKey('period-name-${draft.name}'),
+          initialValue: draft.periodName,
+          decoration: const InputDecoration(labelText: 'عنوان دوره *'),
+          onChanged: (value) => cubit.updateFiscalPeriod(periodName: value),
+        ),
+        DropdownButtonFormField<String>(
+          value: draft.periodType,
+          decoration: const InputDecoration(labelText: 'نوع دوره'),
+          items: const [
+            DropdownMenuItem(value: 'Standard', child: Text('استاندارد')),
+            DropdownMenuItem(value: 'Adjustment', child: Text('تعدیلاتی')),
+          ],
+          onChanged: (value) => cubit.updateFiscalPeriod(periodType: value),
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                initialValue: draft.fromDate,
+                decoration: const InputDecoration(
+                  labelText: 'از تاریخ *',
+                  hintText: 'YYYY-MM-DD',
+                ),
+                onChanged: (value) => cubit.updateFiscalPeriod(fromDate: value),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: TextFormField(
+                initialValue: draft.toDate,
+                decoration: const InputDecoration(
+                  labelText: 'تا تاریخ *',
+                  hintText: 'YYYY-MM-DD',
+                ),
+                onChanged: (value) => cubit.updateFiscalPeriod(toDate: value),
+              ),
+            ),
+          ],
+        ),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          value: draft.enabled,
+          title: const Text('دوره فعال باشد'),
+          onChanged: (value) => cubit.updateFiscalPeriod(enabled: value),
+        ),
+      ],
+    );
+  }
+}
+
+class _PeriodLockDrawer extends StatelessWidget {
+  const _PeriodLockDrawer({
+    required this.draft,
+    required this.financial,
+    required this.saving,
+  });
+  final PeriodLockDraft draft;
+  final FinancialSettingsSnapshot financial;
+  final bool saving;
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<OrganizationSettingsCubit>();
+    final activePeriods = financial.fiscalPeriods
+        .where((row) => row['enabled'] == 1 || row['enabled'] == true)
+        .toList(growable: false);
+    return _SettingsDrawer(
+      title: 'قفل دوره مالی',
+      onClose: cubit.cancelPeriodLock,
+      onSave: saving ? null : cubit.savePeriodLock,
+      saving: saving,
+      children: [
+        DropdownButtonFormField<String>(
+          value: draft.fiscalPeriod.isEmpty ? '' : draft.fiscalPeriod,
+          decoration: const InputDecoration(labelText: 'دوره مالی'),
+          items: [
+            const DropdownMenuItem(
+              value: '',
+              child: Text('بازه انتخابی بدون دوره مشخص'),
+            ),
+            for (final period in activePeriods)
+              DropdownMenuItem(
+                value: period['name']?.toString(),
+                child: Text(period['period_name']?.toString() ?? '-'),
+              ),
+          ],
+          onChanged: (value) =>
+              cubit.updatePeriodLock(fiscalPeriod: value ?? ''),
+        ),
+        DropdownButtonFormField<String>(
+          value: draft.fiscalYear.isEmpty ? null : draft.fiscalYear,
+          decoration: const InputDecoration(labelText: 'سال مالی *'),
+          items: [
+            for (final year in financial.fiscalYears)
+              DropdownMenuItem(
+                value: year['name']?.toString(),
+                child: Text(year['name']?.toString() ?? '-'),
+              ),
+          ],
+          onChanged: draft.fiscalPeriod.isNotEmpty
+              ? null
+              : (value) => cubit.updatePeriodLock(fiscalYear: value ?? ''),
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                key: ValueKey('lock-from-${draft.fiscalPeriod}'),
+                initialValue: draft.fromDate,
+                readOnly: draft.fiscalPeriod.isNotEmpty,
+                decoration: const InputDecoration(
+                  labelText: 'از تاریخ *',
+                  hintText: 'YYYY-MM-DD',
+                ),
+                onChanged: (value) => cubit.updatePeriodLock(fromDate: value),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: TextFormField(
+                key: ValueKey('lock-to-${draft.fiscalPeriod}'),
+                initialValue: draft.toDate,
+                readOnly: draft.fiscalPeriod.isNotEmpty,
+                decoration: const InputDecoration(
+                  labelText: 'تا تاریخ *',
+                  hintText: 'YYYY-MM-DD',
+                ),
+                onChanged: (value) => cubit.updatePeriodLock(toDate: value),
+              ),
+            ),
+          ],
+        ),
+        TextFormField(
+          initialValue: draft.reason,
+          maxLines: 3,
+          decoration: const InputDecoration(labelText: 'دلیل قفل *'),
+          onChanged: (value) => cubit.updatePeriodLock(reason: value),
+        ),
+        const Card(
+          color: Color(0xfffff8e8),
+          child: Padding(
+            padding: EdgeInsets.all(14),
+            child: Text(
+              'قبل از قفل باید همه اسناد ثبت‌شده این بازه شماره قطعی داشته باشند. پس از قفل، ثبت، اصلاح و ابطال سند در بازه ممنوع است.',
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PeriodUnlockDrawer extends StatelessWidget {
+  const _PeriodUnlockDrawer({required this.draft, required this.saving});
+  final PeriodUnlockDraft draft;
+  final bool saving;
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<OrganizationSettingsCubit>();
+    return _SettingsDrawer(
+      title: 'بازگشایی کنترل‌شده دوره',
+      onClose: cubit.cancelPeriodUnlock,
+      onSave: saving ? null : cubit.savePeriodUnlock,
+      saving: saving,
+      children: [
+        TextFormField(
+          initialValue: draft.lockName,
+          readOnly: true,
+          decoration: const InputDecoration(labelText: 'شناسه قفل'),
+        ),
+        TextFormField(
+          initialValue: draft.reason,
+          maxLines: 4,
+          decoration: const InputDecoration(labelText: 'دلیل بازگشایی *'),
+          onChanged: cubit.updatePeriodUnlock,
+        ),
+        const Card(
+          color: Color(0xfffff1f2),
+          child: Padding(
+            padding: EdgeInsets.all(14),
+            child: Text(
+              'بازگشایی در زنجیره حسابرسی ثبت می‌شود. اسناد قفل‌شده به وضعیت شماره قطعی بازمی‌گردند، اما شماره قطعی آن‌ها حذف یا تغییر نمی‌کند.',
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class _AccountFormDrawer extends StatelessWidget {
