@@ -66,8 +66,9 @@ void main() {
       parentAccount: 'Current Assets - ASOUD',
       accountType: 'Receivable',
     );
-    cubit.addDetailRule('Customer');
-    cubit.updateDetailRule(0, required: true);
+    cubit.startDetailRule();
+    cubit.updateDetailRuleDraft(detailType: 'Customer', required: true);
+    expect(cubit.applyDetailRule(), isTrue);
     expect(await cubit.saveChartAccount(), isTrue);
     expect(gateway.savedAccounts.single.rules.single.detailType, 'Customer');
     expect(gateway.savedAccounts.single.rules.single.required, isTrue);

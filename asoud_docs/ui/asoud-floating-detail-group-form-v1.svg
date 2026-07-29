@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900">
+<style>.t{font-family:Tahoma,Arial}.h{font-size:22px;font-weight:700}.l{font-size:14px}.m{fill:#64748b}.f{fill:#fff;stroke:#dbe3ef}.b{fill:#2563eb}</style>
+<rect width="1440" height="900" fill="#f4f7fb"/><rect width="1440" height="138" fill="#fff"/>
+<text x="1380" y="42" text-anchor="end" class="t h">آسود ERP</text><text x="1220" y="40" text-anchor="end" class="t l m">تنظیمات › تنظیمات مالی</text>
+<text x="1380" y="105" text-anchor="end" class="t h">تفصیلی‌های شناور</text>
+<rect x="55" y="170" width="800" height="650" rx="14" fill="#fff"/><text x="815" y="215" text-anchor="end" class="t h">گروه‌های تفصیلی</text>
+<rect x="82" y="250" width="745" height="82" rx="10" fill="#f8fafc" stroke="#e2e8f0"/><text x="790" y="282" text-anchor="end" class="t l" font-weight="700">مشتریان</text><text x="790" y="307" text-anchor="end" class="t l m">CUS • مشتری</text>
+<rect x="0" y="0" width="1440" height="900" fill="#0f172a" opacity=".22"/>
+<rect x="900" y="0" width="540" height="900" fill="#fff"/><text x="1400" y="52" text-anchor="end" class="t h">ایجاد گروه تفصیلی</text><text x="1400" y="78" text-anchor="end" class="t l m">گروه در سطح هلدینگ ثبت می‌شود.</text>
+<line x1="920" y1="100" x2="1420" y2="100" stroke="#e2e8f0"/>
+<text x="1400" y="145" text-anchor="end" class="t l m">عنوان گروه *</text><rect x="930" y="158" width="470" height="50" rx="8" class="f"/><text x="1375" y="189" text-anchor="end" class="t l">مشتریان تجاری</text>
+<text x="1400" y="245" text-anchor="end" class="t l m">کد گروه *</text><rect x="930" y="258" width="470" height="50" rx="8" class="f"/><text x="1375" y="289" text-anchor="end" class="t l">CUS-TRADE</text>
+<text x="1400" y="345" text-anchor="end" class="t l m">نوع تفصیلی *</text><rect x="930" y="358" width="470" height="50" rx="8" class="f"/><text x="1375" y="389" text-anchor="end" class="t l">مشتری⌄</text>
+<text x="1400" y="445" text-anchor="end" class="t l m">گروه والد</text><rect x="930" y="458" width="470" height="50" rx="8" class="f"/><text x="1375" y="489" text-anchor="end" class="t l">بدون گروه والد⌄</text>
+<rect x="1352" y="545" width="48" height="26" rx="13" class="b"/><circle cx="1386" cy="558" r="10" fill="#fff"/><text x="1335" y="564" text-anchor="end" class="t l">گروه فعال باشد</text>
+<line x1="920" y1="820" x2="1420" y2="820" stroke="#e2e8f0"/><rect x="1245" y="840" width="155" height="44" rx="8" class="b"/><text x="1322" y="868" text-anchor="middle" class="t l" fill="#fff">ذخیره گروه</text><rect x="1110" y="840" width="115" height="44" rx="8" class="f"/><text x="1168" y="868" text-anchor="middle" class="t l">انصراف</text>
+</svg>

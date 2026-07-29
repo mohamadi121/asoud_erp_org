@@ -19,6 +19,8 @@ class OrganizationSettingsState extends Equatable {
     this.financialDraft,
     this.accountRules,
     this.accountDraft,
+    this.detailRuleDraft,
+    this.detailRuleIndex,
     this.detailManagement,
     this.detailGroupDraft,
     this.floatingDetailDraft,
@@ -34,6 +36,8 @@ class OrganizationSettingsState extends Equatable {
   final FinancialSettingsDraft? financialDraft;
   final AccountRulesSnapshot? accountRules;
   final ChartAccountDraft? accountDraft;
+  final AccountDetailRuleDraft? detailRuleDraft;
+  final int? detailRuleIndex;
   final FloatingDetailManagementSnapshot? detailManagement;
   final FloatingDetailGroupDraft? detailGroupDraft;
   final FloatingDetailDraft? floatingDetailDraft;
@@ -49,6 +53,8 @@ class OrganizationSettingsState extends Equatable {
     FinancialSettingsDraft? financialDraft,
     AccountRulesSnapshot? accountRules,
     ChartAccountDraft? accountDraft,
+    AccountDetailRuleDraft? detailRuleDraft,
+    int? detailRuleIndex,
     FloatingDetailManagementSnapshot? detailManagement,
     FloatingDetailGroupDraft? detailGroupDraft,
     FloatingDetailDraft? floatingDetailDraft,
@@ -57,6 +63,7 @@ class OrganizationSettingsState extends Equatable {
     String? error,
     bool clearDraft = false,
     bool clearAccountDraft = false,
+    bool clearDetailRuleDraft = false,
     bool clearDetailGroupDraft = false,
     bool clearFloatingDetailDraft = false,
     bool clearError = false,
@@ -70,6 +77,12 @@ class OrganizationSettingsState extends Equatable {
         accountRules: accountRules ?? this.accountRules,
         accountDraft:
             clearAccountDraft ? null : accountDraft ?? this.accountDraft,
+        detailRuleDraft: clearDetailRuleDraft
+            ? null
+            : detailRuleDraft ?? this.detailRuleDraft,
+        detailRuleIndex: clearDetailRuleDraft
+            ? null
+            : detailRuleIndex ?? this.detailRuleIndex,
         detailManagement: detailManagement ?? this.detailManagement,
         detailGroupDraft: clearDetailGroupDraft
             ? null
@@ -91,6 +104,8 @@ class OrganizationSettingsState extends Equatable {
         financialDraft,
         accountRules,
         accountDraft,
+        detailRuleDraft,
+        detailRuleIndex,
         detailManagement,
         detailGroupDraft,
         floatingDetailDraft,
@@ -356,22 +371,77 @@ class OrganizationSettingsCubit extends Cubit<OrganizationSettingsState> {
     ));
   }
 
-  void addDetailRule(String detailType) {
+  void startDetailRule([int? index]) {
     final draft = state.accountDraft;
-    if (draft == null ||
-        detailType.isEmpty ||
-        draft.rules.any((rule) => rule.detailType == detailType)) {
-      return;
-    }
+    if (draft == null || draft.isGroup) return;
     emit(state.copyWith(
-      accountDraft: draft.copyWith(
-        rules: [
-          ...draft.rules,
-          AccountDetailRuleDraft(detailType: detailType),
-        ],
+      detailRuleDraft: index == null
+          ? const AccountDetailRuleDraft(detailType: '')
+          : draft.rules[index],
+      detailRuleIndex: index ?? -1,
+      clearError: true,
+    ));
+  }
+
+  void updateDetailRuleDraft({
+    String? detailType,
+    bool? required,
+    bool? enabled,
+    String? defaultFloatingDetail,
+    String? validFrom,
+    String? validTo,
+  }) {
+    final draft = state.detailRuleDraft;
+    if (draft == null) return;
+    emit(state.copyWith(
+      detailRuleDraft: draft.copyWith(
+        detailType: detailType,
+        required: required,
+        enabled: enabled,
+        defaultFloatingDetail: defaultFloatingDetail,
+        validFrom: validFrom,
+        validTo: validTo,
       ),
       clearError: true,
     ));
+  }
+
+  void cancelDetailRule() =>
+      emit(state.copyWith(clearDetailRuleDraft: true, clearError: true));
+
+  bool applyDetailRule() {
+    final account = state.accountDraft;
+    final rule = state.detailRuleDraft;
+    final index = state.detailRuleIndex ?? -1;
+    if (account == null || rule == null || rule.detailType.isEmpty) {
+      emit(state.copyWith(error: 'نوع تفصیلی را انتخاب کنید.'));
+      return false;
+    }
+    final duplicate = account.rules.indexWhere(
+      (item) => item.detailType == rule.detailType,
+    );
+    if (duplicate >= 0 && duplicate != index) {
+      emit(state.copyWith(
+          error: 'برای این نوع تفصیلی قبلاً قاعده تعریف شده است.'));
+      return false;
+    }
+    var rows = [...account.rules];
+    if (rule.required) {
+      rows = [
+        for (final item in rows) item.copyWith(required: false),
+      ];
+    }
+    if (index >= 0) {
+      rows[index] = rule;
+    } else {
+      rows.add(rule);
+    }
+    emit(state.copyWith(
+      accountDraft: account.copyWith(rules: rows),
+      clearDetailRuleDraft: true,
+      clearError: true,
+    ));
+    return true;
   }
 
   void updateDetailRule(

@@ -84,6 +84,11 @@ class _OrganizationSettingsView extends StatelessWidget {
                   snapshot: state.detailManagement!,
                   saving: state.phase == OrganizationPhase.saving,
                 ),
+              if (state.detailRuleDraft != null)
+                _AccountDetailRuleDrawer(
+                  draft: state.detailRuleDraft!,
+                  snapshot: state.accountRules!,
+                ),
             ],
           );
         },
@@ -261,40 +266,104 @@ class _SettingsCards extends StatelessWidget {
         runSpacing: 12,
         children: [
           for (final item in const [
-            ('ساختار سازمانی', 'هلدینگ، شرکت و شعبه', Icons.account_tree),
-            ('مالی و دوره‌ها', 'سال مالی و نمودار حساب‌ها', Icons.receipt_long),
-            ('شماره‌گذاری', 'شماره موقت و قطعی', Icons.tag),
-            ('کاربران و دسترسی', 'دامنه Company/Branch', Icons.manage_accounts),
-            ('گردش کار', 'مسیرها و تأییدها', Icons.alt_route),
-            ('حسابداری ایران', 'مالیات و خروجی قانونی', Icons.flag_outlined),
-            ('اطلاعات پایه', 'کالا، خدمت و طرف‌حساب', Icons.dataset_outlined),
-            ('قفل و کنترل', 'دوره و رویداد حسابرسی', Icons.lock_outline),
+            (
+              'ساختار سازمانی',
+              'هلدینگ، شرکت و شعبه',
+              Icons.account_tree,
+              SettingsView.structure,
+            ),
+            (
+              'مالی و دوره‌ها',
+              'سال مالی و نمودار حساب‌ها',
+              Icons.receipt_long,
+              SettingsView.financial,
+            ),
+            ('شماره‌گذاری', 'شماره موقت و قطعی', Icons.tag, null),
+            (
+              'کاربران و دسترسی',
+              'دامنه Company/Branch',
+              Icons.manage_accounts,
+              null,
+            ),
+            ('گردش کار', 'مسیرها و تأییدها', Icons.alt_route, null),
+            (
+              'حسابداری ایران',
+              'مالیات و خروجی قانونی',
+              Icons.flag_outlined,
+              null,
+            ),
+            (
+              'اطلاعات پایه',
+              'کالا، خدمت و طرف‌حساب',
+              Icons.dataset_outlined,
+              null,
+            ),
+            (
+              'قفل و کنترل',
+              'دوره و رویداد حسابرسی',
+              Icons.lock_outline,
+              null,
+            ),
           ])
             SizedBox(
               width: 330,
-              height: 130,
+              height: 142,
               child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(18),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CircleAvatar(child: Icon(item.$3)),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(item.$1,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: item.$4 == null
+                      ? null
+                      : () => context
+                          .read<OrganizationSettingsCubit>()
+                          .show(item.$4!),
+                  child: Padding(
+                    padding: const EdgeInsets.all(18),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CircleAvatar(child: Icon(item.$3)),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.$1,
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.w800)),
-                            Text(item.$2,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              Text(
+                                item.$2,
                                 style: const TextStyle(
-                                    color: AsoudColors.muted, fontSize: 12)),
-                          ],
+                                  color: AsoudColors.muted,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                item.$4 == null
+                                    ? 'از منوی اصلی سامانه'
+                                    : 'باز کردن تنظیمات',
+                                style: TextStyle(
+                                  color: item.$4 == null
+                                      ? AsoudColors.muted
+                                      : Theme.of(context).colorScheme.primary,
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                        Icon(
+                          item.$4 == null
+                              ? Icons.info_outline
+                              : Icons.chevron_left,
+                          size: 18,
+                          color: AsoudColors.muted,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -873,6 +942,7 @@ class _FiscalYearsCard extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.w900),
                 ),
                 subtitle: Text('سال‌های قابل استفاده برای شرکت فعال'),
+                trailing: Chip(label: Text('فقط مشاهده')),
               ),
               if (rows.isEmpty)
                 const Text('سال مالی تعریف نشده است.')
@@ -915,6 +985,7 @@ class _PeriodLocksCard extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.w900),
                 ),
                 subtitle: Text('بازه‌های بسته‌شده در شرکت فعال'),
+                trailing: Chip(label: Text('فقط مشاهده')),
               ),
               if (rows.isEmpty)
                 const Text('هیچ دوره‌ای قفل نشده است.')
@@ -969,10 +1040,6 @@ class _AccountFormDrawer extends StatelessWidget {
     final parentValue = parents.any((row) => row.name == draft.parentAccount)
         ? draft.parentAccount
         : null;
-    final availableTypes = snapshot.detailTypes
-        .where((type) => !draft.rules.any((rule) => rule.detailType == type))
-        .toList(growable: false);
-
     return Positioned.fill(
       child: ColoredBox(
         color: Colors.black38,
@@ -1124,26 +1191,14 @@ class _AccountFormDrawer extends StatelessWidget {
                                     ?.copyWith(fontWeight: FontWeight.w900),
                               ),
                             ),
-                            if (!draft.isGroup && availableTypes.isNotEmpty)
-                              SizedBox(
-                                width: 260,
-                                child: DropdownButtonFormField<String>(
-                                  value: null,
-                                  decoration: const InputDecoration(
-                                      labelText: 'افزودن نوع تفصیلی'),
-                                  items: [
-                                    for (final type in availableTypes)
-                                      DropdownMenuItem(
-                                        value: type,
-                                        child: Text(_detailTypeLabel(type)),
-                                      ),
-                                  ],
-                                  onChanged: (value) {
-                                    if (value != null) {
-                                      cubit.addDetailRule(value);
-                                    }
-                                  },
-                                ),
+                            if (!draft.isGroup)
+                              FilledButton.icon(
+                                onPressed: snapshot.detailTypes.length ==
+                                        draft.rules.length
+                                    ? null
+                                    : cubit.startDetailRule,
+                                icon: const Icon(Icons.add),
+                                label: const Text('ایجاد قاعده'),
                               ),
                           ],
                         ),
@@ -1267,6 +1322,11 @@ class _DetailRuleEditor extends StatelessWidget {
                 ),
                 const Text('اجباری'),
                 IconButton(
+                  tooltip: 'ویرایش در فرم قاعده',
+                  onPressed: () => cubit.startDetailRule(index),
+                  icon: const Icon(Icons.edit_outlined),
+                ),
+                IconButton(
                   tooltip: 'حذف قاعده',
                   onPressed: () => cubit.removeDetailRule(index),
                   icon: const Icon(Icons.delete_outline, color: Colors.red),
@@ -1330,6 +1390,138 @@ class _DetailRuleEditor extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _AccountDetailRuleDrawer extends StatelessWidget {
+  const _AccountDetailRuleDrawer({
+    required this.draft,
+    required this.snapshot,
+  });
+
+  final AccountDetailRuleDraft draft;
+  final AccountRulesSnapshot snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<OrganizationSettingsCubit>();
+    final accountDraft = cubit.state.accountDraft;
+    final usedTypes = accountDraft?.rules
+            .where((item) => item.detailType != draft.detailType)
+            .map((item) => item.detailType)
+            .toSet() ??
+        const <String>{};
+    final allowedTypes = snapshot.detailTypes
+        .where((type) => !usedTypes.contains(type))
+        .toList(growable: false);
+    final matchingDetails = snapshot.floatingDetails
+        .where((row) => row['detail_type']?.toString() == draft.detailType)
+        .toList(growable: false);
+    final defaultValue = matchingDetails.any(
+      (row) => row['name']?.toString() == draft.defaultFloatingDetail,
+    )
+        ? draft.defaultFloatingDetail
+        : '';
+    return _SettingsDrawer(
+      title: cubit.state.detailRuleIndex == -1
+          ? 'ایجاد قاعده اتصال حساب و تفصیلی'
+          : 'ویرایش قاعده اتصال حساب و تفصیلی',
+      onClose: cubit.cancelDetailRule,
+      onSave: cubit.applyDetailRule,
+      saving: false,
+      children: [
+        TextFormField(
+          initialValue: accountDraft == null
+              ? ''
+              : '${accountDraft.accountNumber} — ${accountDraft.accountName}',
+          readOnly: true,
+          decoration: const InputDecoration(labelText: 'حساب سندپذیر'),
+        ),
+        DropdownButtonFormField<String>(
+          value: draft.detailType.isEmpty ? null : draft.detailType,
+          decoration: const InputDecoration(labelText: 'نوع تفصیلی مجاز *'),
+          items: [
+            for (final type in allowedTypes)
+              DropdownMenuItem(
+                value: type,
+                child: Text(_detailTypeLabel(type)),
+              ),
+          ],
+          onChanged: (value) =>
+              cubit.updateDetailRuleDraft(detailType: value ?? ''),
+        ),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          value: draft.enabled,
+          title: const Text('قاعده فعال باشد'),
+          onChanged: (value) => cubit.updateDetailRuleDraft(enabled: value),
+        ),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          value: draft.required,
+          title: const Text('انتخاب تفصیلی اجباری باشد'),
+          subtitle: const Text(
+            'برای هر حساب در هر تاریخ فقط یک نوع تفصیلی می‌تواند اجباری باشد.',
+          ),
+          onChanged: draft.enabled
+              ? (value) => cubit.updateDetailRuleDraft(required: value)
+              : null,
+        ),
+        DropdownButtonFormField<String>(
+          value: defaultValue,
+          decoration: const InputDecoration(labelText: 'تفصیلی پیش‌فرض'),
+          items: [
+            const DropdownMenuItem(value: '', child: Text('بدون پیش‌فرض')),
+            for (final detail in matchingDetails)
+              DropdownMenuItem(
+                value: detail['name']?.toString(),
+                child: Text(detail['detail_title']?.toString() ?? '-'),
+              ),
+          ],
+          onChanged: draft.detailType.isEmpty
+              ? null
+              : (value) => cubit.updateDetailRuleDraft(
+                    defaultFloatingDetail: value ?? '',
+                  ),
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                initialValue: draft.validFrom,
+                decoration: const InputDecoration(
+                  labelText: 'معتبر از',
+                  hintText: 'YYYY-MM-DD',
+                ),
+                onChanged: (value) =>
+                    cubit.updateDetailRuleDraft(validFrom: value),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: TextFormField(
+                initialValue: draft.validTo,
+                decoration: const InputDecoration(
+                  labelText: 'معتبر تا',
+                  hintText: 'YYYY-MM-DD',
+                ),
+                onChanged: (value) =>
+                    cubit.updateDetailRuleDraft(validTo: value),
+              ),
+            ),
+          ],
+        ),
+        const Card(
+          color: Color(0xffeff6ff),
+          child: Padding(
+            padding: EdgeInsets.all(14),
+            child: Text(
+              'این قاعده پس از ذخیره حساب در Backend اعمال می‌شود و هنگام ثبت سند حسابداری دوباره کنترل خواهد شد.',
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
