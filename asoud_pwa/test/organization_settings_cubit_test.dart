@@ -51,7 +51,7 @@ void main() {
     await cubit.close();
   });
 
-  test('creates a postable account with one required detail rule', () async {
+  test('creates a postable account with selected detail groups', () async {
     final gateway = _FakeGateway();
     final cubit = OrganizationSettingsCubit(
       gateway,
@@ -66,13 +66,62 @@ void main() {
       parentAccount: 'Current Assets - ASOUD',
       accountType: 'Receivable',
     );
-    cubit.startDetailRule();
-    cubit.updateDetailRuleDraft(detailType: 'Customer', required: true);
-    expect(cubit.applyDetailRule(), isTrue);
+    cubit.toggleAccountDetailGroup(
+      const FloatingDetailGroup(
+        name: 'Customers - ASOUD',
+        title: 'مشتریان',
+        code: 'CUS',
+        detailType: 'Customer',
+      ),
+      true,
+    );
     expect(await cubit.saveChartAccount(), isTrue);
+    expect(gateway.savedAccounts.single.accountLevel, 'Subsidiary');
+    expect(gateway.savedAccounts.single.isGroup, isFalse);
     expect(gateway.savedAccounts.single.rules.single.detailType, 'Customer');
-    expect(gateway.savedAccounts.single.rules.single.required, isTrue);
+    expect(
+      gateway.savedAccounts.single.rules.single.detailGroup,
+      'Customers - ASOUD',
+    );
     expect(cubit.state.accountDraft, isNull);
+    await cubit.close();
+  });
+
+  test('prefills child and sibling account levels from the tree', () async {
+    final gateway = _FakeGateway();
+    final cubit = OrganizationSettingsCubit(
+      gateway,
+      context,
+      initialView: SettingsView.financial,
+    );
+    await cubit.load();
+    final group = cubit.state.accountRules!.accounts.single;
+
+    cubit.startChildAccount(group);
+    expect(cubit.state.accountDraft!.parentAccount, group.name);
+    expect(cubit.state.accountDraft!.accountLevel, 'Ledger');
+    expect(cubit.state.accountDraft!.isGroup, isTrue);
+
+    const ledger = ChartAccount(
+      name: 'Current Assets Ledger - ASOUD',
+      accountName: 'دارایی‌های جاری کل',
+      accountNumber: '1201',
+      accountLevel: 'Ledger',
+      parentAccount: 'Current Assets - ASOUD',
+      rootType: 'Asset',
+      reportType: 'Balance Sheet',
+      accountType: '',
+      accountCurrency: 'IRR',
+      isGroup: true,
+      disabled: false,
+    );
+    cubit.startChildAccount(ledger);
+    expect(cubit.state.accountDraft!.accountLevel, 'Subsidiary');
+    expect(cubit.state.accountDraft!.isGroup, isFalse);
+
+    cubit.startSiblingAccount(ledger);
+    expect(cubit.state.accountDraft!.parentAccount, ledger.parentAccount);
+    expect(cubit.state.accountDraft!.accountLevel, 'Ledger');
     await cubit.close();
   });
 
@@ -192,11 +241,20 @@ class _FakeGateway implements OrganizationGateway {
       const AccountRulesSnapshot(
         company: 'ASOUD',
         detailTypes: ['Customer', 'Supplier', 'Employee'],
+        detailGroups: [
+          FloatingDetailGroup(
+            name: 'Customers - ASOUD',
+            title: 'مشتریان',
+            code: 'CUS',
+            detailType: 'Customer',
+          ),
+        ],
         accounts: [
           ChartAccount(
             name: 'Current Assets - ASOUD',
             accountName: 'دارایی‌های جاری',
             accountNumber: '12',
+            accountLevel: 'Group',
             parentAccount: 'Assets - ASOUD',
             rootType: 'Asset',
             reportType: 'Balance Sheet',

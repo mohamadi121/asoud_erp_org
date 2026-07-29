@@ -1,13 +1,65 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900">
-<style>.t{font-family:Tahoma,Arial}.h{font-size:22px;font-weight:700}.l{font-size:14px}.m{fill:#64748b}.f{fill:#fff;stroke:#dbe3ef}.b{fill:#2563eb}</style>
-<rect width="1440" height="900" fill="#f4f7fb"/><rect width="1440" height="138" fill="#fff"/><text x="1380" y="42" text-anchor="end" class="t h">آسود ERP</text><text x="1220" y="40" text-anchor="end" class="t l m">تنظیمات › تنظیمات مالی</text><text x="1380" y="105" text-anchor="end" class="t h">تفصیلی‌های شناور</text>
-<rect x="55" y="170" width="800" height="650" rx="14" fill="#fff"/><text x="815" y="215" text-anchor="end" class="t h">تفصیلی‌های شرکت فعال</text><rect x="82" y="250" width="745" height="82" rx="10" fill="#f8fafc" stroke="#e2e8f0"/><text x="790" y="282" text-anchor="end" class="t l" font-weight="700">شرکت نمونه پارس</text><text x="790" y="307" text-anchor="end" class="t l m">10021 • مشتری</text>
-<rect width="1440" height="900" fill="#0f172a" opacity=".22"/><rect x="900" width="540" height="900" fill="#fff"/><text x="1400" y="52" text-anchor="end" class="t h">ایجاد تفصیلی شناور</text><text x="1400" y="78" text-anchor="end" class="t l m">کد استفاده برای شرکت فعال مستقل است.</text><line x1="920" y1="100" x2="1420" y2="100" stroke="#e2e8f0"/>
-<text x="1400" y="140" text-anchor="end" class="t l m">عنوان تفصیلی *</text><rect x="930" y="153" width="470" height="48" rx="8" class="f"/><text x="1375" y="183" text-anchor="end" class="t l">شرکت نمونه پارس</text>
-<text x="1400" y="230" text-anchor="end" class="t l m">گروه تفصیلی *</text><rect x="930" y="243" width="470" height="48" rx="8" class="f"/><text x="1375" y="273" text-anchor="end" class="t l">مشتریان تجاری — مشتری⌄</text>
-<text x="1400" y="320" text-anchor="end" class="t l m">کد در شرکت فعال *</text><rect x="930" y="333" width="470" height="48" rx="8" class="f"/><text x="1375" y="363" text-anchor="end" class="t l">10021</text>
-<text x="1400" y="410" text-anchor="end" class="t l m">نوع مرجع اختیاری</text><rect x="930" y="423" width="470" height="48" rx="8" class="f"/><text x="1375" y="453" text-anchor="end" class="t l">Customer</text>
-<text x="1400" y="500" text-anchor="end" class="t l m">رکورد مرجع اختیاری</text><rect x="930" y="513" width="470" height="48" rx="8" class="f"/><text x="1375" y="543" text-anchor="end" class="t l">CUST-0001</text>
-<rect x="1352" y="605" width="48" height="26" rx="13" class="b"/><circle cx="1386" cy="618" r="10" fill="#fff"/><text x="1335" y="624" text-anchor="end" class="t l">فعال در سطح هلدینگ</text><rect x="1352" y="655" width="48" height="26" rx="13" class="b"/><circle cx="1386" cy="668" r="10" fill="#fff"/><text x="1335" y="674" text-anchor="end" class="t l">فعال در شرکت انتخاب‌شده</text>
-<line x1="920" y1="820" x2="1420" y2="820" stroke="#e2e8f0"/><rect x="1245" y="840" width="155" height="44" rx="8" class="b"/><text x="1322" y="868" text-anchor="middle" class="t l" fill="#fff">ذخیره تفصیلی</text><rect x="1110" y="840" width="115" height="44" rx="8" class="f"/><text x="1168" y="868" text-anchor="middle" class="t l">انصراف</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+<defs>
+ <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="5" stdDeviation="9" flood-color="#12213d" flood-opacity=".08"/></filter>
+ <style>.t{font-family:Vazirmatn,Tahoma,"Segoe UI",sans-serif}.dark{fill:#12213d}.muted{fill:#64748b}.card,.panel{fill:#fff;stroke:#dfe5ee}.ico{fill:none;stroke:#12213d;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.label{font-family:Vazirmatn,Tahoma,sans-serif;fill:#334155;font-size:11px}.value{font-family:Vazirmatn,Tahoma,sans-serif;fill:#12213d;font-size:13px;font-weight:600}.section{fill:#f8fafd;stroke:#dfe5ee}.blue{fill:#155bd7}</style>
+</defs>
+<rect width="1920" height="1080" fill="#f5f7fb"/>
+
+<!-- primary navigation -->
+<rect width="1920" height="66" fill="#fff"/><line x1="0" y1="65.5" x2="1920" y2="65.5" stroke="#dfe5ee"/>
+<rect x="1848" y="14" width="38" height="38" rx="8" fill="#155bd7"/><path d="M1867 21l10 12-10 12-10-12z" fill="none" stroke="#fff" stroke-width="2"/>
+<text x="1835" y="40" class="t dark" font-size="22" font-weight="800" text-anchor="end">آسود ERP</text>
+<g class="t" font-size="14" fill="#12213d" text-anchor="middle"><text x="1644" y="41">داشبورد</text><text x="1515" y="41">مالی</text><text x="1400" y="41">خزانه‌داری</text><text x="1285" y="41">فروش</text><text x="1180" y="41">خرید</text><text x="1080" y="41">انبار</text><text x="965" y="41">منابع انسانی</text><text x="850" y="41">گزارش‌ها</text><text x="735" y="41" fill="#155bd7" font-weight="700">تنظیمات</text><rect x="686" y="63" width="98" height="3" fill="#155bd7"/></g>
+<rect x="384" y="13" width="252" height="40" rx="9" fill="#f8fafd" stroke="#dfe5ee"/><circle cx="414" cy="33" r="7" fill="none" stroke="#155bd7" stroke-width="2"/><path d="M419 38l6 6" stroke="#155bd7" stroke-width="2"/><text x="611" y="38" class="t muted" font-size="12" text-anchor="end">جست‌وجوی ماژول یا فرمان...</text>
+<circle cx="350" cy="33" r="7" class="ico"/><path d="M350 23v2M342 43h16" class="ico"/><circle cx="298" cy="32" r="8" class="ico"/><text x="298" y="37" font-family="Arial" font-size="13" text-anchor="middle">?</text>
+<circle cx="224" cy="33" r="20" fill="#edf3ff"/><circle cx="224" cy="29" r="6" class="ico"/><path d="M214 44c2-7 18-7 20 0" class="ico"/><text x="193" y="29" class="t dark" font-size="13" font-weight="700" text-anchor="end">مدیر سیستم</text><text x="193" y="46" class="t muted" font-size="10" text-anchor="end">شرکت آسود — دفتر مرکزی</text><path d="M28 25h17M28 33h17M28 41h17" class="ico"/>
+
+<!-- financial settings ribbon -->
+<rect y="66" width="1920" height="116" fill="#f8fafd"/><line x1="0" y1="181.5" x2="1920" y2="181.5" stroke="#dfe5ee"/>
+<g class="t dark" font-size="11" text-anchor="middle">
+ <path d="M1805 96h18v20h-18zM1810 91h8v5M1810 102h8M1810 108h8" class="ico"/><text x="1814" y="135">داشبورد تنظیمات</text>
+ <path d="M1710 98l10-7 10 7v19h-20zM1716 117v-10h8v10" class="ico"/><text x="1720" y="135">ساختار سازمانی</text>
+</g>
+<rect x="1578" y="77" width="80" height="72" rx="10" fill="#edf3ff"/><path d="M1607 94h22v24h-22zM1612 101h12M1612 107h12M1612 113h8" fill="none" stroke="#155bd7" stroke-width="2"/><text x="1618" y="135" class="t" fill="#155bd7" font-size="11" font-weight="700" text-anchor="middle">تنظیمات مالی</text>
+<g class="t dark" font-size="11" text-anchor="middle">
+ <path d="M1510 95h22v22h-22zM1515 101h12M1515 107h7M1515 113h10" class="ico"/><text x="1521" y="135">شماره‌گذاری</text>
+ <path d="M1406 104a7 7 0 1 0 14 0a7 7 0 1 0-14 0M1399 120c2-9 26-9 28 0" class="ico"/><text x="1413" y="135">کاربران و نقش‌ها</text>
+ <path d="M1304 104h28M1312 96l-8 8 8 8M1324 96l8 8-8 8" class="ico"/><text x="1318" y="135">گردش تأیید</text>
+ <path d="M1213 94h22v24h-22zM1213 104h22M1224 94v24" class="ico"/><text x="1224" y="135">حسابداری ایران</text>
+ <path d="M1112 97h23v19h-23zM1117 92h13v5M1118 104h11M1118 110h8" class="ico"/><text x="1124" y="135">داده‌های پایه</text>
+ <path d="M1018 103v-5a8 8 0 0 1 16 0v5M1015 103h22v17h-22z" class="ico"/><text x="1026" y="135">قفل و کنترل</text>
+</g>
+<line x1="970" y1="78" x2="970" y2="166" stroke="#dfe5ee"/>
+<rect x="716" y="91" width="230" height="38" rx="8" fill="#fff" stroke="#dfe5ee"/><text x="926" y="115" class="t dark" font-size="12" text-anchor="end">شرکت آسود دمو</text>
+<rect x="526" y="91" width="175" height="38" rx="8" fill="#fff" stroke="#dfe5ee"/><text x="681" y="115" class="t dark" font-size="12" text-anchor="end">دفتر مرکزی</text>
+<rect x="335" y="91" width="176" height="38" rx="8" fill="#fff" stroke="#dfe5ee"/><text x="491" y="115" class="t dark" font-size="12" text-anchor="end">سال مالی ۱۴۰۶</text>
+<text x="926" y="155" class="t muted" font-size="10" text-anchor="end">دامنه تنظیمات جاری: Company</text>
+
+<!-- page header -->
+<rect y="182" width="1920" height="123" fill="#fff"/>
+<text x="1848" y="218" class="t muted" font-size="11" text-anchor="end">تنظیمات مالی / تفصیلی‌های شناور / ایجاد تفصیلی</text>
+<text x="1848" y="255" class="t dark" font-size="26" font-weight="800" text-anchor="end">ایجاد تفصیلی شناور</text>
+<text x="1848" y="282" class="t muted" font-size="12" text-anchor="end">ایجاد شناسه تفصیلی با وضعیت مستقل برای Company فعال</text>
+<rect x="72" y="220" width="148" height="42" rx="8" fill="#155bd7"/><text x="196" y="246" class="t" fill="#fff" font-size="12" font-weight="700" text-anchor="end">ذخیره تفصیلی</text>
+<rect x="232" y="220" width="96" height="42" rx="8" fill="#fff" stroke="#b9c7dc"/><text x="304" y="246" class="t dark" font-size="12" text-anchor="end">انصراف</text>
+
+<rect x="70" y="327" width="350" height="650" rx="10" class="card"/>
+<text x="390" y="368" class="t dark" font-size="17" font-weight="800" text-anchor="end">راهنمای تفصیلی شناور</text>
+<circle cx="378" cy="424" r="22" fill="#edf3ff"/><text x="378" y="430" class="t" fill="#155bd7" font-size="15" text-anchor="middle">۱</text><text x="340" y="420" class="t dark" font-size="12" font-weight="700" text-anchor="end">انتخاب گروه</text><text x="340" y="444" class="t muted" font-size="10" text-anchor="end">نوع تفصیلی از گروه انتخاب‌شده تعیین می‌شود.</text>
+<circle cx="378" cy="496" r="22" fill="#edf3ff"/><text x="378" y="502" class="t" fill="#155bd7" font-size="15" text-anchor="middle">غ²</text><text x="340" y="492" class="t dark" font-size="12" font-weight="700" text-anchor="end">شناسه یکتا</text><text x="340" y="516" class="t muted" font-size="10" text-anchor="end">کد در هلدینگ یکتا و سوابق آن پایدار است.</text>
+<circle cx="378" cy="568" r="22" fill="#edf3ff"/><text x="378" y="574" class="t" fill="#155bd7" font-size="15" text-anchor="middle">غ³</text><text x="340" y="564" class="t dark" font-size="12" font-weight="700" text-anchor="end">وضعیت Company</text><text x="340" y="588" class="t muted" font-size="10" text-anchor="end">فعال یا غیرفعال بودن برای هر شرکت مستقل است.</text>
+<rect x="92" y="646" width="306" height="130" rx="9" fill="#fff7e8" stroke="#f1cf8a"/><text x="375" y="680" class="t dark" font-size="12" font-weight="800" text-anchor="end">کنترل مهم</text><text x="375" y="713" class="t muted" font-size="10" text-anchor="end">تفصیلی دارای گردش حذف نمی‌شود و فقط برای</text><text x="375" y="737" class="t muted" font-size="10" text-anchor="end">Company انتخابی غیرفعال خواهد شد.</text>
+<rect x="440" y="327" width="1410" height="650" rx="10" class="card"/>
+<text x="1815" y="368" class="t dark" font-size="17" font-weight="800" text-anchor="end">مشخصات تفصیلی</text><text x="1815" y="391" class="t muted" font-size="11" text-anchor="end">ایجاد تفصیلی قابل استفاده در اسناد و گزارش‌های چندشرکتی</text>
+<rect x="470" y="416" width="1350" height="286" rx="9" class="section"/><text x="1785" y="451" class="t dark" font-size="13" font-weight="800" text-anchor="end">۱. هویت تفصیلی</text>
+<text x="1785" y="489" class="label" text-anchor="end">گروه تفصیلی *</text><rect x="1370" y="501" width="415" height="42" rx="8" class="card"/><text x="1755" y="528" class="value" text-anchor="end">مشتریان تجاری⌄</text>
+<text x="1325" y="489" class="label" text-anchor="end">نوع تفصیلی</text><rect x="910" y="501" width="415" height="42" rx="8" fill="#f1f4f8" stroke="#dfe5ee"/><text x="1295" y="528" class="value" text-anchor="end">مشتری</text>
+<text x="865" y="489" class="label" text-anchor="end">کد تفصیلی *</text><rect x="495" y="501" width="370" height="42" rx="8" class="card"/><text x="835" y="528" class="value" text-anchor="end">CUS-10021</text>
+<text x="1785" y="579" class="label" text-anchor="end">عنوان فارسی *</text><rect x="1370" y="591" width="415" height="42" rx="8" class="card"/><text x="1755" y="618" class="value" text-anchor="end">شرکت نمونه پارس</text>
+<text x="1325" y="579" class="label" text-anchor="end">عنوان انگلیسی</text><rect x="910" y="591" width="415" height="42" rx="8" class="card"/><text x="1295" y="618" class="value" text-anchor="end">Pars Sample Co.</text>
+<rect x="470" y="722" width="1350" height="178" rx="9" class="section"/><text x="1785" y="758" class="t dark" font-size="13" font-weight="800" text-anchor="end">۲. وضعیت در شرکت فعال</text>
+<text x="1785" y="795" class="label" text-anchor="end">Company *</text><rect x="1370" y="807" width="415" height="42" rx="8" fill="#f1f4f8" stroke="#dfe5ee"/><text x="1755" y="834" class="value" text-anchor="end">شرکت آسود دمو</text>
+<rect x="1230" y="813" width="70" height="30" rx="15" fill="#155bd7"/><circle cx="1285" cy="828" r="12" fill="#fff"/><text x="1208" y="832" class="t dark" font-size="11" text-anchor="end">در این Company فعال باشد</text>
+<rect x="500" y="866" width="1285" height="20" rx="6" fill="#eaf7f0"/><text x="1755" y="881" class="t" fill="#137344" font-size="9" text-anchor="end">شناسه تکراری نیست و گروه انتخابی فعال است.</text>
+<text x="960" y="1058" class="t muted" font-size="10" text-anchor="middle">ASOUD ERP — Financial Settings — پوسته اصلی ثابت</text>
 </svg>

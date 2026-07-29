@@ -396,6 +396,7 @@ class ChartAccount extends Equatable {
     required this.name,
     required this.accountName,
     required this.accountNumber,
+    required this.accountLevel,
     required this.parentAccount,
     required this.rootType,
     required this.reportType,
@@ -409,6 +410,11 @@ class ChartAccount extends Equatable {
         name: json['name']?.toString() ?? '',
         accountName: json['account_name']?.toString() ?? '',
         accountNumber: json['account_number']?.toString() ?? '',
+        accountLevel: json['asoud_account_level']?.toString().isNotEmpty == true
+            ? json['asoud_account_level'].toString()
+            : (json['is_group'] == 1 || json['is_group'] == true
+                ? 'Group'
+                : 'Subsidiary'),
         parentAccount: json['parent_account']?.toString() ?? '',
         rootType: json['root_type']?.toString() ?? '',
         reportType: json['report_type']?.toString() ?? '',
@@ -421,6 +427,7 @@ class ChartAccount extends Equatable {
   final String name;
   final String accountName;
   final String accountNumber;
+  final String accountLevel;
   final String parentAccount;
   final String rootType;
   final String reportType;
@@ -434,6 +441,7 @@ class ChartAccount extends Equatable {
         name,
         accountName,
         accountNumber,
+        accountLevel,
         parentAccount,
         rootType,
         reportType,
@@ -447,6 +455,7 @@ class ChartAccount extends Equatable {
 class AccountDetailRuleDraft extends Equatable {
   const AccountDetailRuleDraft({
     required this.detailType,
+    this.detailGroup = '',
     this.required = false,
     this.enabled = true,
     this.defaultFloatingDetail = '',
@@ -457,6 +466,7 @@ class AccountDetailRuleDraft extends Equatable {
   factory AccountDetailRuleDraft.fromJson(Map<String, dynamic> json) =>
       AccountDetailRuleDraft(
         detailType: json['detail_type']?.toString() ?? '',
+        detailGroup: json['detail_group']?.toString() ?? '',
         required: json['required'] == 1 || json['required'] == true,
         enabled: json['enabled'] == 1 || json['enabled'] == true,
         defaultFloatingDetail:
@@ -466,6 +476,7 @@ class AccountDetailRuleDraft extends Equatable {
       );
 
   final String detailType;
+  final String detailGroup;
   final bool required;
   final bool enabled;
   final String defaultFloatingDetail;
@@ -474,6 +485,7 @@ class AccountDetailRuleDraft extends Equatable {
 
   AccountDetailRuleDraft copyWith({
     String? detailType,
+    String? detailGroup,
     bool? required,
     bool? enabled,
     String? defaultFloatingDetail,
@@ -482,6 +494,7 @@ class AccountDetailRuleDraft extends Equatable {
   }) =>
       AccountDetailRuleDraft(
         detailType: detailType ?? this.detailType,
+        detailGroup: detailGroup ?? this.detailGroup,
         required: required ?? this.required,
         enabled: enabled ?? this.enabled,
         defaultFloatingDetail:
@@ -492,6 +505,7 @@ class AccountDetailRuleDraft extends Equatable {
 
   Map<String, dynamic> toJson() => {
         'detail_type': detailType,
+        'detail_group': detailGroup.trim().isEmpty ? null : detailGroup,
         'required': required,
         'enabled': enabled,
         'default_floating_detail':
@@ -503,6 +517,7 @@ class AccountDetailRuleDraft extends Equatable {
   @override
   List<Object?> get props => [
         detailType,
+        detailGroup,
         required,
         enabled,
         defaultFloatingDetail,
@@ -515,6 +530,7 @@ class AccountRulesSnapshot extends Equatable {
   const AccountRulesSnapshot({
     required this.company,
     this.detailTypes = const [],
+    this.detailGroups = const [],
     this.floatingDetails = const [],
     this.accounts = const [],
     this.rules = const {},
@@ -538,6 +554,10 @@ class AccountRulesSnapshot extends Equatable {
       detailTypes: (json['detail_types'] as List<dynamic>? ?? const [])
           .map((value) => value.toString())
           .toList(growable: false),
+      detailGroups: (json['detail_groups'] as List<dynamic>? ?? const [])
+          .whereType<Map<String, dynamic>>()
+          .map(FloatingDetailGroup.fromJson)
+          .toList(growable: false),
       floatingDetails: (json['floating_details'] as List<dynamic>? ?? const [])
           .whereType<Map<String, dynamic>>()
           .map(Map<String, dynamic>.unmodifiable)
@@ -552,13 +572,20 @@ class AccountRulesSnapshot extends Equatable {
 
   final String company;
   final List<String> detailTypes;
+  final List<FloatingDetailGroup> detailGroups;
   final List<Map<String, dynamic>> floatingDetails;
   final List<ChartAccount> accounts;
   final Map<String, List<AccountDetailRuleDraft>> rules;
 
   @override
-  List<Object?> get props =>
-      [company, detailTypes, floatingDetails, accounts, rules];
+  List<Object?> get props => [
+        company,
+        detailTypes,
+        detailGroups,
+        floatingDetails,
+        accounts,
+        rules,
+      ];
 }
 
 class ChartAccountDraft extends Equatable {
@@ -566,6 +593,7 @@ class ChartAccountDraft extends Equatable {
     this.name = '',
     this.accountName = '',
     this.accountNumber = '',
+    this.accountLevel = 'Subsidiary',
     this.parentAccount = '',
     this.accountType = '',
     this.accountCurrency = 'IRR',
@@ -582,6 +610,7 @@ class ChartAccountDraft extends Equatable {
         name: account.name,
         accountName: account.accountName,
         accountNumber: account.accountNumber,
+        accountLevel: account.accountLevel,
         parentAccount: account.parentAccount,
         accountType: account.accountType,
         accountCurrency: account.accountCurrency,
@@ -593,6 +622,7 @@ class ChartAccountDraft extends Equatable {
   final String name;
   final String accountName;
   final String accountNumber;
+  final String accountLevel;
   final String parentAccount;
   final String accountType;
   final String accountCurrency;
@@ -604,6 +634,7 @@ class ChartAccountDraft extends Equatable {
     String? name,
     String? accountName,
     String? accountNumber,
+    String? accountLevel,
     String? parentAccount,
     String? accountType,
     String? accountCurrency,
@@ -615,6 +646,7 @@ class ChartAccountDraft extends Equatable {
         name: name ?? this.name,
         accountName: accountName ?? this.accountName,
         accountNumber: accountNumber ?? this.accountNumber,
+        accountLevel: accountLevel ?? this.accountLevel,
         parentAccount: parentAccount ?? this.parentAccount,
         accountType: accountType ?? this.accountType,
         accountCurrency: accountCurrency ?? this.accountCurrency,
@@ -627,6 +659,7 @@ class ChartAccountDraft extends Equatable {
         if (name.isNotEmpty) 'name': name,
         'account_name': accountName,
         'account_number': accountNumber,
+        'account_level': accountLevel,
         'parent_account': parentAccount,
         'account_type': accountType,
         'account_currency': accountCurrency,
@@ -640,6 +673,7 @@ class ChartAccountDraft extends Equatable {
         name,
         accountName,
         accountNumber,
+        accountLevel,
         parentAccount,
         accountType,
         accountCurrency,

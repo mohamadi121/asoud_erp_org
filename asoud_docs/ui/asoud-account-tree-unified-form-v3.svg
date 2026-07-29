@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#10243f" flood-opacity=".14"/>
+    </filter>
+    <style>
+      text { font-family: Tahoma, Arial, sans-serif; fill: #18243a }
+      .muted { fill: #6d7890 }
+      .small { font-size: 15px }
+      .label { font-size: 16px; font-weight: 700 }
+      .title { font-size: 28px; font-weight: 800 }
+      .field { fill: #fff; stroke: #d8dfeb; stroke-width: 2 }
+      .row { fill: #fff; stroke: #e2e7f0 }
+      .chip { fill: #edf5ff; stroke: #b8d6ff }
+      .button { fill: #1769e0 }
+    </style>
+  </defs>
+  <rect width="1600" height="900" fill="#f2f5fa"/>
+  <rect x="42" y="36" width="1516" height="828" rx="24" fill="#fff" filter="url(#shadow)"/>
+
+  <rect x="42" y="36" width="860" height="828" rx="24" fill="#f8fafd"/>
+  <text x="92" y="92" class="title">نمودار درختی حساب‌ها</text>
+  <text x="92" y="124" class="muted small">برای ویرایش روی ردیف کلیک کنید؛ برای ساخت حساب از دکمه‌های هر سطح استفاده کنید.</text>
+  <rect x="694" y="70" width="158" height="48" rx="12" class="button"/>
+  <text x="773" y="101" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">+ حساب جدید</text>
+
+  <g transform="translate(86 158)">
+    <rect width="770" height="76" rx="14" class="row"/>
+    <circle cx="42" cy="38" r="17" fill="#dff0ff"/>
+    <text x="74" y="32" class="label">1 — دارایی‌ها</text>
+    <text x="74" y="55" class="muted small">ریشه نمودار</text>
+    <rect x="450" y="22" width="70" height="32" rx="16" class="chip"/>
+    <text x="485" y="43" text-anchor="middle" class="small">گروه</text>
+    <rect x="536" y="16" width="98" height="44" rx="10" fill="#edf5ff"/>
+    <text x="585" y="44" text-anchor="middle" class="small">+ زیرحساب</text>
+    <rect x="646" y="16" width="100" height="44" rx="10" fill="#f2f4f8"/>
+    <text x="696" y="44" text-anchor="middle" class="small">ویرایش</text>
+  </g>
+  <path d="M116 234v30h30" fill="none" stroke="#b5c0d2" stroke-width="3"/>
+  <g transform="translate(126 264)">
+    <rect width="730" height="76" rx="14" class="row"/>
+    <circle cx="42" cy="38" r="17" fill="#e9e3ff"/>
+    <text x="74" y="32" class="label">11 — دارایی‌های جاری</text>
+    <text x="74" y="55" class="muted small">والد: دارایی‌ها</text>
+    <rect x="410" y="22" width="70" height="32" rx="16" class="chip"/>
+    <text x="445" y="43" text-anchor="middle" class="small">کل</text>
+    <rect x="492" y="16" width="98" height="44" rx="10" fill="#edf5ff"/>
+    <text x="541" y="44" text-anchor="middle" class="small">+ زیرحساب</text>
+    <rect x="600" y="16" width="106" height="44" rx="10" fill="#f2f4f8"/>
+    <text x="653" y="44" text-anchor="middle" class="small">+ هم‌سطح</text>
+  </g>
+  <path d="M156 340v30h30" fill="none" stroke="#b5c0d2" stroke-width="3"/>
+  <g transform="translate(166 370)">
+    <rect width="690" height="76" rx="14" class="row"/>
+    <circle cx="42" cy="38" r="17" fill="#ddf8e8"/>
+    <text x="74" y="32" class="label">1101 — صندوق مرکزی</text>
+    <text x="74" y="55" class="muted small">والد: دارایی‌های جاری</text>
+    <rect x="368" y="22" width="70" height="32" rx="16" fill="#e8f8ee" stroke="#a9dfbd"/>
+    <text x="403" y="43" text-anchor="middle" class="small">معین</text>
+    <rect x="450" y="16" width="106" height="44" rx="10" fill="#f2f4f8"/>
+    <text x="503" y="44" text-anchor="middle" class="small">+ هم‌سطح</text>
+    <rect x="568" y="16" width="98" height="44" rx="10" fill="#f2f4f8"/>
+    <text x="617" y="44" text-anchor="middle" class="small">ویرایش</text>
+  </g>
+  <rect x="86" y="494" width="770" height="142" rx="16" fill="#edf5ff"/>
+  <text x="116" y="532" class="label">رفتار سطح‌ها</text>
+  <text x="116" y="566" class="small">گروه ← امکان ساخت حساب کل</text>
+  <text x="116" y="598" class="small">کل ← امکان ساخت حساب معین</text>
+  <text x="420" y="566" class="small">معین ← سندپذیر و قابل اتصال به گروه تفصیلی</text>
+  <text x="420" y="598" class="small">هم‌سطح ← همان والد و همان سطح را از قبل انتخاب می‌کند</text>
+
+  <g transform="translate(902 36)">
+    <rect width="656" height="828" rx="24" fill="#fff"/>
+    <text x="606" y="58" text-anchor="end" class="title">ایجاد حساب</text>
+    <text x="606" y="88" text-anchor="end" class="muted small">یک فرم برای ایجاد حساب گروه، کل یا معین</text>
+    <line x1="0" y1="116" x2="656" y2="116" stroke="#e0e5ee"/>
+
+    <text x="606" y="158" text-anchor="end" class="label">سطح حساب *</text>
+    <rect x="48" y="174" width="560" height="54" rx="11" class="field"/>
+    <text x="576" y="207" text-anchor="end" font-size="17">کل</text>
+    <text x="72" y="207" class="muted">⌄</text>
+
+    <text x="606" y="265" text-anchor="end" class="label">حساب والد *</text>
+    <rect x="48" y="281" width="560" height="54" rx="11" class="field"/>
+    <text x="576" y="314" text-anchor="end" font-size="17">1 — دارایی‌ها</text>
+
+    <text x="606" y="372" text-anchor="end" class="label">کد و عنوان حساب</text>
+    <rect x="48" y="388" width="210" height="54" rx="11" class="field"/>
+    <text x="234" y="421" text-anchor="end" class="muted small">11</text>
+    <rect x="274" y="388" width="334" height="54" rx="11" class="field"/>
+    <text x="576" y="421" text-anchor="end" class="small">دارایی‌های جاری</text>
+
+    <text x="606" y="479" text-anchor="end" class="label">نوع حساب</text>
+    <rect x="48" y="495" width="560" height="54" rx="11" class="field"/>
+    <text x="576" y="528" text-anchor="end" class="muted small">اختیاری</text>
+
+    <rect x="48" y="583" width="560" height="88" rx="14" fill="#fff8e8" stroke="#f1d49a"/>
+    <text x="576" y="618" text-anchor="end" class="label">حساب گروه و کل سندپذیر نیستند</text>
+    <text x="576" y="648" text-anchor="end" class="muted small">گروه‌های تفصیلی فقط در سطح «معین» نمایش داده می‌شوند.</text>
+
+    <rect x="48" y="732" width="154" height="54" rx="12" fill="#eef1f6"/>
+    <text x="125" y="765" text-anchor="middle" class="label">انصراف</text>
+    <rect x="218" y="732" width="390" height="54" rx="12" class="button"/>
+    <text x="413" y="765" text-anchor="middle" font-size="18" font-weight="700" fill="#fff">ذخیره حساب</text>
+  </g>
+</svg>

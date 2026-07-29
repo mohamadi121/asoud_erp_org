@@ -8,7 +8,7 @@ enum OrganizationPhase { initial, loading, ready, saving, failure }
 
 enum SettingsView { dashboard, structure, financial }
 
-enum FinancialSection { general, chartOfAccounts, floatingDetails, dimensions }
+enum FinancialSection { general, chartOfAccounts, floatingDetails }
 
 class OrganizationSettingsState extends Equatable {
   const OrganizationSettingsState({
@@ -19,8 +19,6 @@ class OrganizationSettingsState extends Equatable {
     this.financialDraft,
     this.accountRules,
     this.accountDraft,
-    this.detailRuleDraft,
-    this.detailRuleIndex,
     this.detailManagement,
     this.detailGroupDraft,
     this.floatingDetailDraft,
@@ -40,8 +38,6 @@ class OrganizationSettingsState extends Equatable {
   final FinancialSettingsDraft? financialDraft;
   final AccountRulesSnapshot? accountRules;
   final ChartAccountDraft? accountDraft;
-  final AccountDetailRuleDraft? detailRuleDraft;
-  final int? detailRuleIndex;
   final FloatingDetailManagementSnapshot? detailManagement;
   final FloatingDetailGroupDraft? detailGroupDraft;
   final FloatingDetailDraft? floatingDetailDraft;
@@ -61,8 +57,6 @@ class OrganizationSettingsState extends Equatable {
     FinancialSettingsDraft? financialDraft,
     AccountRulesSnapshot? accountRules,
     ChartAccountDraft? accountDraft,
-    AccountDetailRuleDraft? detailRuleDraft,
-    int? detailRuleIndex,
     FloatingDetailManagementSnapshot? detailManagement,
     FloatingDetailGroupDraft? detailGroupDraft,
     FloatingDetailDraft? floatingDetailDraft,
@@ -75,7 +69,6 @@ class OrganizationSettingsState extends Equatable {
     String? error,
     bool clearDraft = false,
     bool clearAccountDraft = false,
-    bool clearDetailRuleDraft = false,
     bool clearDetailGroupDraft = false,
     bool clearFloatingDetailDraft = false,
     bool clearFiscalYearDraft = false,
@@ -93,12 +86,6 @@ class OrganizationSettingsState extends Equatable {
         accountRules: accountRules ?? this.accountRules,
         accountDraft:
             clearAccountDraft ? null : accountDraft ?? this.accountDraft,
-        detailRuleDraft: clearDetailRuleDraft
-            ? null
-            : detailRuleDraft ?? this.detailRuleDraft,
-        detailRuleIndex: clearDetailRuleDraft
-            ? null
-            : detailRuleIndex ?? this.detailRuleIndex,
         detailManagement: detailManagement ?? this.detailManagement,
         detailGroupDraft: clearDetailGroupDraft
             ? null
@@ -132,8 +119,6 @@ class OrganizationSettingsState extends Equatable {
         financialDraft,
         accountRules,
         accountDraft,
-        detailRuleDraft,
-        detailRuleIndex,
         detailManagement,
         detailGroupDraft,
         floatingDetailDraft,
@@ -376,139 +361,77 @@ class OrganizationSettingsCubit extends Cubit<OrganizationSettingsState> {
     ));
   }
 
+  void startChildAccount(ChartAccount parent) {
+    if (!parent.isGroup) {
+      emit(state.copyWith(
+        error: 'حساب معین سندپذیر است و نمی‌تواند زیرحساب داشته باشد.',
+      ));
+      return;
+    }
+    final accountLevel =
+        parent.accountLevel == 'Group' ? 'Ledger' : 'Subsidiary';
+    emit(state.copyWith(
+      accountDraft: ChartAccountDraft(
+        parentAccount: parent.name,
+        accountLevel: accountLevel,
+        isGroup: accountLevel != 'Subsidiary',
+      ),
+      clearError: true,
+    ));
+  }
+
+  void startSiblingAccount(ChartAccount account) {
+    emit(state.copyWith(
+      accountDraft: ChartAccountDraft(
+        parentAccount: account.parentAccount,
+        accountLevel: account.accountLevel,
+        isGroup: account.accountLevel != 'Subsidiary',
+      ),
+      clearError: true,
+    ));
+  }
+
   void cancelAccount() =>
       emit(state.copyWith(clearAccountDraft: true, clearError: true));
 
   void updateAccount({
     String? accountName,
     String? accountNumber,
+    String? accountLevel,
     String? parentAccount,
     String? accountType,
-    bool? isGroup,
     bool? disabled,
   }) {
     final draft = state.accountDraft;
     if (draft == null) return;
+    final nextLevel = accountLevel ?? draft.accountLevel;
+    final nextIsGroup = nextLevel != 'Subsidiary';
     emit(state.copyWith(
       accountDraft: draft.copyWith(
         accountName: accountName,
         accountNumber: accountNumber,
+        accountLevel: nextLevel,
         parentAccount: parentAccount,
         accountType: accountType,
-        isGroup: isGroup,
+        isGroup: nextIsGroup,
         disabled: disabled,
-        rules: isGroup == true ? const [] : null,
+        rules: nextIsGroup ? const [] : null,
       ),
       clearError: true,
     ));
   }
 
-  void startDetailRule([int? index]) {
+  void toggleAccountDetailGroup(FloatingDetailGroup group, bool selected) {
     final draft = state.accountDraft;
     if (draft == null || draft.isGroup) return;
-    emit(state.copyWith(
-      detailRuleDraft: index == null
-          ? const AccountDetailRuleDraft(detailType: '')
-          : draft.rules[index],
-      detailRuleIndex: index ?? -1,
-      clearError: true,
-    ));
-  }
-
-  void updateDetailRuleDraft({
-    String? detailType,
-    bool? required,
-    bool? enabled,
-    String? defaultFloatingDetail,
-    String? validFrom,
-    String? validTo,
-  }) {
-    final draft = state.detailRuleDraft;
-    if (draft == null) return;
-    emit(state.copyWith(
-      detailRuleDraft: draft.copyWith(
-        detailType: detailType,
-        required: required,
-        enabled: enabled,
-        defaultFloatingDetail: defaultFloatingDetail,
-        validFrom: validFrom,
-        validTo: validTo,
-      ),
-      clearError: true,
-    ));
-  }
-
-  void cancelDetailRule() =>
-      emit(state.copyWith(clearDetailRuleDraft: true, clearError: true));
-
-  bool applyDetailRule() {
-    final account = state.accountDraft;
-    final rule = state.detailRuleDraft;
-    final index = state.detailRuleIndex ?? -1;
-    if (account == null || rule == null || rule.detailType.isEmpty) {
-      emit(state.copyWith(error: 'نوع تفصیلی را انتخاب کنید.'));
-      return false;
+    final rows = [...draft.rules]
+      ..removeWhere((rule) => rule.detailGroup == group.name);
+    if (selected) {
+      rows.add(AccountDetailRuleDraft(
+        detailType: group.detailType,
+        detailGroup: group.name,
+      ));
     }
-    final duplicate = account.rules.indexWhere(
-      (item) => item.detailType == rule.detailType,
-    );
-    if (duplicate >= 0 && duplicate != index) {
-      emit(state.copyWith(
-          error: 'برای این نوع تفصیلی قبلاً قاعده تعریف شده است.'));
-      return false;
-    }
-    var rows = [...account.rules];
-    if (rule.required) {
-      rows = [
-        for (final item in rows) item.copyWith(required: false),
-      ];
-    }
-    if (index >= 0) {
-      rows[index] = rule;
-    } else {
-      rows.add(rule);
-    }
-    emit(state.copyWith(
-      accountDraft: account.copyWith(rules: rows),
-      clearDetailRuleDraft: true,
-      clearError: true,
-    ));
-    return true;
-  }
-
-  void updateDetailRule(
-    int index, {
-    bool? required,
-    bool? enabled,
-    String? defaultFloatingDetail,
-    String? validFrom,
-    String? validTo,
-  }) {
-    final draft = state.accountDraft;
-    if (draft == null || index < 0 || index >= draft.rules.length) return;
-    final rows = [...draft.rules];
-    if (required == true) {
-      for (var i = 0; i < rows.length; i++) {
-        rows[i] = rows[i].copyWith(required: i == index);
-      }
-    }
-    rows[index] = rows[index].copyWith(
-      required: required,
-      enabled: enabled,
-      defaultFloatingDetail: defaultFloatingDetail,
-      validFrom: validFrom,
-      validTo: validTo,
-    );
-    emit(state.copyWith(
-      accountDraft: draft.copyWith(rules: rows),
-      clearError: true,
-    ));
-  }
-
-  void removeDetailRule(int index) {
-    final draft = state.accountDraft;
-    if (draft == null || index < 0 || index >= draft.rules.length) return;
-    final rows = [...draft.rules]..removeAt(index);
     emit(state.copyWith(
       accountDraft: draft.copyWith(rules: rows),
       clearError: true,
@@ -521,6 +444,7 @@ class OrganizationSettingsCubit extends Cubit<OrganizationSettingsState> {
     final missing = <String>[
       if (draft.accountName.trim().isEmpty) 'عنوان حساب',
       if (draft.accountNumber.trim().isEmpty) 'کد حساب',
+      if (draft.accountLevel.trim().isEmpty) 'سطح حساب',
       if (draft.parentAccount.trim().isEmpty) 'حساب والد',
     ];
     if (missing.isNotEmpty) {
@@ -528,9 +452,9 @@ class OrganizationSettingsCubit extends Cubit<OrganizationSettingsState> {
           error: 'فیلدهای الزامی را تکمیل کنید: ${missing.join('، ')}'));
       return false;
     }
-    if (draft.isGroup && draft.rules.isNotEmpty) {
+    if (draft.accountLevel != 'Subsidiary' && draft.rules.isNotEmpty) {
       emit(state.copyWith(
-          error: 'برای حساب گروه نمی‌توان قاعده تفصیلی تعریف کرد.'));
+          error: 'برای حساب گروه یا کل نمی‌توان قاعده تفصیلی تعریف کرد.'));
       return false;
     }
     emit(state.copyWith(phase: OrganizationPhase.saving, clearError: true));

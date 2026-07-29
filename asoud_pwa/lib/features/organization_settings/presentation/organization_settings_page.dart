@@ -84,11 +84,6 @@ class _OrganizationSettingsView extends StatelessWidget {
                   snapshot: state.detailManagement!,
                   saving: state.phase == OrganizationPhase.saving,
                 ),
-              if (state.detailRuleDraft != null)
-                _AccountDetailRuleDrawer(
-                  draft: state.detailRuleDraft!,
-                  snapshot: state.accountRules!,
-                ),
               if (state.fiscalYearDraft != null)
                 _FiscalYearDrawer(
                   draft: state.fiscalYearDraft!,
@@ -636,8 +631,6 @@ class _FinancialSettings extends StatelessWidget {
           _ChartOfAccountsPanel(snapshot: state.accountRules),
         if (state.financialSection == FinancialSection.floatingDetails)
           _FloatingDetailsPanel(snapshot: state.detailManagement),
-        if (state.financialSection == FinancialSection.dimensions)
-          _AccountDimensionsPanel(snapshot: state.accountRules),
       ],
     );
   }
@@ -667,11 +660,6 @@ class _FinancialSectionSelector extends StatelessWidget {
               value: FinancialSection.floatingDetails,
               label: Text('تفصیلی‌های شناور'),
               icon: Icon(Icons.badge_outlined),
-            ),
-            ButtonSegment(
-              value: FinancialSection.dimensions,
-              label: Text('تفصیلی و ابعاد'),
-              icon: Icon(Icons.hub_outlined),
             ),
           ],
           selected: {selected},
@@ -734,41 +722,17 @@ class _ChartOfAccountsPanel extends StatelessWidget {
                 child: Center(child: Text('حسابی تعریف نشده است.')),
               )
             else
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  columns: const [
-                    DataColumn(label: Text('کد')),
-                    DataColumn(label: Text('عنوان حساب')),
-                    DataColumn(label: Text('حساب والد')),
-                    DataColumn(label: Text('نوع')),
-                    DataColumn(label: Text('قواعد تفصیلی')),
-                    DataColumn(label: Text('عملیات')),
-                  ],
-                  rows: [
-                    for (final account in data.accounts)
-                      DataRow(cells: [
-                        DataCell(Text(account.accountNumber)),
-                        DataCell(Text(account.accountName)),
-                        DataCell(Text(account.parentAccount)),
-                        DataCell(Text(account.isGroup
-                            ? 'گروه'
-                            : account.accountType.isEmpty
-                                ? 'سندپذیر'
-                                : account.accountType)),
-                        DataCell(Text(account.isGroup
-                            ? '—'
-                            : '${data.rules[account.name]?.where((rule) => rule.enabled).length ?? 0} قاعده')),
-                        DataCell(IconButton(
-                          tooltip: 'ویرایش',
-                          onPressed: () => context
-                              .read<OrganizationSettingsCubit>()
-                              .startAccount(account),
-                          icon: const Icon(Icons.edit_outlined),
-                        )),
-                      ]),
-                  ],
-                ),
+              Column(
+                children: [
+                  for (final entry in _accountTreeEntries(data.accounts))
+                    _AccountTreeRow(
+                      entry: entry,
+                      ruleCount: data.rules[entry.account.name]
+                              ?.where((rule) => rule.enabled)
+                              .length ??
+                          0,
+                    ),
+                ],
               ),
           ],
         ),
@@ -777,116 +741,144 @@ class _ChartOfAccountsPanel extends StatelessWidget {
   }
 }
 
-class _AccountDimensionsPanel extends StatelessWidget {
-  const _AccountDimensionsPanel({required this.snapshot});
+class _AccountTreeEntry {
+  const _AccountTreeEntry(this.account, this.depth);
 
-  final AccountRulesSnapshot? snapshot;
+  final ChartAccount account;
+  final int depth;
+}
+
+List<_AccountTreeEntry> _accountTreeEntries(List<ChartAccount> accounts) {
+  final accountNames = accounts.map((account) => account.name).toSet();
+  final children = <String, List<ChartAccount>>{};
+  for (final account in accounts) {
+    children.putIfAbsent(account.parentAccount, () => []).add(account);
+  }
+  for (final rows in children.values) {
+    rows.sort(
+        (first, second) => first.accountNumber.compareTo(second.accountNumber));
+  }
+
+  final entries = <_AccountTreeEntry>[];
+  final visited = <String>{};
+  void addBranch(ChartAccount account, int depth) {
+    if (!visited.add(account.name)) return;
+    entries.add(_AccountTreeEntry(account, depth));
+    for (final child in children[account.name] ?? const <ChartAccount>[]) {
+      addBranch(child, depth + 1);
+    }
+  }
+
+  final roots = accounts
+      .where((account) =>
+          account.parentAccount.isEmpty ||
+          !accountNames.contains(account.parentAccount))
+      .toList()
+    ..sort(
+        (first, second) => first.accountNumber.compareTo(second.accountNumber));
+  for (final root in roots) {
+    addBranch(root, 0);
+  }
+  for (final account in accounts) {
+    addBranch(account, 0);
+  }
+  return entries;
+}
+
+class _AccountTreeRow extends StatelessWidget {
+  const _AccountTreeRow({
+    required this.entry,
+    required this.ruleCount,
+  });
+
+  final _AccountTreeEntry entry;
+  final int ruleCount;
 
   @override
   Widget build(BuildContext context) {
-    final data = snapshot;
-    if (data == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    final mappedAccounts = data.accounts
-        .where((account) =>
-            (data.rules[account.name] ?? const []).any((rule) => rule.enabled))
-        .toList(growable: false);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'قواعد نگاشت حساب و تفصیلی',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.w900),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'این صفحه نمای تجمیعی قواعد است؛ ویرایش دقیق از فرم حساب انجام می‌شود.',
-              style: TextStyle(color: AsoudColors.muted),
-            ),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
+    final account = entry.account;
+    final cubit = context.read<OrganizationSettingsCubit>();
+    return Padding(
+      padding: EdgeInsetsDirectional.only(
+        start: entry.depth * 28,
+        bottom: 8,
+      ),
+      child: Card(
+        margin: EdgeInsets.zero,
+        color: entry.depth == 0 ? const Color(0xfff8fafd) : Colors.white,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () => cubit.startAccount(account),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            child: Row(
               children: [
-                _MetricChip(
-                  label: 'حساب‌های نگاشت‌شده',
-                  value: '${mappedAccounts.length}',
+                Icon(
+                  account.isGroup
+                      ? Icons.account_tree_outlined
+                      : Icons.description_outlined,
+                  color: account.isGroup ? AsoudColors.primary : null,
                 ),
-                _MetricChip(
-                  label: 'انواع تفصیلی',
-                  value: '${data.detailTypes.length}',
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${account.accountNumber} — ${account.accountName}',
+                        style: const TextStyle(fontWeight: FontWeight.w800),
+                      ),
+                      Text(
+                        account.parentAccount.isEmpty
+                            ? 'ریشه نمودار حساب‌ها'
+                            : 'والد: ${account.parentAccount}',
+                        style: const TextStyle(
+                          color: AsoudColors.muted,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                _MetricChip(
-                  label: 'قواعد فعال',
-                  value:
-                      '${data.rules.values.expand((rows) => rows).where((rule) => rule.enabled).length}',
+                Chip(label: Text(_accountLevelLabel(account.accountLevel))),
+                if (!account.isGroup) ...[
+                  const SizedBox(width: 8),
+                  Chip(label: Text('$ruleCount گروه تفصیلی')),
+                ],
+                const SizedBox(width: 8),
+                if (account.isGroup)
+                  IconButton(
+                    tooltip: 'ایجاد حساب زیرمجموعه',
+                    onPressed: () => cubit.startChildAccount(account),
+                    icon: const Icon(Icons.subdirectory_arrow_left),
+                  ),
+                IconButton(
+                  tooltip: 'ایجاد حساب هم‌سطح',
+                  onPressed: account.parentAccount.isEmpty
+                      ? null
+                      : () => cubit.startSiblingAccount(account),
+                  icon: const Icon(Icons.add_link_outlined),
+                ),
+                IconButton(
+                  tooltip: 'ویرایش حساب',
+                  onPressed: () => cubit.startAccount(account),
+                  icon: const Icon(Icons.edit_outlined),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            for (final account in mappedAccounts)
-              Card(
-                color: const Color(0xfff8fafd),
-                child: ListTile(
-                  title: Text(
-                    '${account.accountNumber} — ${account.accountName}',
-                    style: const TextStyle(fontWeight: FontWeight.w800),
-                  ),
-                  subtitle: Wrap(
-                    spacing: 8,
-                    children: [
-                      for (final rule in data.rules[account.name]!
-                          .where((rule) => rule.enabled))
-                        Chip(
-                          label: Text(
-                            '${_detailTypeLabel(rule.detailType)}'
-                            '${rule.required ? ' • اجباری' : ''}',
-                          ),
-                        ),
-                    ],
-                  ),
-                  trailing: IconButton(
-                    tooltip: 'ویرایش قواعد',
-                    onPressed: () => context
-                        .read<OrganizationSettingsCubit>()
-                        .startAccount(account),
-                    icon: const Icon(Icons.rule_folder_outlined),
-                  ),
-                ),
-              ),
-            if (mappedAccounts.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(24),
-                child: Center(
-                  child: Text('هنوز قاعده تفصیلی فعالی تعریف نشده است.'),
-                ),
-              ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _MetricChip extends StatelessWidget {
-  const _MetricChip({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) => Chip(
-        avatar: CircleAvatar(child: Text(value)),
-        label: Text(label),
-      );
-}
+String _accountLevelLabel(String value) => switch (value) {
+      'Group' => 'گروه',
+      'Ledger' => 'کل',
+      'Subsidiary' => 'معین',
+      _ => 'نامشخص',
+    };
 
 String _detailTypeLabel(String value) => switch (value) {
       'Customer' => 'مشتری',
@@ -1475,7 +1467,7 @@ class _AccountFormDrawer extends StatelessWidget {
                                     ?.copyWith(fontWeight: FontWeight.w900),
                               ),
                               const Text(
-                                'مشخصات حساب و قواعد تفصیلی در سطح شرکت فعال',
+                                'یک فرم برای ایجاد حساب گروه، کل یا معین',
                                 style: TextStyle(color: AsoudColors.muted),
                               ),
                             ],
@@ -1499,6 +1491,31 @@ class _AccountFormDrawer extends StatelessWidget {
                               .textTheme
                               .titleMedium
                               ?.copyWith(fontWeight: FontWeight.w900),
+                        ),
+                        const SizedBox(height: 14),
+                        DropdownButtonFormField<String>(
+                          value: draft.accountLevel,
+                          decoration: const InputDecoration(
+                            labelText: 'سطح حساب *',
+                            helperText:
+                                'گروه و کل غیرسندپذیر هستند؛ معین سندپذیر است',
+                          ),
+                          items: const [
+                            DropdownMenuItem(
+                              value: 'Group',
+                              child: Text('گروه'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Ledger',
+                              child: Text('کل'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Subsidiary',
+                              child: Text('معین'),
+                            ),
+                          ],
+                          onChanged: (value) =>
+                              cubit.updateAccount(accountLevel: value),
                         ),
                         const SizedBox(height: 14),
                         DropdownButtonFormField<String>(
@@ -1561,17 +1578,6 @@ class _AccountFormDrawer extends StatelessWidget {
                                     cubit.updateAccount(accountType: value),
                               ),
                             ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: SwitchListTile(
-                                contentPadding: EdgeInsets.zero,
-                                title: const Text('حساب گروه'),
-                                subtitle: const Text('حساب گروه سندپذیر نیست'),
-                                value: draft.isGroup,
-                                onChanged: (value) =>
-                                    cubit.updateAccount(isGroup: value),
-                              ),
-                            ),
                           ],
                         ),
                         SwitchListTile(
@@ -1584,58 +1590,85 @@ class _AccountFormDrawer extends StatelessWidget {
                               cubit.updateAccount(disabled: value),
                         ),
                         const Divider(height: 36),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                'قواعد تفصیلی و ابعاد',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(fontWeight: FontWeight.w900),
-                              ),
-                            ),
-                            if (!draft.isGroup)
-                              FilledButton.icon(
-                                onPressed: snapshot.detailTypes.length ==
-                                        draft.rules.length
-                                    ? null
-                                    : cubit.startDetailRule,
-                                icon: const Icon(Icons.add),
-                                label: const Text('ایجاد قاعده'),
-                              ),
-                          ],
+                        Text(
+                          'گروه‌های تفصیلی مجاز',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w900),
                         ),
                         const SizedBox(height: 8),
-                        if (draft.isGroup)
+                        if (draft.accountLevel != 'Subsidiary')
                           const Card(
                             color: Color(0xfffff8e8),
                             child: Padding(
                               padding: EdgeInsets.all(16),
                               child: Text(
-                                'حساب گروه مستقیماً سند نمی‌پذیرد؛ قواعد تفصیلی روی حساب‌های نهایی تعریف می‌شوند.',
+                                'حساب گروه و کل مستقیماً سند نمی‌پذیرند؛ گروه‌های تفصیلی فقط برای حساب‌های معین قابل انتخاب هستند.',
                               ),
                             ),
                           )
-                        else if (draft.rules.isEmpty)
+                        else if (snapshot.detailGroups.isEmpty)
                           const Card(
                             color: Color(0xfff8fafd),
                             child: Padding(
                               padding: EdgeInsets.all(16),
                               child: Text(
-                                'برای این حساب تفصیلی الزامی نیست. در صورت نیاز، نوع تفصیلی مجاز را اضافه کنید.',
+                                'هنوز گروه تفصیلی فعالی تعریف نشده است. ابتدا از بخش مدیریت تفصیلی شناور، گروه‌ها را ایجاد کنید.',
                               ),
                             ),
                           )
                         else
-                          for (var index = 0;
-                              index < draft.rules.length;
-                              index++)
-                            _DetailRuleEditor(
-                              index: index,
-                              rule: draft.rules[index],
-                              details: snapshot.floatingDetails,
+                          Card(
+                            color: const Color(0xfff8fafd),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: LayoutBuilder(
+                                builder: (context, constraints) {
+                                  final twoColumns =
+                                      constraints.maxWidth >= 720;
+                                  final itemWidth = twoColumns
+                                      ? (constraints.maxWidth - 12) / 2
+                                      : constraints.maxWidth;
+                                  return Wrap(
+                                    spacing: 12,
+                                    runSpacing: 10,
+                                    children: [
+                                      for (final group in snapshot.detailGroups)
+                                        SizedBox(
+                                          width: itemWidth,
+                                          child: Card(
+                                            margin: EdgeInsets.zero,
+                                            child: CheckboxListTile(
+                                              value: draft.rules.any(
+                                                (rule) =>
+                                                    rule.detailGroup ==
+                                                        group.name &&
+                                                    rule.enabled,
+                                              ),
+                                              enabled: group.enabled,
+                                              title: Text(group.title),
+                                              subtitle: Text(
+                                                '${group.code} · ${_detailTypeLabel(group.detailType)}'
+                                                '${group.enabled ? '' : ' · غیرفعال'}',
+                                              ),
+                                              controlAffinity:
+                                                  ListTileControlAffinity
+                                                      .leading,
+                                              onChanged: (value) => cubit
+                                                  .toggleAccountDetailGroup(
+                                                group,
+                                                value ?? false,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  );
+                                },
+                              ),
                             ),
+                          ),
                       ],
                     ),
                   ),
@@ -1658,7 +1691,7 @@ class _AccountFormDrawer extends StatelessWidget {
                                       CircularProgressIndicator(strokeWidth: 2),
                                 )
                               : const Icon(Icons.save_outlined),
-                          label: const Text('ذخیره حساب و قواعد'),
+                          label: const Text('ذخیره حساب'),
                         ),
                       ],
                     ),
@@ -1669,263 +1702,6 @@ class _AccountFormDrawer extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _DetailRuleEditor extends StatelessWidget {
-  const _DetailRuleEditor({
-    required this.index,
-    required this.rule,
-    required this.details,
-  });
-
-  final int index;
-  final AccountDetailRuleDraft rule;
-  final List<Map<String, dynamic>> details;
-
-  @override
-  Widget build(BuildContext context) {
-    final cubit = context.read<OrganizationSettingsCubit>();
-    final matchingDetails = details
-        .where((row) => row['detail_type']?.toString() == rule.detailType)
-        .toList(growable: false);
-    final defaultValue = matchingDetails
-            .any((row) => row['name']?.toString() == rule.defaultFloatingDetail)
-        ? rule.defaultFloatingDetail
-        : null;
-    return Card(
-      margin: const EdgeInsets.only(top: 12),
-      color: const Color(0xfff8fafd),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    _detailTypeLabel(rule.detailType),
-                    style: const TextStyle(fontWeight: FontWeight.w900),
-                  ),
-                ),
-                Switch(
-                  value: rule.enabled,
-                  onChanged: (value) =>
-                      cubit.updateDetailRule(index, enabled: value),
-                ),
-                const Text('فعال'),
-                const SizedBox(width: 14),
-                Switch(
-                  value: rule.required,
-                  onChanged: rule.enabled
-                      ? (value) =>
-                          cubit.updateDetailRule(index, required: value)
-                      : null,
-                ),
-                const Text('اجباری'),
-                IconButton(
-                  tooltip: 'ویرایش در فرم قاعده',
-                  onPressed: () => cubit.startDetailRule(index),
-                  icon: const Icon(Icons.edit_outlined),
-                ),
-                IconButton(
-                  tooltip: 'حذف قاعده',
-                  onPressed: () => cubit.removeDetailRule(index),
-                  icon: const Icon(Icons.delete_outline, color: Colors.red),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: DropdownButtonFormField<String>(
-                    value: defaultValue,
-                    decoration:
-                        const InputDecoration(labelText: 'تفصیلی پیش‌فرض'),
-                    items: [
-                      const DropdownMenuItem(
-                          value: '', child: Text('بدون پیش‌فرض')),
-                      for (final detail in matchingDetails)
-                        DropdownMenuItem(
-                          value: detail['name']?.toString(),
-                          child:
-                              Text(detail['detail_title']?.toString() ?? '-'),
-                        ),
-                    ],
-                    onChanged: (value) => cubit.updateDetailRule(
-                      index,
-                      defaultFloatingDetail: value ?? '',
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextFormField(
-                    key: ValueKey('from-$index-${rule.detailType}'),
-                    initialValue: rule.validFrom,
-                    decoration: const InputDecoration(
-                      labelText: 'معتبر از',
-                      hintText: 'YYYY-MM-DD',
-                    ),
-                    onChanged: (value) =>
-                        cubit.updateDetailRule(index, validFrom: value),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextFormField(
-                    key: ValueKey('to-$index-${rule.detailType}'),
-                    initialValue: rule.validTo,
-                    decoration: const InputDecoration(
-                      labelText: 'معتبر تا',
-                      hintText: 'YYYY-MM-DD',
-                    ),
-                    onChanged: (value) =>
-                        cubit.updateDetailRule(index, validTo: value),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _AccountDetailRuleDrawer extends StatelessWidget {
-  const _AccountDetailRuleDrawer({
-    required this.draft,
-    required this.snapshot,
-  });
-
-  final AccountDetailRuleDraft draft;
-  final AccountRulesSnapshot snapshot;
-
-  @override
-  Widget build(BuildContext context) {
-    final cubit = context.read<OrganizationSettingsCubit>();
-    final accountDraft = cubit.state.accountDraft;
-    final usedTypes = accountDraft?.rules
-            .where((item) => item.detailType != draft.detailType)
-            .map((item) => item.detailType)
-            .toSet() ??
-        const <String>{};
-    final allowedTypes = snapshot.detailTypes
-        .where((type) => !usedTypes.contains(type))
-        .toList(growable: false);
-    final matchingDetails = snapshot.floatingDetails
-        .where((row) => row['detail_type']?.toString() == draft.detailType)
-        .toList(growable: false);
-    final defaultValue = matchingDetails.any(
-      (row) => row['name']?.toString() == draft.defaultFloatingDetail,
-    )
-        ? draft.defaultFloatingDetail
-        : '';
-    return _SettingsDrawer(
-      title: cubit.state.detailRuleIndex == -1
-          ? 'ایجاد قاعده اتصال حساب و تفصیلی'
-          : 'ویرایش قاعده اتصال حساب و تفصیلی',
-      onClose: cubit.cancelDetailRule,
-      onSave: cubit.applyDetailRule,
-      saving: false,
-      children: [
-        TextFormField(
-          initialValue: accountDraft == null
-              ? ''
-              : '${accountDraft.accountNumber} — ${accountDraft.accountName}',
-          readOnly: true,
-          decoration: const InputDecoration(labelText: 'حساب سندپذیر'),
-        ),
-        DropdownButtonFormField<String>(
-          value: draft.detailType.isEmpty ? null : draft.detailType,
-          decoration: const InputDecoration(labelText: 'نوع تفصیلی مجاز *'),
-          items: [
-            for (final type in allowedTypes)
-              DropdownMenuItem(
-                value: type,
-                child: Text(_detailTypeLabel(type)),
-              ),
-          ],
-          onChanged: (value) =>
-              cubit.updateDetailRuleDraft(detailType: value ?? ''),
-        ),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          value: draft.enabled,
-          title: const Text('قاعده فعال باشد'),
-          onChanged: (value) => cubit.updateDetailRuleDraft(enabled: value),
-        ),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          value: draft.required,
-          title: const Text('انتخاب تفصیلی اجباری باشد'),
-          subtitle: const Text(
-            'برای هر حساب در هر تاریخ فقط یک نوع تفصیلی می‌تواند اجباری باشد.',
-          ),
-          onChanged: draft.enabled
-              ? (value) => cubit.updateDetailRuleDraft(required: value)
-              : null,
-        ),
-        DropdownButtonFormField<String>(
-          value: defaultValue,
-          decoration: const InputDecoration(labelText: 'تفصیلی پیش‌فرض'),
-          items: [
-            const DropdownMenuItem(value: '', child: Text('بدون پیش‌فرض')),
-            for (final detail in matchingDetails)
-              DropdownMenuItem(
-                value: detail['name']?.toString(),
-                child: Text(detail['detail_title']?.toString() ?? '-'),
-              ),
-          ],
-          onChanged: draft.detailType.isEmpty
-              ? null
-              : (value) => cubit.updateDetailRuleDraft(
-                    defaultFloatingDetail: value ?? '',
-                  ),
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                initialValue: draft.validFrom,
-                decoration: const InputDecoration(
-                  labelText: 'معتبر از',
-                  hintText: 'YYYY-MM-DD',
-                ),
-                onChanged: (value) =>
-                    cubit.updateDetailRuleDraft(validFrom: value),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: TextFormField(
-                initialValue: draft.validTo,
-                decoration: const InputDecoration(
-                  labelText: 'معتبر تا',
-                  hintText: 'YYYY-MM-DD',
-                ),
-                onChanged: (value) =>
-                    cubit.updateDetailRuleDraft(validTo: value),
-              ),
-            ),
-          ],
-        ),
-        const Card(
-          color: Color(0xffeff6ff),
-          child: Padding(
-            padding: EdgeInsets.all(14),
-            child: Text(
-              'این قاعده پس از ذخیره حساب در Backend اعمال می‌شود و هنگام ثبت سند حسابداری دوباره کنترل خواهد شد.',
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

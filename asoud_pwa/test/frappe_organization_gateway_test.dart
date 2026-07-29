@@ -108,6 +108,7 @@ void main() {
         rules: [
           AccountDetailRuleDraft(
             detailType: 'Employee',
+            detailGroup: 'Employees - ASOUD',
             required: true,
           ),
         ],
@@ -124,7 +125,13 @@ void main() {
     expect(captured.bodyFields['company'], 'ASOUD');
     expect(captured.bodyFields['idempotency_key'], isNotEmpty);
     expect(payload['account_number'], '111003');
+    expect(payload['account_level'], 'Subsidiary');
+    expect(payload['is_group'], isFalse);
     expect((payload['rules'] as List).single['detail_type'], 'Employee');
+    expect(
+      (payload['rules'] as List).single['detail_group'],
+      'Employees - ASOUD',
+    );
     expect((payload['rules'] as List).single['required'], isTrue);
   });
 

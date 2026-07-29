@@ -6,6 +6,16 @@ def sync_custom_fields() -> None:
 
     create_custom_fields(
         {
+            "Account": [
+                {
+                    "fieldname": "asoud_account_level",
+                    "label": "ASOUD Account Level",
+                    "fieldtype": "Select",
+                    "options": "Group\nLedger\nSubsidiary",
+                    "insert_after": "account_number",
+                    "in_list_view": 1,
+                },
+            ],
             "Journal Entry": [
                 {
                     "fieldname": "asoud_iran_section",
