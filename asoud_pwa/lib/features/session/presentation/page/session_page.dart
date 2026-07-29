@@ -9,6 +9,7 @@ import 'package:asoud_pwa/features/home/presentation/workspace_page.dart';
 import 'package:asoud_pwa/features/hr/domain/hr_gateway.dart';
 import 'package:asoud_pwa/features/operations/domain/operations_gateway.dart';
 import 'package:asoud_pwa/features/organization_settings/domain/organization_gateway.dart';
+import 'package:asoud_pwa/features/parties/domain/party_gateway.dart';
 import 'package:asoud_pwa/features/treasury/domain/treasury_gateway.dart';
 import 'package:asoud_pwa/features/reports/domain/reports_gateway.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,7 @@ class SessionPage extends StatelessWidget {
     required this.hrGateway,
     required this.dashboardGateway,
     required this.organizationGateway,
+    required this.partyGateway,
     super.key,
   });
 
@@ -39,6 +41,7 @@ class SessionPage extends StatelessWidget {
   final HrGateway hrGateway;
   final DashboardGateway dashboardGateway;
   final OrganizationGateway organizationGateway;
+  final PartyGateway partyGateway;
 
   @override
   Widget build(BuildContext context) => BlocProvider(
@@ -53,6 +56,7 @@ class SessionPage extends StatelessWidget {
           hrGateway: hrGateway,
           dashboardGateway: dashboardGateway,
           organizationGateway: organizationGateway,
+          partyGateway: partyGateway,
         ),
       );
 }
@@ -68,6 +72,7 @@ class _SessionView extends StatefulWidget {
     required this.hrGateway,
     required this.dashboardGateway,
     required this.organizationGateway,
+    required this.partyGateway,
   });
 
   final IranAccountingGateway accountingGateway;
@@ -79,6 +84,7 @@ class _SessionView extends StatefulWidget {
   final HrGateway hrGateway;
   final DashboardGateway dashboardGateway;
   final OrganizationGateway organizationGateway;
+  final PartyGateway partyGateway;
 
   @override
   State<_SessionView> createState() => _SessionViewState();
@@ -113,6 +119,7 @@ class _SessionViewState extends State<_SessionView> {
                 hrGateway: widget.hrGateway,
                 dashboardGateway: widget.dashboardGateway,
                 organizationGateway: widget.organizationGateway,
+                partyGateway: widget.partyGateway,
               );
             }
             return Column(

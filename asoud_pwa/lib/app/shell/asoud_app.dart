@@ -14,6 +14,8 @@ import 'package:asoud_pwa/features/operations/data/frappe_operations_gateway.dar
 import 'package:asoud_pwa/features/operations/domain/operations_gateway.dart';
 import 'package:asoud_pwa/features/organization_settings/data/frappe_organization_gateway.dart';
 import 'package:asoud_pwa/features/organization_settings/domain/organization_gateway.dart';
+import 'package:asoud_pwa/features/parties/data/frappe_party_gateway.dart';
+import 'package:asoud_pwa/features/parties/domain/party_gateway.dart';
 import 'package:asoud_pwa/features/reports/data/frappe_reports_gateway.dart';
 import 'package:asoud_pwa/features/reports/domain/reports_gateway.dart';
 import 'package:asoud_pwa/features/session/data/frappe_session_gateway.dart';
@@ -40,6 +42,7 @@ class AsoudApp extends StatelessWidget {
     HrGateway? hrGateway,
     DashboardGateway? dashboardGateway,
     OrganizationGateway? organizationGateway,
+    PartyGateway? partyGateway,
   }) {
     final client = AsoudApiClient(baseUrl: _apiBaseUrl());
     return AsoudApp._(
@@ -56,6 +59,7 @@ class AsoudApp extends StatelessWidget {
       dashboardGateway: dashboardGateway ?? FrappeDashboardGateway(client),
       organizationGateway:
           organizationGateway ?? FrappeOrganizationGateway(client),
+      partyGateway: partyGateway ?? FrappePartyGateway(client),
     );
   }
 
@@ -70,6 +74,7 @@ class AsoudApp extends StatelessWidget {
     required this.hrGateway,
     required this.dashboardGateway,
     required this.organizationGateway,
+    required this.partyGateway,
     super.key,
   });
 
@@ -83,6 +88,7 @@ class AsoudApp extends StatelessWidget {
   final HrGateway hrGateway;
   final DashboardGateway dashboardGateway;
   final OrganizationGateway organizationGateway;
+  final PartyGateway partyGateway;
 
   @override
   Widget build(BuildContext context) => MaterialApp(
@@ -105,6 +111,7 @@ class AsoudApp extends StatelessWidget {
           hrGateway: hrGateway,
           dashboardGateway: dashboardGateway,
           organizationGateway: organizationGateway,
+          partyGateway: partyGateway,
         ),
       );
 }

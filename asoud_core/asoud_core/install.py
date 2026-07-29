@@ -137,6 +137,23 @@ def _custom_fields() -> dict[str, list[dict]]:
                 "options": "ASOUD Holding",
                 "insert_after": "customer_name",
                 "in_standard_filter": 1,
+            },
+            {
+                "fieldname": "asoud_party_identity",
+                "label": "ASOUD Party Identity",
+                "fieldtype": "Link",
+                "options": "ASOUD Party Identity",
+                "insert_after": "asoud_holding",
+                "read_only": 1,
+                "in_standard_filter": 1,
+            },
+            {
+                "fieldname": "asoud_role_code",
+                "label": "ASOUD Automatic Role Code",
+                "fieldtype": "Data",
+                "insert_after": "asoud_party_identity",
+                "read_only": 1,
+                "in_list_view": 1,
             }
         ],
         "Supplier": [
@@ -147,7 +164,61 @@ def _custom_fields() -> dict[str, list[dict]]:
                 "options": "ASOUD Holding",
                 "insert_after": "supplier_name",
                 "in_standard_filter": 1,
+            },
+            {
+                "fieldname": "asoud_party_identity",
+                "label": "ASOUD Party Identity",
+                "fieldtype": "Link",
+                "options": "ASOUD Party Identity",
+                "insert_after": "asoud_holding",
+                "read_only": 1,
+                "in_standard_filter": 1,
+            },
+            {
+                "fieldname": "asoud_role_code",
+                "label": "ASOUD Automatic Role Code",
+                "fieldtype": "Data",
+                "insert_after": "asoud_party_identity",
+                "read_only": 1,
+                "in_list_view": 1,
             }
+        ],
+        "Employee": [
+            {
+                "fieldname": "asoud_party_identity",
+                "label": "ASOUD Party Identity",
+                "fieldtype": "Link",
+                "options": "ASOUD Party Identity",
+                "insert_after": "employee_name",
+                "read_only": 1,
+                "in_standard_filter": 1,
+            },
+            {
+                "fieldname": "asoud_role_code",
+                "label": "ASOUD Automatic Role Code",
+                "fieldtype": "Data",
+                "insert_after": "asoud_party_identity",
+                "read_only": 1,
+                "in_list_view": 1,
+            },
+            {
+                "fieldname": "asoud_father_name",
+                "label": "Father Name",
+                "fieldtype": "Data",
+                "insert_after": "asoud_role_code",
+            },
+            {
+                "fieldname": "asoud_birth_certificate_number",
+                "label": "Birth Certificate Number",
+                "fieldtype": "Data",
+                "insert_after": "asoud_father_name",
+            },
+            {
+                "fieldname": "asoud_birth_place",
+                "label": "Birth Certificate Place of Issue",
+                "fieldtype": "Data",
+                "insert_after": "asoud_birth_certificate_number",
+            },
         ],
         "Item": [
             {

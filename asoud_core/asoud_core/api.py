@@ -333,6 +333,51 @@ def operational_catalog(company: str, branch: str | None = None) -> dict:
 
 
 @_whitelist(methods=["GET"])
+def party_management_snapshot(
+    company: str,
+    branch: str | None = None,
+    search: str | None = None,
+) -> dict:
+    from asoud_core.services.party_management import party_snapshot
+
+    return party_snapshot(company, branch or None, search)
+
+
+@_whitelist(methods=["GET"])
+def party_code_preview(company: str, roles: str) -> dict:
+    from asoud_core.services.party_management import preview_codes
+
+    return preview_codes(company, roles)
+
+
+@_whitelist(methods=["GET"])
+def party_management_detail(name: str, company: str) -> dict:
+    from asoud_core.services.party_management import party_detail
+
+    return party_detail(name, company)
+
+
+@_whitelist(methods=["POST"])
+def save_party_identity(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+    branch: str | None = None,
+) -> dict:
+    from asoud_core.services.idempotency import execute_once
+    from asoud_core.services.party_management import normalize_party_payload, save_party
+
+    values = normalize_party_payload(payload)
+    request = {"company": company, "branch": branch or None, "payload": values}
+    return execute_once(
+        idempotency_key,
+        "party.identity.save",
+        request,
+        lambda: save_party(company, values, branch or None),
+    )
+
+
+@_whitelist(methods=["GET"])
 def operational_workbench(
     company: str,
     branch: str | None = None,

@@ -15,6 +15,8 @@ import 'package:asoud_pwa/features/operations/presentation/operations_page.dart'
 import 'package:asoud_pwa/features/organization_settings/domain/organization_gateway.dart';
 import 'package:asoud_pwa/features/organization_settings/presentation/organization_settings_page.dart';
 import 'package:asoud_pwa/features/organization_settings/presentation/bloc/organization_settings_cubit.dart';
+import 'package:asoud_pwa/features/parties/domain/party_gateway.dart';
+import 'package:asoud_pwa/features/parties/presentation/party_management_page.dart';
 import 'package:asoud_pwa/features/reports/domain/reports_gateway.dart';
 import 'package:asoud_pwa/features/reports/presentation/reports_page.dart';
 import 'package:asoud_pwa/features/session/domain/work_context.dart';
@@ -34,6 +36,7 @@ class WorkspacePage extends StatefulWidget {
     required this.approvalGateway,
     required this.hrGateway,
     required this.organizationGateway,
+    required this.partyGateway,
     required this.contexts,
     required this.switchContext,
     super.key,
@@ -49,6 +52,7 @@ class WorkspacePage extends StatefulWidget {
   final ApprovalGateway approvalGateway;
   final HrGateway hrGateway;
   final OrganizationGateway organizationGateway;
+  final PartyGateway partyGateway;
   final List<WorkContext> contexts;
   final ValueChanged<WorkContext> switchContext;
 
@@ -61,6 +65,7 @@ class _WorkspacePageState extends State<WorkspacePage> {
   bool approvalMode = false;
   ApprovalView approvalView = ApprovalView.incoming;
   SettingsView settingsView = SettingsView.dashboard;
+  String? partyRoleFilter;
   late final DashboardController dashboardController = DashboardController();
 
   @override
@@ -74,6 +79,7 @@ class _WorkspacePageState extends State<WorkspacePage> {
     setState(() {
       index = value;
       approvalMode = false;
+      partyRoleFilter = null;
     });
   }
 
@@ -82,6 +88,7 @@ class _WorkspacePageState extends State<WorkspacePage> {
       setState(() {
         index = 0;
         approvalMode = false;
+        partyRoleFilter = null;
       });
     }
     action();
@@ -197,11 +204,25 @@ class _WorkspacePageState extends State<WorkspacePage> {
         _selectModule(2);
         return;
       case 'customer':
+        setState(() {
+          index = 3;
+          approvalMode = false;
+          partyRoleFilter = 'Customer';
+        });
+        return;
       case 'sales_order':
         _selectModule(3);
         return;
       case 'purchase_invoice':
+        _selectModule(4);
+        return;
       case 'supplier':
+        setState(() {
+          index = 4;
+          approvalMode = false;
+          partyRoleFilter = 'Supplier';
+        });
+        return;
       case 'purchase_order':
         _selectModule(4);
         return;
@@ -211,6 +232,12 @@ class _WorkspacePageState extends State<WorkspacePage> {
         _selectModule(5);
         return;
       case 'employees':
+        setState(() {
+          index = 6;
+          approvalMode = false;
+          partyRoleFilter = 'Employee';
+        });
+        return;
       case 'organization':
       case 'positions':
       case 'work_report':
@@ -327,6 +354,14 @@ class _WorkspacePageState extends State<WorkspacePage> {
         context: widget.context,
         gateway: widget.approvalGateway,
         initialView: approvalView,
+      );
+    }
+    if (partyRoleFilter != null) {
+      return PartyManagementPage(
+        key: ValueKey('${widget.context.company}|$partyRoleFilter'),
+        context: widget.context,
+        gateway: widget.partyGateway,
+        initialRole: partyRoleFilter,
       );
     }
     return switch (index) {

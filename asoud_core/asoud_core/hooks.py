@@ -238,6 +238,8 @@ permission_query_conditions = {
     "ASOUD User Access Schedule": "asoud_core.permissions.access_schedule_query",
     "ASOUD Fiscal Period": "asoud_core.permissions.fiscal_period_query",
     "ASOUD Period Lock": "asoud_core.permissions.period_lock_query",
+    "ASOUD Party Identity": "asoud_core.permissions.party_identity_query",
+    "ASOUD Party Code Series": "asoud_core.permissions.party_code_series_query",
 }
 
 has_permission = {
@@ -287,4 +289,6 @@ has_permission = {
     "ASOUD User Access Schedule": "asoud_core.permissions.access_schedule_permission",
     "ASOUD Fiscal Period": "asoud_core.permissions.company_profile_permission",
     "ASOUD Period Lock": "asoud_core.permissions.company_profile_permission",
+    "ASOUD Party Identity": "asoud_core.permissions.company_profile_permission",
+    "ASOUD Party Code Series": "asoud_core.permissions.company_profile_permission",
 }
