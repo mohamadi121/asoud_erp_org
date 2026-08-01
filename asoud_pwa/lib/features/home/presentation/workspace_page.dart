@@ -9,6 +9,8 @@ import 'package:asoud_pwa/features/dashboard/presentation/dashboard_page.dart';
 import 'package:asoud_pwa/features/hr/domain/hr_gateway.dart';
 import 'package:asoud_pwa/features/hr/presentation/hr_page.dart';
 import 'package:asoud_pwa/features/iran_accounting/domain/iran_accounting_gateway.dart';
+import 'package:asoud_pwa/features/items/domain/item_gateway.dart';
+import 'package:asoud_pwa/features/items/presentation/item_management_page.dart';
 import 'package:asoud_pwa/features/iran_accounting/presentation/page/iran_accounting_page.dart';
 import 'package:asoud_pwa/features/operations/domain/operations_gateway.dart';
 import 'package:asoud_pwa/features/operations/presentation/operations_page.dart';
@@ -37,6 +39,7 @@ class WorkspacePage extends StatefulWidget {
     required this.hrGateway,
     required this.organizationGateway,
     required this.partyGateway,
+    required this.itemGateway,
     required this.contexts,
     required this.switchContext,
     super.key,
@@ -53,6 +56,7 @@ class WorkspacePage extends StatefulWidget {
   final HrGateway hrGateway;
   final OrganizationGateway organizationGateway;
   final PartyGateway partyGateway;
+  final ItemGateway itemGateway;
   final List<WorkContext> contexts;
   final ValueChanged<WorkContext> switchContext;
 
@@ -66,6 +70,7 @@ class _WorkspacePageState extends State<WorkspacePage> {
   ApprovalView approvalView = ApprovalView.incoming;
   SettingsView settingsView = SettingsView.dashboard;
   String? partyRoleFilter;
+  bool itemManagementMode = false;
   late final DashboardController dashboardController = DashboardController();
 
   @override
@@ -80,6 +85,7 @@ class _WorkspacePageState extends State<WorkspacePage> {
       index = value;
       approvalMode = false;
       partyRoleFilter = null;
+      itemManagementMode = false;
     });
   }
 
@@ -228,8 +234,15 @@ class _WorkspacePageState extends State<WorkspacePage> {
         return;
       case 'stock_entry':
       case 'warehouses':
-      case 'items':
         _selectModule(5);
+        return;
+      case 'items':
+        setState(() {
+          index = 5;
+          approvalMode = false;
+          partyRoleFilter = null;
+          itemManagementMode = true;
+        });
         return;
       case 'employees':
         setState(() {
@@ -362,6 +375,13 @@ class _WorkspacePageState extends State<WorkspacePage> {
         context: widget.context,
         gateway: widget.partyGateway,
         initialRole: partyRoleFilter,
+      );
+    }
+    if (itemManagementMode) {
+      return ItemManagementPage(
+        key: ValueKey('${widget.context.company}|items'),
+        context: widget.context,
+        gateway: widget.itemGateway,
       );
     }
     return switch (index) {

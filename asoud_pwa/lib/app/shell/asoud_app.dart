@@ -10,6 +10,8 @@ import 'package:asoud_pwa/features/hr/data/frappe_hr_gateway.dart';
 import 'package:asoud_pwa/features/hr/domain/hr_gateway.dart';
 import 'package:asoud_pwa/features/iran_accounting/data/frappe_iran_accounting_gateway.dart';
 import 'package:asoud_pwa/features/iran_accounting/domain/iran_accounting_gateway.dart';
+import 'package:asoud_pwa/features/items/data/frappe_item_gateway.dart';
+import 'package:asoud_pwa/features/items/domain/item_gateway.dart';
 import 'package:asoud_pwa/features/operations/data/frappe_operations_gateway.dart';
 import 'package:asoud_pwa/features/operations/domain/operations_gateway.dart';
 import 'package:asoud_pwa/features/organization_settings/data/frappe_organization_gateway.dart';
@@ -43,6 +45,7 @@ class AsoudApp extends StatelessWidget {
     DashboardGateway? dashboardGateway,
     OrganizationGateway? organizationGateway,
     PartyGateway? partyGateway,
+    ItemGateway? itemGateway,
   }) {
     final client = AsoudApiClient(baseUrl: _apiBaseUrl());
     return AsoudApp._(
@@ -60,6 +63,7 @@ class AsoudApp extends StatelessWidget {
       organizationGateway:
           organizationGateway ?? FrappeOrganizationGateway(client),
       partyGateway: partyGateway ?? FrappePartyGateway(client),
+      itemGateway: itemGateway ?? FrappeItemGateway(client),
     );
   }
 
@@ -75,6 +79,7 @@ class AsoudApp extends StatelessWidget {
     required this.dashboardGateway,
     required this.organizationGateway,
     required this.partyGateway,
+    required this.itemGateway,
     super.key,
   });
 
@@ -89,6 +94,7 @@ class AsoudApp extends StatelessWidget {
   final DashboardGateway dashboardGateway;
   final OrganizationGateway organizationGateway;
   final PartyGateway partyGateway;
+  final ItemGateway itemGateway;
 
   @override
   Widget build(BuildContext context) => MaterialApp(
@@ -112,6 +118,7 @@ class AsoudApp extends StatelessWidget {
           dashboardGateway: dashboardGateway,
           organizationGateway: organizationGateway,
           partyGateway: partyGateway,
+          itemGateway: itemGateway,
         ),
       );
 }

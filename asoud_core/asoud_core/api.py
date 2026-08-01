@@ -378,6 +378,44 @@ def save_party_identity(
 
 
 @_whitelist(methods=["GET"])
+def item_management_snapshot(
+    company: str,
+    branch: str | None = None,
+    search: str | None = None,
+) -> dict:
+    from asoud_core.services.item_management import item_snapshot
+
+    return item_snapshot(company, branch or None, search)
+
+
+@_whitelist(methods=["GET"])
+def item_management_detail(item_code: str, company: str) -> dict:
+    from asoud_core.services.item_management import item_detail
+
+    return item_detail(item_code, company)
+
+
+@_whitelist(methods=["POST"])
+def save_item_master(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+    branch: str | None = None,
+) -> dict:
+    from asoud_core.services.idempotency import execute_once
+    from asoud_core.services.item_management import normalize_item_payload, save_item
+
+    values = normalize_item_payload(payload)
+    request = {"company": company, "branch": branch or None, "payload": values}
+    return execute_once(
+        idempotency_key,
+        "item.master.save",
+        request,
+        lambda: save_item(company, values, branch or None),
+    )
+
+
+@_whitelist(methods=["GET"])
 def operational_workbench(
     company: str,
     branch: str | None = None,

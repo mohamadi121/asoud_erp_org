@@ -5,6 +5,7 @@ import 'package:asoud_pwa/features/dashboard/domain/dashboard_gateway.dart';
 import 'package:asoud_pwa/features/session/domain/work_context.dart';
 import 'package:asoud_pwa/features/session/presentation/bloc/session_cubit.dart';
 import 'package:asoud_pwa/features/iran_accounting/domain/iran_accounting_gateway.dart';
+import 'package:asoud_pwa/features/items/domain/item_gateway.dart';
 import 'package:asoud_pwa/features/home/presentation/workspace_page.dart';
 import 'package:asoud_pwa/features/hr/domain/hr_gateway.dart';
 import 'package:asoud_pwa/features/operations/domain/operations_gateway.dart';
@@ -28,6 +29,7 @@ class SessionPage extends StatelessWidget {
     required this.dashboardGateway,
     required this.organizationGateway,
     required this.partyGateway,
+    required this.itemGateway,
     super.key,
   });
 
@@ -42,6 +44,7 @@ class SessionPage extends StatelessWidget {
   final DashboardGateway dashboardGateway;
   final OrganizationGateway organizationGateway;
   final PartyGateway partyGateway;
+  final ItemGateway itemGateway;
 
   @override
   Widget build(BuildContext context) => BlocProvider(
@@ -57,6 +60,7 @@ class SessionPage extends StatelessWidget {
           dashboardGateway: dashboardGateway,
           organizationGateway: organizationGateway,
           partyGateway: partyGateway,
+          itemGateway: itemGateway,
         ),
       );
 }
@@ -73,6 +77,7 @@ class _SessionView extends StatefulWidget {
     required this.dashboardGateway,
     required this.organizationGateway,
     required this.partyGateway,
+    required this.itemGateway,
   });
 
   final IranAccountingGateway accountingGateway;
@@ -85,6 +90,7 @@ class _SessionView extends StatefulWidget {
   final DashboardGateway dashboardGateway;
   final OrganizationGateway organizationGateway;
   final PartyGateway partyGateway;
+  final ItemGateway itemGateway;
 
   @override
   State<_SessionView> createState() => _SessionViewState();
@@ -120,6 +126,7 @@ class _SessionViewState extends State<_SessionView> {
                 dashboardGateway: widget.dashboardGateway,
                 organizationGateway: widget.organizationGateway,
                 partyGateway: widget.partyGateway,
+                itemGateway: widget.itemGateway,
               );
             }
             return Column(
