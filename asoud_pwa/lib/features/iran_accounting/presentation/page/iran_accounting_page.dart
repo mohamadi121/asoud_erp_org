@@ -3,15 +3,19 @@ import 'package:asoud_pwa/features/iran_accounting/domain/iran_accounting_gatewa
 import 'package:asoud_pwa/features/session/domain/work_context.dart';
 import 'package:flutter/material.dart';
 
+enum IranAccountingSection { dashboard, numbering }
+
 class IranAccountingPage extends StatefulWidget {
   const IranAccountingPage({
     required this.context,
     required this.gateway,
+    this.initialSection = IranAccountingSection.dashboard,
     super.key,
   });
 
   final WorkContext context;
   final IranAccountingGateway gateway;
+  final IranAccountingSection initialSection;
 
   @override
   State<IranAccountingPage> createState() => _IranAccountingPageState();
@@ -26,9 +30,15 @@ class _IranAccountingPageState extends State<IranAccountingPage> {
   final jalaliDate = TextEditingController(text: '1405-01-01');
   final fromDate = TextEditingController(text: '2026-03-21');
   final toDate = TextEditingController(text: '2027-03-20');
+  final numberingFiscalYear = TextEditingController(text: '1405');
+  final numberingFromDate = TextEditingController(text: '2026-03-21');
+  final numberingToDate = TextEditingController(text: '2027-03-20');
+  final numberingReason = TextEditingController();
+  late IranAccountingSection section;
   String inputUnit = 'TOMAN';
   String? amountResult;
   String? dateResult;
+  String? numberingResult;
   List<TrialBalanceRow>? balanceRows;
   String? actionError;
   bool actionLoading = false;
@@ -36,6 +46,7 @@ class _IranAccountingPageState extends State<IranAccountingPage> {
   @override
   void initState() {
     super.initState();
+    section = widget.initialSection;
     settings = widget.gateway.loadSettings(widget.context.company);
     chart = widget.gateway.loadChartOfAccounts(widget.context.company);
     numbering = widget.gateway.loadNumberingOverview(widget.context.company);
@@ -48,6 +59,10 @@ class _IranAccountingPageState extends State<IranAccountingPage> {
     jalaliDate.dispose();
     fromDate.dispose();
     toDate.dispose();
+    numberingFiscalYear.dispose();
+    numberingFromDate.dispose();
+    numberingToDate.dispose();
+    numberingReason.dispose();
     super.dispose();
   }
 
@@ -86,17 +101,39 @@ class _IranAccountingPageState extends State<IranAccountingPage> {
               const SizedBox(height: 4),
               Text(widget.context.label),
               const SizedBox(height: 16),
-              _settingsCard(data),
+              SegmentedButton<IranAccountingSection>(
+                segments: const [
+                  ButtonSegment(
+                    value: IranAccountingSection.dashboard,
+                    icon: Icon(Icons.dashboard_customize_outlined),
+                    label: Text('داشبورد تنظیمات'),
+                  ),
+                  ButtonSegment(
+                    value: IranAccountingSection.numbering,
+                    icon: Icon(Icons.format_list_numbered_rtl),
+                    label: Text('شماره‌گذاری اسناد'),
+                  ),
+                ],
+                selected: {section},
+                onSelectionChanged: (value) =>
+                    setState(() => section = value.first),
+              ),
               const SizedBox(height: 16),
-              _amountCard(),
-              const SizedBox(height: 16),
-              _dateCard(),
-              const SizedBox(height: 16),
-              _trialBalanceCard(),
-              const SizedBox(height: 16),
-              _numberingCard(),
-              const SizedBox(height: 16),
-              _closingCard(),
+              if (section == IranAccountingSection.dashboard) ...[
+                _iranSettingsOverview(data),
+                const SizedBox(height: 16),
+                _settingsCard(data),
+                const SizedBox(height: 16),
+                _amountCard(),
+                const SizedBox(height: 16),
+                _dateCard(),
+                const SizedBox(height: 16),
+                _trialBalanceCard(),
+                const SizedBox(height: 16),
+                _closingCard(),
+              ] else ...[
+                _numberingWorkspace(),
+              ],
               if (actionLoading) ...[
                 const SizedBox(height: 16),
                 const LinearProgressIndicator(),
@@ -112,6 +149,140 @@ class _IranAccountingPageState extends State<IranAccountingPage> {
           );
         },
       );
+
+  Widget _iranSettingsOverview(AccountingSettings data) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'داشبورد تنظیمات حسابداری ایران',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge
+                    ?.copyWith(fontWeight: FontWeight.w900),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'وضعیت راه‌اندازی، تقویم، واحد مبلغ، نمودار حساب‌ها و عملیات پایان سال در سطح Company فعال.',
+              ),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  _value('وضعیت', data.setupStatus),
+                  _value('ارز دفتر کل', data.baseCurrency ?? '—'),
+                  _value('واحد ورود', data.amountInputUnit ?? '—'),
+                  _value('تقویم', data.calendarDisplay ?? '—'),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+
+  Widget _numberingWorkspace() => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _numberingCard(),
+          const SizedBox(height: 16),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'تخصیص شماره قطعی',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(fontWeight: FontWeight.w900),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'اسناد ثبت‌شده بر اساس تاریخ مرتب می‌شوند؛ شماره موقت حذف نمی‌شود.',
+                  ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: [
+                      _numberingField('سال مالی *', numberingFiscalYear),
+                      _numberingField('از تاریخ *', numberingFromDate),
+                      _numberingField('تا تاریخ *', numberingToDate),
+                      _numberingField('دلیل اجرا *', numberingReason,
+                          width: 520),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: FilledButton.icon(
+                      onPressed: actionLoading ? null : _finalizeNumbering,
+                      icon: const Icon(Icons.numbers_outlined),
+                      label: const Text('مرتب‌سازی و تخصیص شماره قطعی'),
+                    ),
+                  ),
+                  if (numberingResult != null) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      'عملیات با موفقیت ثبت شد: $numberingResult',
+                      style: const TextStyle(
+                        color: Color(0xff168a56),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+
+  Widget _numberingField(
+    String label,
+    TextEditingController controller, {
+    double width = 250,
+  }) =>
+      SizedBox(
+        width: width,
+        child: TextField(
+          controller: controller,
+          decoration: InputDecoration(labelText: label),
+        ),
+      );
+
+  void _finalizeNumbering() {
+    if ([
+      numberingFiscalYear.text,
+      numberingFromDate.text,
+      numberingToDate.text,
+      numberingReason.text,
+    ].any((value) => value.trim().isEmpty)) {
+      setState(
+          () => actionError = 'تمام فیلدهای عملیات شماره‌گذاری الزامی هستند.');
+      return;
+    }
+    _action(() async {
+      final batch = await widget.gateway.finalizeNumbering(
+        company: widget.context.company,
+        fiscalYear: numberingFiscalYear.text.trim(),
+        fromDate: numberingFromDate.text.trim(),
+        toDate: numberingToDate.text.trim(),
+        reason: numberingReason.text.trim(),
+      );
+      setState(() {
+        numbering =
+            widget.gateway.loadNumberingOverview(widget.context.company);
+        numberingResult = batch;
+        numberingReason.clear();
+      });
+    });
+  }
 
   Widget _numberingCard() => Card(
         child: Padding(

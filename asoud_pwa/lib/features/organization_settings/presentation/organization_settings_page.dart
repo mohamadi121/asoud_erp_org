@@ -11,6 +11,7 @@ class OrganizationSettingsPage extends StatelessWidget {
     required this.context,
     required this.gateway,
     this.initialView = SettingsView.dashboard,
+    this.initialFinancialSection = FinancialSection.general,
     this.onOpenDestination,
     super.key,
   });
@@ -18,6 +19,7 @@ class OrganizationSettingsPage extends StatelessWidget {
   final WorkContext context;
   final OrganizationGateway gateway;
   final SettingsView initialView;
+  final FinancialSection initialFinancialSection;
   final ValueChanged<String>? onOpenDestination;
 
   @override
@@ -26,6 +28,7 @@ class OrganizationSettingsPage extends StatelessWidget {
           gateway,
           this.context,
           initialView: initialView,
+          initialFinancialSection: initialFinancialSection,
         )..load(),
         child: _OrganizationSettingsView(
           onOpenDestination: onOpenDestination,
@@ -662,6 +665,34 @@ class _FinancialSettings extends StatelessWidget {
             draft: draft,
             saving: state.phase == OrganizationPhase.saving,
           ),
+        if (state.financialSection == FinancialSection.periodsControls)
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final width = constraints.maxWidth >= 1200
+                  ? (constraints.maxWidth - 32) / 3
+                  : constraints.maxWidth >= 760
+                      ? (constraints.maxWidth - 16) / 2
+                      : constraints.maxWidth;
+              return Wrap(
+                spacing: 16,
+                runSpacing: 16,
+                children: [
+                  SizedBox(
+                    width: width,
+                    child: _FiscalYearsCard(rows: settings.fiscalYears),
+                  ),
+                  SizedBox(
+                    width: width,
+                    child: _FiscalPeriodsCard(rows: settings.fiscalPeriods),
+                  ),
+                  SizedBox(
+                    width: width,
+                    child: _PeriodLocksCard(rows: settings.periodLocks),
+                  ),
+                ],
+              );
+            },
+          ),
       ],
     );
   }
@@ -681,6 +712,11 @@ class _FinancialSectionSelector extends StatelessWidget {
               value: FinancialSection.general,
               label: Text('عمومی'),
               icon: Icon(Icons.tune),
+            ),
+            ButtonSegment(
+              value: FinancialSection.periodsControls,
+              label: Text('سال، دوره و قفل'),
+              icon: Icon(Icons.lock_clock_outlined),
             ),
             ButtonSegment(
               value: FinancialSection.defaultAccounts,

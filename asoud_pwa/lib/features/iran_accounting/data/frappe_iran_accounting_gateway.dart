@@ -106,6 +106,27 @@ class FrappeIranAccountingGateway implements IranAccountingGateway {
   }
 
   @override
+  Future<String> finalizeNumbering({
+    required String company,
+    required String fiscalYear,
+    required String fromDate,
+    required String toDate,
+    required String reason,
+  }) async {
+    final response = await _client.postForm(
+      '/api/method/asoud_core.api.final_number',
+      {
+        'company': company,
+        'fiscal_year': fiscalYear,
+        'from_date': fromDate,
+        'to_date': toDate,
+        'reason': reason,
+      },
+    );
+    return response['message']?.toString() ?? '';
+  }
+
+  @override
   Future<List<Map<String, dynamic>>> loadClosingRuns(String company) async {
     final response = await _client.getQuery(
       '/api/method/asoud_iran.api.closing_runs',

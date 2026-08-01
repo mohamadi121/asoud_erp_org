@@ -71,4 +71,36 @@ void main() {
     });
     expect(result, '12505 IRR');
   });
+
+  test('posts an explicit legal numbering range and reason', () async {
+    late http.Request captured;
+    final gateway = FrappeIranAccountingGateway(
+      AsoudApiClient(
+        baseUrl: 'https://erp.example.test',
+        client: MockClient((request) async {
+          captured = request;
+          return http.Response(jsonEncode({'message': 'NUM-BATCH-0001'}), 200);
+        }),
+      ),
+    );
+
+    final batch = await gateway.finalizeNumbering(
+      company: 'Sample Company',
+      fiscalYear: '1405',
+      fromDate: '2026-03-21',
+      toDate: '2026-04-20',
+      reason: 'تخصیص ماهانه',
+    );
+
+    expect(captured.method, 'POST');
+    expect(captured.url.path, '/api/method/asoud_core.api.final_number');
+    expect(captured.bodyFields, {
+      'company': 'Sample Company',
+      'fiscal_year': '1405',
+      'from_date': '2026-03-21',
+      'to_date': '2026-04-20',
+      'reason': 'تخصیص ماهانه',
+    });
+    expect(batch, 'NUM-BATCH-0001');
+  });
 }

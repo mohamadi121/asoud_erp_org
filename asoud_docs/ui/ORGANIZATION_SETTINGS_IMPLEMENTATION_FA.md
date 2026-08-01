@@ -56,3 +56,13 @@
 | حسابداری ایران | ماژول حسابداری ایران |
 | اطلاعات پایه | مرکز اشخاص و کالا/خدمات |
 | قفل و کنترل | سال، دوره و قفل‌های Company فعال |
+
+## خروجی‌های طراحی تکمیلی
+
+- `asoud-master-data-hub-v1.svg` و نسخه PNG
+- `asoud-period-controls-workspace-v1.svg` و نسخه PNG
+- `asoud-document-numbering-workspace-v1.svg` و نسخه PNG
+- `asoud-iran-accounting-settings-dashboard-v1.svg` و نسخه PNG
+
+مسیرهای «شماره‌گذاری» و «قفل و کنترل» دیگر به صفحه عمومی
+هدایت نمی‌شوند و مستقیماً زیرصفحه عملیاتی خود را باز می‌کنند.

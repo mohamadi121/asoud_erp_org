@@ -23,5 +23,13 @@ abstract interface class IranAccountingGateway {
 
   Future<Map<String, dynamic>> loadNumberingOverview(String company);
 
+  Future<String> finalizeNumbering({
+    required String company,
+    required String fiscalYear,
+    required String fromDate,
+    required String toDate,
+    required String reason,
+  });
+
   Future<List<Map<String, dynamic>>> loadClosingRuns(String company);
 }

@@ -10,6 +10,7 @@ enum SettingsView { dashboard, structure, financial }
 
 enum FinancialSection {
   general,
+  periodsControls,
   defaultAccounts,
   chartOfAccounts,
   floatingDetails,
@@ -142,7 +143,11 @@ class OrganizationSettingsCubit extends Cubit<OrganizationSettingsState> {
     this._gateway,
     this._context, {
     SettingsView initialView = SettingsView.dashboard,
-  }) : super(OrganizationSettingsState(view: initialView));
+    FinancialSection initialFinancialSection = FinancialSection.general,
+  }) : super(OrganizationSettingsState(
+          view: initialView,
+          financialSection: initialFinancialSection,
+        ));
 
   final OrganizationGateway _gateway;
   final WorkContext _context;
@@ -202,6 +207,7 @@ class OrganizationSettingsCubit extends Cubit<OrganizationSettingsState> {
   Future<void> showFinancialSection(FinancialSection section) async {
     emit(state.copyWith(financialSection: section, clearError: true));
     if (section == FinancialSection.general ||
+        section == FinancialSection.periodsControls ||
         section == FinancialSection.defaultAccounts ||
         (section == FinancialSection.floatingDetails &&
             state.detailManagement != null) ||

@@ -32,6 +32,16 @@ class FakeSessionGateway implements SessionGateway {
 
 class FakeAccountingGateway implements IranAccountingGateway {
   @override
+  Future<String> finalizeNumbering({
+    required String company,
+    required String fiscalYear,
+    required String fromDate,
+    required String toDate,
+    required String reason,
+  }) async =>
+      'ASOUD-NUM-0001';
+
+  @override
   Future<List<Map<String, dynamic>>> loadClosingRuns(String company) async =>
       const [];
 

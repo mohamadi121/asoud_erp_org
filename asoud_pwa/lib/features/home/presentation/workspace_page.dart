@@ -69,6 +69,8 @@ class _WorkspacePageState extends State<WorkspacePage> {
   bool approvalMode = false;
   ApprovalView approvalView = ApprovalView.incoming;
   SettingsView settingsView = SettingsView.dashboard;
+  FinancialSection settingsFinancialSection = FinancialSection.general;
+  IranAccountingSection iranAccountingSection = IranAccountingSection.dashboard;
   String? partyRoleFilter;
   bool itemManagementMode = false;
   bool masterDataMode = false;
@@ -201,11 +203,16 @@ class _WorkspacePageState extends State<WorkspacePage> {
         return;
       case 'journal':
       case 'ledger':
-      case 'numbering':
       case 'period':
       case 'lock':
       case 'closing':
       case 'opening':
+        setState(() => iranAccountingSection = IranAccountingSection.dashboard);
+        _selectModule(1);
+        return;
+      case 'numbering':
+      case 'document_sequences':
+        setState(() => iranAccountingSection = IranAccountingSection.numbering);
         _selectModule(1);
         return;
       case 'bank':
@@ -287,11 +294,11 @@ class _WorkspacePageState extends State<WorkspacePage> {
         _selectModule(8);
         return;
       case 'financial_settings':
-        setState(() => settingsView = SettingsView.financial);
+        setState(() {
+          settingsView = SettingsView.financial;
+          settingsFinancialSection = FinancialSection.general;
+        });
         _selectModule(8);
-        return;
-      case 'document_sequences':
-        _selectModule(1);
         return;
       case 'organization_access':
         _openApprovalInbox(ApprovalView.access);
@@ -300,6 +307,7 @@ class _WorkspacePageState extends State<WorkspacePage> {
         _openApprovalInbox(ApprovalView.policies);
         return;
       case 'iran_settings':
+        setState(() => iranAccountingSection = IranAccountingSection.dashboard);
         _selectModule(1);
         return;
       case 'master_data':
@@ -312,7 +320,10 @@ class _WorkspacePageState extends State<WorkspacePage> {
         });
         return;
       case 'control_locks':
-        setState(() => settingsView = SettingsView.financial);
+        setState(() {
+          settingsView = SettingsView.financial;
+          settingsFinancialSection = FinancialSection.periodsControls;
+        });
         _selectModule(8);
         return;
       case 'access':
@@ -440,8 +451,10 @@ class _WorkspacePageState extends State<WorkspacePage> {
           openApprovals: _openApprovalInbox,
         ),
       1 => IranAccountingPage(
+          key: ValueKey(iranAccountingSection),
           context: widget.context,
           gateway: widget.accountingGateway,
+          initialSection: iranAccountingSection,
         ),
       2 => TreasuryPage(
           context: widget.context,
@@ -465,10 +478,11 @@ class _WorkspacePageState extends State<WorkspacePage> {
           gateway: widget.reportsGateway,
         ),
       8 => OrganizationSettingsPage(
-          key: ValueKey(settingsView),
+          key: ValueKey('$settingsView|$settingsFinancialSection'),
           context: widget.context,
           gateway: widget.organizationGateway,
           initialView: settingsView,
+          initialFinancialSection: settingsFinancialSection,
           onOpenDestination: _handleCommand,
         ),
       _ => CompliancePage(
