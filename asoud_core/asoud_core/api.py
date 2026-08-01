@@ -221,6 +221,41 @@ def numbering_overview(company: str) -> dict:
 
 
 @_whitelist(methods=["GET"])
+def document_consolidation_workspace(
+    company: str,
+    posting_date: str | None = None,
+) -> dict:
+    from asoud_core.services.document_consolidation import workspace
+
+    return workspace(company, posting_date or None)
+
+
+@_whitelist(methods=["POST"])
+def consolidate_accounting_documents(
+    company: str,
+    posting_date: str,
+    documents: str,
+    reason: str,
+    idempotency_key: str,
+) -> dict:
+    from asoud_core.services.document_consolidation import create
+    from asoud_core.services.idempotency import execute_once
+
+    request = {
+        "company": company,
+        "posting_date": posting_date,
+        "documents": documents,
+        "reason": reason,
+    }
+    return execute_once(
+        idempotency_key,
+        "accounting.documents.consolidate",
+        request,
+        lambda: create(company, posting_date, documents, reason),
+    )
+
+
+@_whitelist(methods=["GET"])
 def operational_dashboard(
     company: str,
     branch: str | None = None,

@@ -23,11 +23,23 @@ abstract interface class IranAccountingGateway {
 
   Future<Map<String, dynamic>> loadNumberingOverview(String company);
 
+  Future<NumberingWorkspace> loadNumberingWorkspace(
+    String company, {
+    String? postingDate,
+  });
+
   Future<String> finalizeNumbering({
     required String company,
     required String fiscalYear,
     required String fromDate,
     required String toDate,
+    required String reason,
+  });
+
+  Future<String> consolidateDocuments({
+    required String company,
+    required String postingDate,
+    required List<String> documents,
     required String reason,
   });
 

@@ -8,6 +8,19 @@ class ASOUDDocumentConsolidation(Document):
 
         if len(self.documents or []) < 2:
             frappe.throw("A consolidation requires at least two documents")
+        document_names = [item.accounting_document for item in self.documents]
+        placeholders = ", ".join(["%s"] * len(document_names))
+        locked_names = {
+            row[0]
+            for row in frappe.db.sql(
+                f"select name from `tabASOUD Accounting Document` "
+                f"where name in ({placeholders}) for update",
+                tuple(document_names),
+                as_list=True,
+            )
+        }
+        if locked_names != set(document_names):
+            frappe.throw("One or more accounting documents do not exist")
         seen: set[str] = set()
         for item in self.documents:
             if item.accounting_document in seen:

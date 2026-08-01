@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="utf-8">
-  <title>معماری نهایی ASOUD ERP — نسخه ۳.۵</title>
+  <title>معماری نهایی ASOUD ERP — نسخه ۳.۸</title>
   <style>
     @page { size: A4; margin: 18mm 16mm 18mm 16mm; }
     * { box-sizing: border-box; }
@@ -38,7 +38,7 @@
     <div class="brand">ASOUD</div><div class="fa">آسود</div>
     <div class="sub">معماری مصوب، مدل داده، حسابداری ایرانی و نقشه راه اجرای سامانه ERP</div>
     <table class="meta">
-      <tr><th>نسخه سند</th><td>۳.۴ — منابع انسانی، گزارش کار و مکاتبات سازمانی</td></tr>
+      <tr><th>نسخه سند</th><td>۳.۸ — تنظیمات مالی، شماره‌گذاری و ادغام روزانه عملیاتی</td></tr>
       <tr><th>هسته</th><td>ERPNext / Frappe v15</td></tr>
       <tr><th>رابط کاربری</th><td>Flutter Web PWA + BLoC</td></tr>
       <tr><th>تاریخ</th><td>۴ مرداد ۱۴۰۵ / 26 July 2026</td></tr>
@@ -925,6 +925,34 @@ ERPNext Submit (only after valid approval)</pre>
 
     <div class="future"><b>مرز UAT:</b> Site توسعه درخواست تأیید واقعی نداشت، بنابراین Gate عملی خواندن Viewها و فیلترها را روی داده خالی اجرا کرد و Detail/Action با تست‌های خودکار پوشش داده شدند. اجرای سناریوی چندکاربره با داده و Role واقعی بخشی از UAT سازمان مقصد است.</div>
     <p class="footer-note">ASOUD ERP Architecture &amp; Execution Baseline v3.7 — BLoC Approval Cartable Technical Gate</p>
+  </section>
+  <section class="page">
+    <h1>۳۷. الحاقیه — تنظیمات مالی، شماره‌گذاری و ادغام روزانه</h1>
+    <p>Workspace حسابداری ایران بر پوسته ثابت RTL به Cubit مستقل منتقل شد و صفحه شماره‌گذاری از حالت نمایشی به قرارداد عملیاتی Company-scoped متصل گردید. سال مالی از Backend دریافت می‌شود، بازه معتبر آن پیشنهاد می‌گردد و شماره موقت پس از تخصیص شماره قطعی حذف نمی‌شود.</p>
+
+    <h2>قراردادهای اجرایی</h2>
+    <table>
+      <tr><th>بخش</th><th>رفتار و کنترل</th></tr>
+      <tr><td><code>IranAccountingCubit</code></td><td>تنظیمات، نمودار حساب، شماره‌گذاری، اختتامیه، تبدیل مبلغ/تاریخ، تراز آزمایشی، انتخاب اسناد و وضعیت خطا/ذخیره را در State واحد نگه می‌دارد.</td></tr>
+      <tr><td><code>document_consolidation_workspace</code></td><td>GET؛ سال‌های مالی مجاز، تاریخ‌های دارای سند موقت، اسناد قابل ادغام و ادغام‌های اخیر را فقط برای Company مجاز برمی‌گرداند.</td></tr>
+      <tr><td><code>consolidate_accounting_documents</code></td><td>POST idempotent؛ حداقل دو سند موقت هم‌روز و هم‌Company را در DocType واقعی <code>ASOUD Document Consolidation</code> ثبت و Submit می‌کند.</td></tr>
+      <tr><td><code>final_number</code></td><td>POST؛ سال مالی، ابتدا/انتهای بازه و دلیل اجباری؛ مرتب‌سازی قانونی و تخصیص شماره قطعی بدون حذف شماره موقت.</td></tr>
+    </table>
+
+    <h2>اصلاح کشف‌شده در Migration واقعی</h2>
+    <p>بازسازی Image روی ERPNext v15 یک نقص قدیمی را آشکار کرد: سه Child DocType اشخاص Controller پایتون نداشتند. Controllerهای <code>ASOUD Party Role</code>، <code>ASOUD Party Code Series</code> و <code>ASOUD Party Opening Balance</code> افزوده و یک تست ساختاری برای جلوگیری از تکرار این نقص ثبت شد. اسکریپت Bootstrap و Smoke نیز Fail-fast شد تا Exit Code خطای Compose/Migration پنهان نماند.</p>
+
+    <h2>شواهد فنی این Gate</h2>
+    <ul>
+      <li>۷۴ تست مستقل <code>asoud_core</code> و ۴۹ تست Flutter موفق.</li>
+      <li>Dart Analyze بدون Issue و Flutter Web Release Build موفق.</li>
+      <li>Image اختصاصی ERPNext 15.117.0 بازسازی و Site <code>asoud.localhost</code> با Core 0.19.0، Iran 0.10.0 و HR 0.1.0 migrate شد.</li>
+      <li>Smoke Test واقعی پاسخ <code>pong</code> دریافت کرد و Endpoint Workspace ادغام روی Company نمونه، سال‌های مالی ۱۴۰۵/۱۴۰۶ و اسناد موقت واقعی را برگرداند.</li>
+      <li>مرجع طراحی: <code>asoud_docs/ui/asoud-document-numbering-workspace-v1.svg</code> و PNG متناظر.</li>
+    </ul>
+
+    <div class="future"><b>مرز UAT:</b> Gate فنی روی داده مصنوعی Site توسعه موفق است. شماره‌گذاری و ادغام اسناد واقعی سازمان، سطح دسترسی کاربران واقعی و سیاست بستن دوره باید در UAT مالی سازمان مقصد تأیید شوند.</div>
+    <p class="footer-note">ASOUD ERP Architecture &amp; Execution Baseline v3.8 — Financial Numbering &amp; Daily Consolidation Technical Gate</p>
   </section>
 </body>
 </html>

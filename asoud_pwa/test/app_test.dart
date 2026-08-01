@@ -32,6 +32,15 @@ class FakeSessionGateway implements SessionGateway {
 
 class FakeAccountingGateway implements IranAccountingGateway {
   @override
+  Future<String> consolidateDocuments({
+    required String company,
+    required String postingDate,
+    required List<String> documents,
+    required String reason,
+  }) async =>
+      'ASOUD-MERGE-0001';
+
+  @override
   Future<String> finalizeNumbering({
     required String company,
     required String fiscalYear,
@@ -54,6 +63,13 @@ class FakeAccountingGateway implements IranAccountingGateway {
           'Cancelled': 0,
         }
       };
+
+  @override
+  Future<NumberingWorkspace> loadNumberingWorkspace(
+    String company, {
+    String? postingDate,
+  }) async =>
+      NumberingWorkspace(company: company, postingDate: postingDate ?? '');
   @override
   Future<AccountingSettings> applySetup(String company) =>
       loadSettings(company);

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:asoud_pwa/core/api/asoud_api_client.dart';
 import 'package:asoud_pwa/features/iran_accounting/domain/accounting_settings.dart';
 import 'package:asoud_pwa/features/iran_accounting/domain/iran_accounting_gateway.dart';
@@ -106,6 +108,22 @@ class FrappeIranAccountingGateway implements IranAccountingGateway {
   }
 
   @override
+  Future<NumberingWorkspace> loadNumberingWorkspace(
+    String company, {
+    String? postingDate,
+  }) async {
+    final response = await _client.getQuery(
+      '/api/method/asoud_core.api.document_consolidation_workspace',
+      {
+        'company': company,
+        if (postingDate != null && postingDate.isNotEmpty)
+          'posting_date': postingDate,
+      },
+    );
+    return NumberingWorkspace.fromJson(_message(response));
+  }
+
+  @override
   Future<String> finalizeNumbering({
     required String company,
     required String fiscalYear,
@@ -124,6 +142,28 @@ class FrappeIranAccountingGateway implements IranAccountingGateway {
       },
     );
     return response['message']?.toString() ?? '';
+  }
+
+  @override
+  Future<String> consolidateDocuments({
+    required String company,
+    required String postingDate,
+    required List<String> documents,
+    required String reason,
+  }) async {
+    final response = await _client.postForm(
+      '/api/method/asoud_core.api.consolidate_accounting_documents',
+      {
+        'company': company,
+        'posting_date': postingDate,
+        'documents': jsonEncode(documents),
+        'reason': reason,
+        'idempotency_key':
+            'merge-${DateTime.now().microsecondsSinceEpoch}-$company',
+      },
+    );
+    final message = _message(response);
+    return message['name']?.toString() ?? '';
   }
 
   @override

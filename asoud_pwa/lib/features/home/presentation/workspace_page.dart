@@ -9,6 +9,7 @@ import 'package:asoud_pwa/features/dashboard/presentation/dashboard_page.dart';
 import 'package:asoud_pwa/features/hr/domain/hr_gateway.dart';
 import 'package:asoud_pwa/features/hr/presentation/hr_page.dart';
 import 'package:asoud_pwa/features/iran_accounting/domain/iran_accounting_gateway.dart';
+import 'package:asoud_pwa/features/iran_accounting/presentation/bloc/iran_accounting_cubit.dart';
 import 'package:asoud_pwa/features/items/domain/item_gateway.dart';
 import 'package:asoud_pwa/features/items/presentation/item_management_page.dart';
 import 'package:asoud_pwa/features/iran_accounting/presentation/page/iran_accounting_page.dart';
