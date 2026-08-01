@@ -11,12 +11,14 @@ class OrganizationSettingsPage extends StatelessWidget {
     required this.context,
     required this.gateway,
     this.initialView = SettingsView.dashboard,
+    this.onOpenDestination,
     super.key,
   });
 
   final WorkContext context;
   final OrganizationGateway gateway;
   final SettingsView initialView;
+  final ValueChanged<String>? onOpenDestination;
 
   @override
   Widget build(BuildContext context) => BlocProvider(
@@ -25,12 +27,16 @@ class OrganizationSettingsPage extends StatelessWidget {
           this.context,
           initialView: initialView,
         )..load(),
-        child: const _OrganizationSettingsView(),
+        child: _OrganizationSettingsView(
+          onOpenDestination: onOpenDestination,
+        ),
       );
 }
 
 class _OrganizationSettingsView extends StatelessWidget {
-  const _OrganizationSettingsView();
+  const _OrganizationSettingsView({required this.onOpenDestination});
+
+  final ValueChanged<String>? onOpenDestination;
 
   @override
   Widget build(BuildContext context) =>
@@ -58,7 +64,10 @@ class _OrganizationSettingsView extends StatelessWidget {
                     ),
                   Expanded(
                     child: switch (state.view) {
-                      SettingsView.dashboard => _Dashboard(state.snapshot),
+                      SettingsView.dashboard => _Dashboard(
+                          state.snapshot,
+                          onOpenDestination: onOpenDestination,
+                        ),
                       SettingsView.structure => _Structure(state.snapshot),
                       SettingsView.financial => _FinancialSettings(state),
                     },
@@ -210,8 +219,9 @@ class _Header extends StatelessWidget {
 }
 
 class _Dashboard extends StatelessWidget {
-  const _Dashboard(this.snapshot);
+  const _Dashboard(this.snapshot, {required this.onOpenDestination});
   final OrganizationSnapshot snapshot;
+  final ValueChanged<String>? onOpenDestination;
 
   @override
   Widget build(BuildContext context) {
@@ -269,14 +279,26 @@ class _Dashboard extends StatelessWidget {
           },
         ),
         const SizedBox(height: 18),
-        const _SettingsCards(),
+        _SettingsCards(onOpenDestination: onOpenDestination),
       ],
     );
   }
 }
 
 class _SettingsCards extends StatelessWidget {
-  const _SettingsCards();
+  const _SettingsCards({required this.onOpenDestination});
+  final ValueChanged<String>? onOpenDestination;
+
+  String _destination(IconData icon) {
+    if (icon == Icons.tag) return 'document_sequences';
+    if (icon == Icons.manage_accounts) return 'organization_access';
+    if (icon == Icons.alt_route) return 'approval_settings';
+    if (icon == Icons.flag_outlined) return 'iran_settings';
+    if (icon == Icons.dataset_outlined) return 'master_data';
+    if (icon == Icons.lock_outline) return 'control_locks';
+    return 'settings_dashboard';
+  }
+
   @override
   Widget build(BuildContext context) => Wrap(
         spacing: 12,
@@ -287,13 +309,13 @@ class _SettingsCards extends StatelessWidget {
               'ساختار سازمانی',
               'هلدینگ، شرکت و شعبه',
               Icons.account_tree,
-              SettingsView.structure,
+              'structure',
             ),
             (
               'مالی و دوره‌ها',
               'سال مالی و نمودار حساب‌ها',
               Icons.receipt_long,
-              SettingsView.financial,
+              'financial',
             ),
             ('شماره‌گذاری', 'شماره موقت و قطعی', Icons.tag, null),
             (
@@ -328,11 +350,20 @@ class _SettingsCards extends StatelessWidget {
               child: Card(
                 child: InkWell(
                   borderRadius: BorderRadius.circular(12),
-                  onTap: item.$4 == null
-                      ? null
-                      : () => context
+                  onTap: () {
+                    final destination = item.$4 ?? _destination(item.$3);
+                    if (destination == 'structure') {
+                      context
                           .read<OrganizationSettingsCubit>()
-                          .show(item.$4!),
+                          .show(SettingsView.structure);
+                    } else if (destination == 'financial') {
+                      context
+                          .read<OrganizationSettingsCubit>()
+                          .show(SettingsView.financial);
+                    } else {
+                      onOpenDestination?.call(destination);
+                    }
+                  },
                   child: Padding(
                     padding: const EdgeInsets.all(18),
                     child: Row(
@@ -359,13 +390,9 @@ class _SettingsCards extends StatelessWidget {
                               ),
                               const Spacer(),
                               Text(
-                                item.$4 == null
-                                    ? 'از منوی اصلی سامانه'
-                                    : 'باز کردن تنظیمات',
+                                'باز کردن تنظیمات',
                                 style: TextStyle(
-                                  color: item.$4 == null
-                                      ? AsoudColors.muted
-                                      : Theme.of(context).colorScheme.primary,
+                                  color: Theme.of(context).colorScheme.primary,
                                   fontSize: 11,
                                 ),
                               ),
@@ -373,9 +400,7 @@ class _SettingsCards extends StatelessWidget {
                           ),
                         ),
                         Icon(
-                          item.$4 == null
-                              ? Icons.info_outline
-                              : Icons.chevron_left,
+                          Icons.chevron_left,
                           size: 18,
                           color: AsoudColors.muted,
                         ),
@@ -631,6 +656,12 @@ class _FinancialSettings extends StatelessWidget {
           _ChartOfAccountsPanel(snapshot: state.accountRules),
         if (state.financialSection == FinancialSection.floatingDetails)
           _FloatingDetailsPanel(snapshot: state.detailManagement),
+        if (state.financialSection == FinancialSection.defaultAccounts)
+          _DefaultAccountsPanel(
+            settings: settings,
+            draft: draft,
+            saving: state.phase == OrganizationPhase.saving,
+          ),
       ],
     );
   }
@@ -652,6 +683,11 @@ class _FinancialSectionSelector extends StatelessWidget {
               icon: Icon(Icons.tune),
             ),
             ButtonSegment(
+              value: FinancialSection.defaultAccounts,
+              label: Text('حساب‌های پیش‌فرض'),
+              icon: Icon(Icons.rule_folder_outlined),
+            ),
+            ButtonSegment(
               value: FinancialSection.chartOfAccounts,
               label: Text('نمودار حساب‌ها'),
               icon: Icon(Icons.account_tree_outlined),
@@ -668,6 +704,185 @@ class _FinancialSectionSelector extends StatelessWidget {
               .showFinancialSection(value.first),
         ),
       );
+}
+
+class _DefaultAccountsPanel extends StatelessWidget {
+  const _DefaultAccountsPanel({
+    required this.settings,
+    required this.draft,
+    required this.saving,
+  });
+
+  final FinancialSettingsSnapshot settings;
+  final FinancialSettingsDraft draft;
+  final bool saving;
+
+  List<Map<String, dynamic>> _accounts(String expected) =>
+      settings.accountOptions
+          .where((row) =>
+              row['account_type']?.toString() == expected ||
+              row['root_type']?.toString() == expected)
+          .toList(growable: false);
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<OrganizationSettingsCubit>();
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'حساب‌های پیش‌فرض شرکت',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.w900),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'این حساب‌ها هنگام ایجاد طرف‌حساب، کالا و اسناد عملیاتی شرکت فعال استفاده می‌شوند.',
+              style: TextStyle(color: AsoudColors.muted),
+            ),
+            const SizedBox(height: 18),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final width = constraints.maxWidth >= 900
+                    ? (constraints.maxWidth - 16) / 2
+                    : constraints.maxWidth;
+                return Wrap(
+                  spacing: 16,
+                  runSpacing: 16,
+                  children: [
+                    SizedBox(
+                      width: width,
+                      child: _DefaultAccountSelect(
+                        label: 'حساب دریافتنی',
+                        value: draft.defaultReceivableAccount,
+                        rows: _accounts('Receivable'),
+                        changed: (value) => cubit.updateFinancial(
+                            defaultReceivableAccount: value),
+                      ),
+                    ),
+                    SizedBox(
+                      width: width,
+                      child: _DefaultAccountSelect(
+                        label: 'حساب پرداختنی',
+                        value: draft.defaultPayableAccount,
+                        rows: _accounts('Payable'),
+                        changed: (value) =>
+                            cubit.updateFinancial(defaultPayableAccount: value),
+                      ),
+                    ),
+                    SizedBox(
+                      width: width,
+                      child: _DefaultAccountSelect(
+                        label: 'حساب درآمد',
+                        value: draft.defaultIncomeAccount,
+                        rows: _accounts('Income'),
+                        changed: (value) =>
+                            cubit.updateFinancial(defaultIncomeAccount: value),
+                      ),
+                    ),
+                    SizedBox(
+                      width: width,
+                      child: _DefaultAccountSelect(
+                        label: 'حساب هزینه',
+                        value: draft.defaultExpenseAccount,
+                        rows: _accounts('Expense'),
+                        changed: (value) =>
+                            cubit.updateFinancial(defaultExpenseAccount: value),
+                      ),
+                    ),
+                    SizedBox(
+                      width: width,
+                      child: _DefaultAccountSelect(
+                        label: 'حساب صندوق',
+                        value: draft.defaultCashAccount,
+                        rows: _accounts('Cash'),
+                        changed: (value) =>
+                            cubit.updateFinancial(defaultCashAccount: value),
+                      ),
+                    ),
+                    SizedBox(
+                      width: width,
+                      child: _DefaultAccountSelect(
+                        label: 'حساب بانک',
+                        value: draft.defaultBankAccount,
+                        rows: _accounts('Bank'),
+                        changed: (value) =>
+                            cubit.updateFinancial(defaultBankAccount: value),
+                      ),
+                    ),
+                    SizedBox(
+                      width: width,
+                      child: _DefaultAccountSelect(
+                        label: 'حساب تعدیلات موجودی',
+                        value: draft.stockAdjustmentAccount,
+                        rows: _accounts('Expense'),
+                        changed: (value) => cubit.updateFinancial(
+                            stockAdjustmentAccount: value),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: FilledButton.icon(
+                onPressed: saving ? null : cubit.saveFinancial,
+                icon: saving
+                    ? const SizedBox.square(
+                        dimension: 17,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.save_outlined),
+                label: const Text('ذخیره حساب‌های پیش‌فرض'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DefaultAccountSelect extends StatelessWidget {
+  const _DefaultAccountSelect({
+    required this.label,
+    required this.value,
+    required this.rows,
+    required this.changed,
+  });
+
+  final String label;
+  final String value;
+  final List<Map<String, dynamic>> rows;
+  final ValueChanged<String> changed;
+
+  @override
+  Widget build(BuildContext context) {
+    final names = {
+      if (value.isNotEmpty) value,
+      ...rows.map((row) => row['name']?.toString() ?? '').where(
+            (name) => name.isNotEmpty,
+          ),
+    };
+    return DropdownButtonFormField<String>(
+      value: value.isEmpty ? null : value,
+      isExpanded: true,
+      decoration: InputDecoration(labelText: label),
+      items: [
+        const DropdownMenuItem(value: '', child: Text('انتخاب نشده')),
+        for (final name in names)
+          DropdownMenuItem(value: name, child: Text(name)),
+      ],
+      onChanged: (item) => changed(item ?? ''),
+    );
+  }
 }
 
 class _ChartOfAccountsPanel extends StatelessWidget {

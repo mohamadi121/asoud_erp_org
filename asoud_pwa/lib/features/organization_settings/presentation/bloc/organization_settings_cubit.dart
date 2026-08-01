@@ -8,7 +8,12 @@ enum OrganizationPhase { initial, loading, ready, saving, failure }
 
 enum SettingsView { dashboard, structure, financial }
 
-enum FinancialSection { general, chartOfAccounts, floatingDetails }
+enum FinancialSection {
+  general,
+  defaultAccounts,
+  chartOfAccounts,
+  floatingDetails,
+}
 
 class OrganizationSettingsState extends Equatable {
   const OrganizationSettingsState({
@@ -197,6 +202,7 @@ class OrganizationSettingsCubit extends Cubit<OrganizationSettingsState> {
   Future<void> showFinancialSection(FinancialSection section) async {
     emit(state.copyWith(financialSection: section, clearError: true));
     if (section == FinancialSection.general ||
+        section == FinancialSection.defaultAccounts ||
         (section == FinancialSection.floatingDetails &&
             state.detailManagement != null) ||
         (section != FinancialSection.floatingDetails &&
@@ -479,6 +485,13 @@ class OrganizationSettingsCubit extends Cubit<OrganizationSettingsState> {
     String? coaTemplate,
     String? amountInputUnit,
     String? calendarDisplay,
+    String? defaultReceivableAccount,
+    String? defaultPayableAccount,
+    String? defaultIncomeAccount,
+    String? defaultExpenseAccount,
+    String? defaultCashAccount,
+    String? defaultBankAccount,
+    String? stockAdjustmentAccount,
   }) {
     final draft = state.financialDraft;
     if (draft == null) return;
@@ -487,6 +500,13 @@ class OrganizationSettingsCubit extends Cubit<OrganizationSettingsState> {
         coaTemplate: coaTemplate,
         amountInputUnit: amountInputUnit,
         calendarDisplay: calendarDisplay,
+        defaultReceivableAccount: defaultReceivableAccount,
+        defaultPayableAccount: defaultPayableAccount,
+        defaultIncomeAccount: defaultIncomeAccount,
+        defaultExpenseAccount: defaultExpenseAccount,
+        defaultCashAccount: defaultCashAccount,
+        defaultBankAccount: defaultBankAccount,
+        stockAdjustmentAccount: stockAdjustmentAccount,
       ),
       clearError: true,
     ));

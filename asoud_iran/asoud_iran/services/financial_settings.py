@@ -6,6 +6,15 @@ from typing import Any
 
 AMOUNT_UNITS = {"IRR", "TOMAN"}
 CALENDAR_DISPLAYS = {"Jalali", "Gregorian"}
+DEFAULT_ACCOUNT_FIELDS = {
+    "default_receivable_account": "Receivable",
+    "default_payable_account": "Payable",
+    "default_income_account": "Income",
+    "default_expense_account": "Expense",
+    "default_cash_account": "Cash",
+    "default_bank_account": "Bank",
+    "stock_adjustment_account": "Expense",
+}
 
 
 def snapshot(company: str) -> dict[str, Any]:
@@ -42,7 +51,18 @@ def snapshot(company: str) -> dict[str, Any]:
             "calendar_display": values.get("calendar_display") or "Jalali",
             "timezone": values.get("timezone") or "Asia/Tehran",
             "setup_status": values.get("setup_status") or "Pending",
+            **{
+                fieldname: company_doc.get(fieldname) or ""
+                for fieldname in DEFAULT_ACCOUNT_FIELDS
+            },
         }
+    )
+
+    account_options = frappe.get_all(
+        "Account",
+        filters={"company": company, "is_group": 0, "disabled": 0},
+        fields=["name", "account_name", "account_number", "account_type", "root_type"],
+        order_by="account_number, account_name",
     )
 
     templates = frappe.get_all(
@@ -82,6 +102,7 @@ def snapshot(company: str) -> dict[str, Any]:
     return {
         "settings": values,
         "coa_templates": templates,
+        "account_options": account_options,
         "fiscal_years": applicable_years,
         "period_locks": frappe.get_all(
             "ASOUD Period Lock",
@@ -128,7 +149,8 @@ def save(company: str, payload: str | dict[str, Any]) -> dict[str, Any]:
         frappe.throw("Iranian accounting requires IRR as the company ledger currency")
 
     try:
-        values = _normalize_payload(payload)
+        raw_values = json.loads(payload) if isinstance(payload, str) else dict(payload)
+        values = _normalize_payload(raw_values)
     except (TypeError, ValueError, json.JSONDecodeError) as exc:
         frappe.throw(str(exc))
     template = frappe.db.get_value(
@@ -170,6 +192,15 @@ def save(company: str, payload: str | dict[str, Any]) -> dict[str, Any]:
     )
     doc.save()
 
+    account_updates = {
+        fieldname: values.get(fieldname) or None
+        for fieldname in DEFAULT_ACCOUNT_FIELDS
+        if fieldname in raw_values
+    }
+    if account_updates:
+        _validate_default_accounts(company, account_updates)
+        frappe.db.set_value("Company", company, account_updates)
+
     from asoud_core.services.audit import append_event
 
     append_event(
@@ -182,6 +213,7 @@ def save(company: str, payload: str | dict[str, Any]) -> dict[str, Any]:
             "coa_template": doc.coa_template,
             "amount_input_unit": doc.amount_input_unit,
             "calendar_display": doc.calendar_display,
+            **account_updates,
         },
     )
     return snapshot(company)
@@ -197,6 +229,10 @@ def _normalize_payload(payload: str | dict[str, Any]) -> dict[str, str]:
         "calendar_display": str(
             values.get("calendar_display") or "Jalali"
         ).strip(),
+        **{
+            fieldname: str(values.get(fieldname) or "").strip()
+            for fieldname in DEFAULT_ACCOUNT_FIELDS
+        },
     }
     if not normalized["coa_template"]:
         raise ValueError("Chart-of-accounts template is required")
@@ -205,3 +241,23 @@ def _normalize_payload(payload: str | dict[str, Any]) -> dict[str, str]:
     if normalized["calendar_display"] not in CALENDAR_DISPLAYS:
         raise ValueError("Calendar display must be Jalali or Gregorian")
     return normalized
+
+
+def _validate_default_accounts(company: str, values: dict[str, str | None]) -> None:
+    import frappe
+
+    for fieldname, account in values.items():
+        if not account:
+            continue
+        row = frappe.db.get_value(
+            "Account",
+            account,
+            ["company", "is_group", "disabled", "account_type", "root_type"],
+            as_dict=True,
+        )
+        if not row or row.company != company or row.is_group or row.disabled:
+            frappe.throw(f"{fieldname} must be an enabled leaf account of the company")
+        expected = DEFAULT_ACCOUNT_FIELDS[fieldname]
+        valid = row.account_type == expected or row.root_type == expected
+        if not valid:
+            frappe.throw(f"{fieldname} must use a {expected} account")

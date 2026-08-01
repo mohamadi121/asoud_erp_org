@@ -124,6 +124,14 @@ class FinancialSettingsSnapshot extends Equatable {
     this.fiscalYears = const [],
     this.fiscalPeriods = const [],
     this.periodLocks = const [],
+    this.accountOptions = const [],
+    this.defaultReceivableAccount = '',
+    this.defaultPayableAccount = '',
+    this.defaultIncomeAccount = '',
+    this.defaultExpenseAccount = '',
+    this.defaultCashAccount = '',
+    this.defaultBankAccount = '',
+    this.stockAdjustmentAccount = '',
   });
 
   factory FinancialSettingsSnapshot.fromJson(Map<String, dynamic> json) {
@@ -147,6 +155,19 @@ class FinancialSettingsSnapshot extends Equatable {
       fiscalYears: rows('fiscal_years'),
       fiscalPeriods: rows('fiscal_periods'),
       periodLocks: rows('period_locks'),
+      accountOptions: rows('account_options'),
+      defaultReceivableAccount:
+          settings['default_receivable_account']?.toString() ?? '',
+      defaultPayableAccount:
+          settings['default_payable_account']?.toString() ?? '',
+      defaultIncomeAccount:
+          settings['default_income_account']?.toString() ?? '',
+      defaultExpenseAccount:
+          settings['default_expense_account']?.toString() ?? '',
+      defaultCashAccount: settings['default_cash_account']?.toString() ?? '',
+      defaultBankAccount: settings['default_bank_account']?.toString() ?? '',
+      stockAdjustmentAccount:
+          settings['stock_adjustment_account']?.toString() ?? '',
     );
   }
 
@@ -162,11 +183,26 @@ class FinancialSettingsSnapshot extends Equatable {
   final List<Map<String, dynamic>> fiscalYears;
   final List<Map<String, dynamic>> fiscalPeriods;
   final List<Map<String, dynamic>> periodLocks;
+  final List<Map<String, dynamic>> accountOptions;
+  final String defaultReceivableAccount;
+  final String defaultPayableAccount;
+  final String defaultIncomeAccount;
+  final String defaultExpenseAccount;
+  final String defaultCashAccount;
+  final String defaultBankAccount;
+  final String stockAdjustmentAccount;
 
   FinancialSettingsDraft toDraft() => FinancialSettingsDraft(
         coaTemplate: coaTemplate,
         amountInputUnit: amountInputUnit,
         calendarDisplay: calendarDisplay,
+        defaultReceivableAccount: defaultReceivableAccount,
+        defaultPayableAccount: defaultPayableAccount,
+        defaultIncomeAccount: defaultIncomeAccount,
+        defaultExpenseAccount: defaultExpenseAccount,
+        defaultCashAccount: defaultCashAccount,
+        defaultBankAccount: defaultBankAccount,
+        stockAdjustmentAccount: stockAdjustmentAccount,
       );
 
   @override
@@ -183,6 +219,14 @@ class FinancialSettingsSnapshot extends Equatable {
         fiscalYears,
         fiscalPeriods,
         periodLocks,
+        accountOptions,
+        defaultReceivableAccount,
+        defaultPayableAccount,
+        defaultIncomeAccount,
+        defaultExpenseAccount,
+        defaultCashAccount,
+        defaultBankAccount,
+        stockAdjustmentAccount,
       ];
 }
 
@@ -360,27 +404,66 @@ class FinancialSettingsDraft extends Equatable {
     this.coaTemplate = '',
     this.amountInputUnit = 'IRR',
     this.calendarDisplay = 'Jalali',
+    this.defaultReceivableAccount = '',
+    this.defaultPayableAccount = '',
+    this.defaultIncomeAccount = '',
+    this.defaultExpenseAccount = '',
+    this.defaultCashAccount = '',
+    this.defaultBankAccount = '',
+    this.stockAdjustmentAccount = '',
   });
 
   final String coaTemplate;
   final String amountInputUnit;
   final String calendarDisplay;
+  final String defaultReceivableAccount;
+  final String defaultPayableAccount;
+  final String defaultIncomeAccount;
+  final String defaultExpenseAccount;
+  final String defaultCashAccount;
+  final String defaultBankAccount;
+  final String stockAdjustmentAccount;
 
   FinancialSettingsDraft copyWith({
     String? coaTemplate,
     String? amountInputUnit,
     String? calendarDisplay,
+    String? defaultReceivableAccount,
+    String? defaultPayableAccount,
+    String? defaultIncomeAccount,
+    String? defaultExpenseAccount,
+    String? defaultCashAccount,
+    String? defaultBankAccount,
+    String? stockAdjustmentAccount,
   }) =>
       FinancialSettingsDraft(
         coaTemplate: coaTemplate ?? this.coaTemplate,
         amountInputUnit: amountInputUnit ?? this.amountInputUnit,
         calendarDisplay: calendarDisplay ?? this.calendarDisplay,
+        defaultReceivableAccount:
+            defaultReceivableAccount ?? this.defaultReceivableAccount,
+        defaultPayableAccount:
+            defaultPayableAccount ?? this.defaultPayableAccount,
+        defaultIncomeAccount: defaultIncomeAccount ?? this.defaultIncomeAccount,
+        defaultExpenseAccount:
+            defaultExpenseAccount ?? this.defaultExpenseAccount,
+        defaultCashAccount: defaultCashAccount ?? this.defaultCashAccount,
+        defaultBankAccount: defaultBankAccount ?? this.defaultBankAccount,
+        stockAdjustmentAccount:
+            stockAdjustmentAccount ?? this.stockAdjustmentAccount,
       );
 
   Map<String, dynamic> toJson() => {
         'coa_template': coaTemplate,
         'amount_input_unit': amountInputUnit,
         'calendar_display': calendarDisplay,
+        'default_receivable_account': defaultReceivableAccount,
+        'default_payable_account': defaultPayableAccount,
+        'default_income_account': defaultIncomeAccount,
+        'default_expense_account': defaultExpenseAccount,
+        'default_cash_account': defaultCashAccount,
+        'default_bank_account': defaultBankAccount,
+        'stock_adjustment_account': stockAdjustmentAccount,
       };
 
   @override
@@ -388,6 +471,13 @@ class FinancialSettingsDraft extends Equatable {
         coaTemplate,
         amountInputUnit,
         calendarDisplay,
+        defaultReceivableAccount,
+        defaultPayableAccount,
+        defaultIncomeAccount,
+        defaultExpenseAccount,
+        defaultCashAccount,
+        defaultBankAccount,
+        stockAdjustmentAccount,
       ];
 }
 

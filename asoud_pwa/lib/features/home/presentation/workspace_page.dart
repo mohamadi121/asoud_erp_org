@@ -71,6 +71,7 @@ class _WorkspacePageState extends State<WorkspacePage> {
   SettingsView settingsView = SettingsView.dashboard;
   String? partyRoleFilter;
   bool itemManagementMode = false;
+  bool masterDataMode = false;
   late final DashboardController dashboardController = DashboardController();
 
   @override
@@ -86,6 +87,7 @@ class _WorkspacePageState extends State<WorkspacePage> {
       approvalMode = false;
       partyRoleFilter = null;
       itemManagementMode = false;
+      masterDataMode = false;
     });
   }
 
@@ -95,6 +97,8 @@ class _WorkspacePageState extends State<WorkspacePage> {
         index = 0;
         approvalMode = false;
         partyRoleFilter = null;
+        itemManagementMode = false;
+        masterDataMode = false;
       });
     }
     action();
@@ -107,6 +111,9 @@ class _WorkspacePageState extends State<WorkspacePage> {
     setState(() {
       approvalMode = true;
       approvalView = view;
+      partyRoleFilter = null;
+      itemManagementMode = false;
+      masterDataMode = false;
     });
   }
 
@@ -214,6 +221,8 @@ class _WorkspacePageState extends State<WorkspacePage> {
           index = 3;
           approvalMode = false;
           partyRoleFilter = 'Customer';
+          itemManagementMode = false;
+          masterDataMode = false;
         });
         return;
       case 'sales_order':
@@ -227,6 +236,8 @@ class _WorkspacePageState extends State<WorkspacePage> {
           index = 4;
           approvalMode = false;
           partyRoleFilter = 'Supplier';
+          itemManagementMode = false;
+          masterDataMode = false;
         });
         return;
       case 'purchase_order':
@@ -242,6 +253,7 @@ class _WorkspacePageState extends State<WorkspacePage> {
           approvalMode = false;
           partyRoleFilter = null;
           itemManagementMode = true;
+          masterDataMode = false;
         });
         return;
       case 'employees':
@@ -249,6 +261,8 @@ class _WorkspacePageState extends State<WorkspacePage> {
           index = 6;
           approvalMode = false;
           partyRoleFilter = 'Employee';
+          itemManagementMode = false;
+          masterDataMode = false;
         });
         return;
       case 'organization':
@@ -277,11 +291,30 @@ class _WorkspacePageState extends State<WorkspacePage> {
         _selectModule(8);
         return;
       case 'document_sequences':
+        _selectModule(1);
+        return;
       case 'organization_access':
+        _openApprovalInbox(ApprovalView.access);
+        return;
       case 'approval_settings':
+        _openApprovalInbox(ApprovalView.policies);
+        return;
       case 'iran_settings':
+        _selectModule(1);
+        return;
       case 'master_data':
+        setState(() {
+          index = 8;
+          approvalMode = false;
+          partyRoleFilter = null;
+          itemManagementMode = false;
+          masterDataMode = true;
+        });
+        return;
       case 'control_locks':
+        setState(() => settingsView = SettingsView.financial);
+        _selectModule(8);
+        return;
       case 'access':
       case 'compliance':
         _selectModule(8);
@@ -384,6 +417,19 @@ class _WorkspacePageState extends State<WorkspacePage> {
         gateway: widget.itemGateway,
       );
     }
+    if (masterDataMode) {
+      return _MasterDataHub(
+        openParties: () => setState(() {
+          masterDataMode = false;
+          partyRoleFilter = 'Customer';
+        }),
+        openItems: () => setState(() {
+          masterDataMode = false;
+          itemManagementMode = true;
+          index = 5;
+        }),
+      );
+    }
     return switch (index) {
       0 => DashboardPage(
           context: widget.context,
@@ -423,6 +469,7 @@ class _WorkspacePageState extends State<WorkspacePage> {
           context: widget.context,
           gateway: widget.organizationGateway,
           initialView: settingsView,
+          onOpenDestination: _handleCommand,
         ),
       _ => CompliancePage(
           context: widget.context,
@@ -430,6 +477,110 @@ class _WorkspacePageState extends State<WorkspacePage> {
         ),
     };
   }
+}
+
+class _MasterDataHub extends StatelessWidget {
+  const _MasterDataHub({required this.openParties, required this.openItems});
+
+  final VoidCallback openParties;
+  final VoidCallback openItems;
+
+  @override
+  Widget build(BuildContext context) => ColoredBox(
+        color: AsoudColors.canvas,
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            Text(
+              'اطلاعات پایه',
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.w900),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'مدیریت هویت‌های مشترک هلدینگ و سیاست مستقل شرکت فعال',
+              style: TextStyle(color: AsoudColors.muted),
+            ),
+            const SizedBox(height: 18),
+            Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              children: [
+                _MasterDataCard(
+                  title: 'اشخاص و طرف‌حساب‌ها',
+                  subtitle: 'مشتری، تأمین‌کننده، پرسنل و سایر نقش‌ها',
+                  icon: Icons.people_outline,
+                  open: openParties,
+                ),
+                _MasterDataCard(
+                  title: 'کالا و خدمات',
+                  subtitle: 'کالا، خدمت و سیاست عملیاتی هر شرکت',
+                  icon: Icons.inventory_2_outlined,
+                  open: openItems,
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+}
+
+class _MasterDataCard extends StatelessWidget {
+  const _MasterDataCard({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.open,
+  });
+
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final VoidCallback open;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+        width: 360,
+        height: 150,
+        child: Card(
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: open,
+            child: Padding(
+              padding: const EdgeInsets.all(18),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(child: Icon(icon)),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(title,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.w800)),
+                        const SizedBox(height: 4),
+                        Text(subtitle,
+                            style: const TextStyle(
+                                fontSize: 12, color: AsoudColors.muted)),
+                        const Spacer(),
+                        const Text('باز کردن مدیریت',
+                            style: TextStyle(
+                                fontSize: 11, color: AsoudColors.primary)),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_left,
+                      size: 18, color: AsoudColors.muted),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
 }
 
 class _TopNavigation extends StatelessWidget {

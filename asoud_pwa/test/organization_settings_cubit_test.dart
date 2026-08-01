@@ -45,9 +45,16 @@ void main() {
     cubit.updateFinancial(
       coaTemplate: 'GENERAL-V1',
       amountInputUnit: 'TOMAN',
+      defaultReceivableAccount: '112001 - ASOUD',
+      defaultBankAccount: '111002 - ASOUD',
     );
     expect(await cubit.saveFinancial(), isTrue);
     expect(gateway.savedFinancial.single.amountInputUnit, 'TOMAN');
+    expect(
+      gateway.savedFinancial.single.defaultReceivableAccount,
+      '112001 - ASOUD',
+    );
+    expect(gateway.savedFinancial.single.defaultBankAccount, '111002 - ASOUD');
     await cubit.close();
   });
 

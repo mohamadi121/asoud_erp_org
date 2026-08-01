@@ -67,11 +67,11 @@
 <rect x="70" y="326" width="570" height="94" rx="10" class="card"/>
 <circle cx="110" cy="373" r="21" fill="#e9f8f0"/><path d="M101 373l6 6 12-15" fill="none" stroke="#168a56" stroke-width="2.5"/>
 <text x="610" y="356" class="t muted" font-size="11" text-anchor="end">تنظیمات تکمیل‌شده</text>
-<text x="610" y="391" class="t dark" font-size="26" font-weight="800" text-anchor="end">۵ از ۸ بخش</text>
+<text x="610" y="391" class="t dark" font-size="26" font-weight="800" text-anchor="end">۸ از ۸ بخش</text>
 <rect x="655" y="326" width="570" height="94" rx="10" class="card"/>
 <circle cx="695" cy="373" r="21" fill="#fff2d8"/><path d="M695 360v16M695 383v1" stroke="#b66a00" stroke-width="2.5"/>
-<text x="1195" y="356" class="t muted" font-size="11" text-anchor="end">موارد نیازمند تکمیل</text>
-<text x="1195" y="391" class="t dark" font-size="26" font-weight="800" text-anchor="end">۳ مورد</text>
+<text x="1195" y="356" class="t muted" font-size="11" text-anchor="end">مسیرهای بدون عملکرد</text>
+<text x="1195" y="391" class="t dark" font-size="26" font-weight="800" text-anchor="end">۰ مورد</text>
 <rect x="1240" y="326" width="610" height="94" rx="10" class="card"/>
 <circle cx="1280" cy="373" r="21" fill="#edf3ff"/><path d="M1270 373h20M1280 363v20" stroke="#155bd7" stroke-width="2"/>
 <text x="1820" y="356" class="t muted" font-size="11" text-anchor="end">دامنه فعال تنظیمات</text>
@@ -95,7 +95,7 @@
   <rect x="1302" y="462" width="38" height="38" rx="9" fill="#fff2d8"/><path d="M1311 472h20v20h-20zM1316 478h10M1316 484h7" fill="none" stroke="#b66a00" stroke-width="2"/>
   <text x="1280" y="480" class="dark" font-size="16" font-weight="800" text-anchor="end">شماره‌گذاری اسناد</text>
   <text x="1330" y="526" class="muted" font-size="11" text-anchor="end">شماره موقت، قطعی و سری مستقل اسناد</text>
-  <text x="1330" y="557" fill="#b66a00" font-size="11" font-weight="700" text-anchor="end">۲ مورد نیازمند تکمیل ←</text>
+  <text x="1330" y="557" fill="#168a56" font-size="11" font-weight="700" text-anchor="end">مسیر عملیاتی فعال ←</text>
 
   <rect x="1375" y="442" width="475" height="168" rx="10" class="card"/>
   <rect x="1792" y="462" width="38" height="38" rx="9" fill="#edf3ff"/><circle cx="1811" cy="476" r="6" fill="none" stroke="#155bd7" stroke-width="2"/><path d="M1800 493c2-9 20-9 22 0" fill="none" stroke="#155bd7" stroke-width="2"/>
@@ -113,7 +113,7 @@
   <rect x="867" y="646" width="38" height="38" rx="9" fill="#f1eefe"/><path d="M876 655h20v20h-20zM876 664h20M886 655v20" fill="none" stroke="#7257d9" stroke-width="2"/>
   <text x="845" y="664" class="dark" font-size="16" font-weight="800" text-anchor="end">حسابداری ایران</text>
   <text x="895" y="710" class="muted" font-size="11" text-anchor="end">تقویم، مالیات، ارزش افزوده و خروجی قانونی</text>
-  <text x="895" y="741" fill="#7257d9" font-size="11" font-weight="700" text-anchor="end">پیکربندی اولیه ←</text>
+  <text x="895" y="741" fill="#168a56" font-size="11" font-weight="700" text-anchor="end">مسیر عملیاتی فعال ←</text>
 
   <rect x="940" y="626" width="420" height="168" rx="10" class="card"/>
   <rect x="1302" y="646" width="38" height="38" rx="9" fill="#e9f8f0"/><path d="M1311 655h20v19h-20zM1316 650h10v5M1316 662h10M1316 668h7" fill="none" stroke="#168a56" stroke-width="2"/>
@@ -125,7 +125,7 @@
   <rect x="1792" y="646" width="38" height="38" rx="9" fill="#fdecec"/><path d="M1801 657v-4a10 10 0 0 1 20 0v4M1799 657h24v18h-24z" fill="none" stroke="#d14343" stroke-width="2"/>
   <text x="1770" y="664" class="dark" font-size="16" font-weight="800" text-anchor="end">قفل‌ها و کنترل‌ها</text>
   <text x="1820" y="710" class="muted" font-size="11" text-anchor="end">قفل دوره، ویرایش قطعی و رویداد حسابرسی</text>
-  <text x="1820" y="741" fill="#d14343" font-size="11" font-weight="700" text-anchor="end">۱ کنترل غیرفعال ←</text>
+  <text x="1820" y="741" fill="#168a56" font-size="11" font-weight="700" text-anchor="end">مسیر عملیاتی فعال ←</text>
 </g>
 
 <!-- Setup guidance -->
