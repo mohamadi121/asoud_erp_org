@@ -28,6 +28,8 @@ void main() {
 
     expect(gateway.saved, hasLength(1));
     expect(gateway.saved.single.roles, {'Customer', 'Supplier'});
+    expect(gateway.saved.single.companyPolicies.keys,
+        containsAll(<String>['Customer', 'Supplier']));
     expect(cubit.state.draft, isNull);
     await cubit.close();
   });
@@ -61,6 +63,29 @@ void main() {
     expect(cubit.state.draft!.name, 'PARTY-00001');
     expect(cubit.state.draft!.displayName, 'احمد سماوات');
     await cubit.close();
+  });
+
+  test('serializes company policy independently from shared identity', () {
+    const policy = CompanyPartyPolicy(
+      role: 'Customer',
+      enabled: false,
+      defaultBranch: 'MAIN',
+      creditLimit: 25000000,
+      defaultAccount: 'Debtors - ASOUD',
+    );
+    const draft = PartyDraft(companyPolicies: {'Customer': policy});
+
+    final json = draft.toJson();
+    final restored = PartyDraft.fromJson({
+      ...json,
+      'roles': [
+        {'role': 'Customer'},
+      ],
+    });
+
+    expect(restored.companyPolicies['Customer']!.enabled, isFalse);
+    expect(restored.companyPolicies['Customer']!.creditLimit, 25000000);
+    expect(restored.companyPolicies['Customer']!.defaultBranch, 'MAIN');
   });
 }
 

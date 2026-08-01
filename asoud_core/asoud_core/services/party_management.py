@@ -77,6 +77,28 @@ def normalize_party_payload(payload: str | dict[str, Any]) -> dict[str, Any]:
                 "opening_date": str(row.get("opening_date") or "").strip() or None,
             }
         )
+    policies: dict[str, dict[str, Any]] = {}
+    for item in values.get("company_policies") or []:
+        row = dict(item)
+        role = str(row.get("role") or "").strip()
+        if role not in {"Customer", "Supplier"} or role not in roles:
+            raise ValueError("Company policy requires a selected customer or supplier role")
+        credit_limit = float(row.get("credit_limit") or 0)
+        if credit_limit < 0:
+            raise ValueError("Credit limit cannot be negative")
+        policies[role] = {
+            "role": role,
+            "enabled": _boolean(row.get("enabled"), True),
+            "default_branch": str(row.get("default_branch") or "").strip() or None,
+            "credit_limit": credit_limit if role == "Customer" else 0,
+            "payment_terms_template": str(
+                row.get("payment_terms_template") or ""
+            ).strip()
+            or None,
+            "price_list": str(row.get("price_list") or "").strip() or None,
+            "default_account": str(row.get("default_account") or "").strip()
+            or None,
+        }
     return {
         "name": str(values.get("name") or "").strip() or None,
         "person_type": person_type,
@@ -108,6 +130,7 @@ def normalize_party_payload(payload: str | dict[str, Any]) -> dict[str, Any]:
         "enabled": _boolean(values.get("enabled"), True),
         "roles": roles,
         "opening_balances": opening_balances,
+        "company_policies": policies,
     }
 
 
@@ -228,6 +251,13 @@ def _sync_customer(identity, role_row) -> str:
         "Customer", role_row.reference_name
     ):
         doc = frappe.get_doc("Customer", role_row.reference_name)
+    elif frappe.db.exists("Customer", {"asoud_party_identity": identity.name}):
+        doc = frappe.get_doc(
+            "Customer",
+            frappe.db.get_value(
+                "Customer", {"asoud_party_identity": identity.name}, "name"
+            ),
+        )
     else:
         doc = frappe.new_doc("Customer")
         doc.customer_group = _default_master(
@@ -236,12 +266,15 @@ def _sync_customer(identity, role_row) -> str:
         doc.territory = _default_master(
             "Territory", "Selling Settings", "territory"
         )
-    doc.customer_name = f"{identity.display_name} - {role_row.role_code}"
+    doc.customer_name = identity.display_name
     doc.customer_type = "Individual" if identity.person_type == "Natural" else "Company"
     doc.asoud_holding = identity.holding
     doc.asoud_party_identity = identity.name
-    doc.asoud_role_code = role_row.role_code
-    doc.disabled = 0 if role_row.enabled else 1
+    if not doc.asoud_role_code:
+        doc.asoud_role_code = role_row.role_code
+    # Customer is shared by the holding. Company-level availability belongs to
+    # ASOUD Party Company Profile and must never disable it for other companies.
+    doc.disabled = 0 if identity.enabled else 1
     doc.save(ignore_permissions=True)
     return doc.name
 
@@ -253,17 +286,25 @@ def _sync_supplier(identity, role_row) -> str:
         "Supplier", role_row.reference_name
     ):
         doc = frappe.get_doc("Supplier", role_row.reference_name)
+    elif frappe.db.exists("Supplier", {"asoud_party_identity": identity.name}):
+        doc = frappe.get_doc(
+            "Supplier",
+            frappe.db.get_value(
+                "Supplier", {"asoud_party_identity": identity.name}, "name"
+            ),
+        )
     else:
         doc = frappe.new_doc("Supplier")
         doc.supplier_group = _default_master(
             "Supplier Group", "Buying Settings", "supplier_group"
         )
-    doc.supplier_name = f"{identity.display_name} - {role_row.role_code}"
+    doc.supplier_name = identity.display_name
     doc.supplier_type = "Individual" if identity.person_type == "Natural" else "Company"
     doc.asoud_holding = identity.holding
     doc.asoud_party_identity = identity.name
-    doc.asoud_role_code = role_row.role_code
-    doc.disabled = 0 if role_row.enabled else 1
+    if not doc.asoud_role_code:
+        doc.asoud_role_code = role_row.role_code
+    doc.disabled = 0 if identity.enabled else 1
     doc.save(ignore_permissions=True)
     return doc.name
 
@@ -303,7 +344,7 @@ def _sync_employee(identity, role_row) -> str:
     return doc.name
 
 
-def _sync_company_profile(identity, role_row) -> None:
+def _sync_company_profile(identity, role_row, policy: dict[str, Any] | None = None) -> None:
     import frappe
 
     if role_row.role not in {"Customer", "Supplier"}:
@@ -317,23 +358,66 @@ def _sync_company_profile(identity, role_row) -> None:
     profile.party_type = role_row.role
     profile.party = role_row.reference_name
     profile.company = role_row.company
-    profile.default_branch = identity.branch
-    profile.enabled = int(role_row.enabled)
+    policy = policy or {}
+    profile.default_branch = policy.get("default_branch") or (
+        identity.branch if identity.company == role_row.company else None
+    )
+    profile.enabled = int(policy.get("enabled", role_row.enabled))
+    profile.credit_limit = policy.get("credit_limit", profile.credit_limit or 0)
+    profile.payment_terms_template = policy.get(
+        "payment_terms_template", profile.payment_terms_template
+    )
+    profile.price_list = policy.get("price_list", profile.price_list)
+    profile.default_account = policy.get("default_account", profile.default_account)
     profile.save(ignore_permissions=True)
 
 
-def _sync_role_masters(identity) -> None:
+def _sync_role_masters(
+    identity, company: str, policies: dict[str, dict[str, Any]]
+) -> None:
     syncers = {
         "Customer": ("Customer", _sync_customer),
         "Supplier": ("Supplier", _sync_supplier),
         "Employee": ("Employee", _sync_employee),
     }
     for row in identity.roles:
+        if row.company != company:
+            continue
         target = syncers.get(row.role)
         if target:
             row.reference_doctype = target[0]
             row.reference_name = target[1](identity, row)
-            _sync_company_profile(identity, row)
+            _sync_company_profile(identity, row, policies.get(row.role))
+
+
+def _role_values(row: Any) -> dict[str, Any]:
+    """Return only business fields accepted by the child table."""
+    getter = row.get if isinstance(row, dict) else lambda key: getattr(row, key, None)
+    return {
+        "company": getter("company"),
+        "role": getter("role"),
+        "role_code": getter("role_code"),
+        "code_key": getter("code_key"),
+        "reference_doctype": getter("reference_doctype"),
+        "reference_name": getter("reference_name"),
+        "enabled": getter("enabled"),
+    }
+
+
+def _opening_values(row: Any) -> dict[str, Any]:
+    getter = row.get if isinstance(row, dict) else lambda key: getattr(row, key, None)
+    return {
+        "company": getter("company"),
+        "role": getter("role"),
+        "balance_state": getter("balance_state"),
+        "amount": getter("amount"),
+        "currency": getter("currency"),
+        "account": getter("account"),
+        "offset_account": getter("offset_account"),
+        "opening_date": getter("opening_date"),
+        "status": getter("status"),
+        "journal_entry": getter("journal_entry"),
+    }
 
 
 def save_party(
@@ -355,10 +439,12 @@ def save_party(
         or not values["birth_date"]
     ):
         frappe.throw("A personnel record requires a natural person, gender and birth date")
-    if values["name"]:
+    is_new = not values["name"]
+    if not is_new:
         identity = frappe.get_doc("ASOUD Party Identity", values["name"])
-        if identity.company != company:
-            frappe.throw("Party does not belong to the selected company")
+        target_holding = frappe.db.get_value("Company", company, "asoud_holding")
+        if identity.holding != target_holding:
+            frappe.throw("Party does not belong to the selected holding")
         before = identity.as_dict()
         existing = {
             (row.company, row.role): row.as_dict() for row in identity.roles
@@ -371,13 +457,17 @@ def save_party(
         {
             key: value
             for key, value in values.items()
-            if key not in {"name", "roles", "opening_balances"}
+            if key not in {"name", "roles", "opening_balances", "company_policies"}
         }
     )
-    identity.company = company
-    identity.branch = branch
-    identity.holding = frappe.db.get_value("Company", company, "asoud_holding")
+    if is_new:
+        identity.company = company
+        identity.branch = branch
+        identity.holding = frappe.db.get_value("Company", company, "asoud_holding")
     identity.set("roles", [])
+    for (row_company, _), previous in existing.items():
+        if row_company != company:
+            identity.append("roles", _role_values(previous))
     for role in values["roles"]:
         previous = existing.get((company, role), {})
         code = previous.get("role_code") or _allocate_code(company, role)
@@ -394,6 +484,10 @@ def save_party(
             },
         )
     identity.set("opening_balances", [])
+    if not is_new:
+        for previous in before.get("opening_balances") or []:
+            if previous.get("company") != company:
+                identity.append("opening_balances", _opening_values(previous))
     for row in values["opening_balances"]:
         identity.append(
             "opening_balances",
@@ -404,7 +498,7 @@ def save_party(
             },
         )
     identity.save(ignore_permissions=True)
-    _sync_role_masters(identity)
+    _sync_role_masters(identity, company, values["company_policies"])
     identity.save(ignore_permissions=True)
     from asoud_core.services.audit import append_event
 
@@ -432,9 +526,21 @@ def party_snapshot(
 
     if not can_access_context(frappe.session.user, company, branch):
         frappe.throw("Not permitted", frappe.PermissionError)
-    filters: dict[str, Any] = {"company": company}
-    if branch:
-        filters["branch"] = ["in", ("", branch)]
+    parent_names = frappe.get_all(
+        "ASOUD Party Role",
+        filters={"company": company, "enabled": 1},
+        pluck="parent",
+    )
+    if not parent_names:
+        return {
+            "company": company,
+            "branch": branch,
+            "items": [],
+            "series": preview_codes(company, list(ROLE_DEFINITIONS)),
+            "policy_options": _party_policy_options(company),
+            "opening_balance_mode": "Draft until posted through opening balance workflow",
+        }
+    filters: dict[str, Any] = {"name": ["in", list(set(parent_names))]}
     or_filters = (
         {
             "display_name": ["like", f"%{search.strip()}%"],
@@ -465,7 +571,7 @@ def party_snapshot(
     roles = (
         frappe.get_all(
             "ASOUD Party Role",
-            filters={"parent": ["in", names]},
+            filters={"parent": ["in", names], "company": company},
             fields=[
                 "parent",
                 "role",
@@ -489,7 +595,48 @@ def party_snapshot(
             {**row, "roles": by_identity.get(row.name, [])} for row in identities
         ],
         "series": preview_codes(company, list(ROLE_DEFINITIONS)),
+        "policy_options": _party_policy_options(company),
         "opening_balance_mode": "Draft until posted through opening balance workflow",
+    }
+
+
+def _party_policy_options(company: str) -> dict[str, list[str]]:
+    import frappe
+
+    return {
+        "branches": frappe.get_all(
+            "ASOUD Branch",
+            filters={"company": company, "enabled": 1},
+            pluck="name",
+            order_by="branch_name",
+        ),
+        "payment_terms": frappe.get_all(
+            "Payment Terms Template", pluck="name", order_by="name"
+        ),
+        "selling_price_lists": frappe.get_all(
+            "Price List",
+            filters={"selling": 1, "enabled": 1},
+            pluck="name",
+            order_by="name",
+        ),
+        "buying_price_lists": frappe.get_all(
+            "Price List",
+            filters={"buying": 1, "enabled": 1},
+            pluck="name",
+            order_by="name",
+        ),
+        "receivable_accounts": frappe.get_all(
+            "Account",
+            filters={"company": company, "is_group": 0, "account_type": "Receivable"},
+            pluck="name",
+            order_by="name",
+        ),
+        "payable_accounts": frappe.get_all(
+            "Account",
+            filters={"company": company, "is_group": 0, "account_type": "Payable"},
+            pluck="name",
+            order_by="name",
+        ),
     }
 
 
@@ -501,17 +648,41 @@ def party_detail(name: str, company: str) -> dict:
     if not can_access_company(frappe.session.user, company):
         frappe.throw("Not permitted", frappe.PermissionError)
     doc = frappe.get_doc("ASOUD Party Identity", name)
-    if doc.company != company:
-        frappe.throw("Party does not belong to the selected company")
+    current_roles = [row for row in doc.roles if row.company == company]
+    if not current_roles:
+        frappe.throw("Party is not enabled for the selected company")
+    references = {
+        row.role: {"doctype": row.reference_doctype, "name": row.reference_name}
+        for row in current_roles
+        if row.reference_name
+    }
+    policies = []
+    for row in current_roles:
+        if row.role not in {"Customer", "Supplier"} or not row.reference_name:
+            continue
+        profile = frappe.db.get_value(
+            "ASOUD Party Company Profile",
+            {"party_type": row.role, "party": row.reference_name, "company": company},
+            [
+                "enabled",
+                "default_branch",
+                "credit_limit",
+                "payment_terms_template",
+                "price_list",
+                "default_account",
+            ],
+            as_dict=True,
+        )
+        if profile:
+            policies.append({"role": row.role, **profile})
+    party = doc.as_dict()
+    party["roles"] = [row.as_dict() for row in current_roles]
+    party["opening_balances"] = [
+        row.as_dict() for row in doc.opening_balances if row.company == company
+    ]
     return {
-        "party": doc.as_dict(),
-        "codes": {row.role: row.role_code for row in doc.roles},
-        "references": {
-            row.role: {
-                "doctype": row.reference_doctype,
-                "name": row.reference_name,
-            }
-            for row in doc.roles
-            if row.reference_name
-        },
+        "party": party,
+        "codes": {row.role: row.role_code for row in current_roles},
+        "references": references,
+        "company_policies": policies,
     }

@@ -373,6 +373,19 @@ class _PartyManagementViewState extends State<_PartyManagementView> {
                             ),
                           ),
                           const SizedBox(height: 12),
+                          if (draft.roles.contains('Customer') ||
+                              draft.roles.contains('Supplier')) ...[
+                            _SectionCard(
+                              title: 'سیاست شخص در شرکت فعال',
+                              icon: Icons.policy_outlined,
+                              child: _CompanyPolicies(
+                                draft: draft,
+                                options: state.snapshot.policyOptions,
+                                update: cubit.updateCompanyPolicy,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                          ],
                           _SectionCard(
                             title: 'اطلاعات پایه',
                             icon: Icons.article_outlined,
@@ -442,9 +455,9 @@ class _PartyManagementViewState extends State<_PartyManagementView> {
                                 ),
                                 SwitchListTile(
                                   contentPadding: EdgeInsets.zero,
-                                  title: const Text('فعال'),
+                                  title: const Text('هویت فعال در هلدینگ'),
                                   subtitle: const Text(
-                                    'غیرفعال‌سازی فقط در شرکت فعال اعمال می‌شود.',
+                                    'این وضعیت عمومی است؛ وضعیت هر شرکت از بخش سیاست شرکت فعال کنترل می‌شود.',
                                   ),
                                   value: draft.enabled,
                                   onChanged: (value) => cubit.update(
@@ -947,6 +960,184 @@ class _AddressFields extends StatelessWidget {
             ),
           ),
         ],
+      );
+}
+
+class _CompanyPolicies extends StatelessWidget {
+  const _CompanyPolicies({
+    required this.draft,
+    required this.options,
+    required this.update,
+  });
+
+  final PartyDraft draft;
+  final PartyPolicyOptions options;
+  final void Function(String role, CompanyPartyPolicy value) update;
+
+  @override
+  Widget build(BuildContext context) {
+    final roles = draft.roles
+        .where((role) => role == 'Customer' || role == 'Supplier')
+        .toList(growable: false);
+    return Column(
+      children: [
+        const Text(
+          'این تنظیمات فقط برای شرکت فعال است و روی همان شخص در شرکت‌های دیگر اثر ندارد.',
+          style: TextStyle(color: AsoudColors.muted),
+        ),
+        const SizedBox(height: 12),
+        for (final role in roles) ...[
+          _CompanyPolicyCard(
+            value:
+                draft.companyPolicies[role] ?? CompanyPartyPolicy(role: role),
+            options: options,
+            changed: (value) => update(role, value),
+          ),
+          if (role != roles.last) const SizedBox(height: 12),
+        ],
+      ],
+    );
+  }
+}
+
+class _CompanyPolicyCard extends StatelessWidget {
+  const _CompanyPolicyCard({
+    required this.value,
+    required this.options,
+    required this.changed,
+  });
+
+  final CompanyPartyPolicy value;
+  final PartyPolicyOptions options;
+  final ValueChanged<CompanyPartyPolicy> changed;
+
+  List<String> _withCurrent(List<String> values, String current) => {
+        if (current.isNotEmpty) current,
+        ...values,
+      }.toList(growable: false);
+
+  @override
+  Widget build(BuildContext context) {
+    final customer = value.role == 'Customer';
+    final priceLists =
+        customer ? options.sellingPriceLists : options.buyingPriceLists;
+    final accounts =
+        customer ? options.receivableAccounts : options.payableAccounts;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border.all(color: AsoudColors.border),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text('${partyRoles[value.role]} فعال در شرکت جاری'),
+              subtitle: const Text('کنترل مجاز بودن عملیات در همین شرکت'),
+              value: value.enabled,
+              onChanged: (enabled) => changed(value.copyWith(enabled: enabled)),
+            ),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                SizedBox(
+                  width: 270,
+                  child: _PolicySelect(
+                    label: 'شعبه پیش‌فرض',
+                    value: value.defaultBranch,
+                    options:
+                        _withCurrent(options.branches, value.defaultBranch),
+                    changed: (item) =>
+                        changed(value.copyWith(defaultBranch: item)),
+                  ),
+                ),
+                SizedBox(
+                  width: 270,
+                  child: _PolicySelect(
+                    label: 'شرایط پرداخت',
+                    value: value.paymentTermsTemplate,
+                    options: _withCurrent(
+                      options.paymentTerms,
+                      value.paymentTermsTemplate,
+                    ),
+                    changed: (item) => changed(
+                      value.copyWith(paymentTermsTemplate: item),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 270,
+                  child: _PolicySelect(
+                    label: 'لیست قیمت پیش‌فرض',
+                    value: value.priceList,
+                    options: _withCurrent(priceLists, value.priceList),
+                    changed: (item) => changed(value.copyWith(priceList: item)),
+                  ),
+                ),
+                SizedBox(
+                  width: 270,
+                  child: _PolicySelect(
+                    label: customer
+                        ? 'حساب دریافتنی پیش‌فرض'
+                        : 'حساب پرداختنی پیش‌فرض',
+                    value: value.defaultAccount,
+                    options: _withCurrent(accounts, value.defaultAccount),
+                    changed: (item) =>
+                        changed(value.copyWith(defaultAccount: item)),
+                  ),
+                ),
+                if (customer)
+                  SizedBox(
+                    width: 270,
+                    child: TextFormField(
+                      initialValue: value.creditLimit == 0
+                          ? ''
+                          : value.creditLimit.toStringAsFixed(0),
+                      keyboardType: TextInputType.number,
+                      decoration:
+                          const InputDecoration(labelText: 'سقف اعتبار'),
+                      onChanged: (text) => changed(value.copyWith(
+                        creditLimit: double.tryParse(text) ?? 0,
+                      )),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PolicySelect extends StatelessWidget {
+  const _PolicySelect({
+    required this.label,
+    required this.value,
+    required this.options,
+    required this.changed,
+  });
+
+  final String label;
+  final String value;
+  final List<String> options;
+  final ValueChanged<String> changed;
+
+  @override
+  Widget build(BuildContext context) => DropdownButtonFormField<String>(
+        value: value.isEmpty ? null : value,
+        isExpanded: true,
+        decoration: InputDecoration(labelText: label),
+        items: [
+          const DropdownMenuItem(value: '', child: Text('بدون پیش‌فرض')),
+          for (final item in options)
+            DropdownMenuItem(value: item, child: Text(item)),
+        ],
+        onChanged: (item) => changed(item ?? ''),
       );
 }
 

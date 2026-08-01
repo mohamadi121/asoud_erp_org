@@ -110,17 +110,36 @@ class PartyManagementCubit extends Cubit<PartyManagementState> {
     if (draft == null) return;
     final roles = {...draft.roles};
     final balances = {...draft.openingBalances};
+    final policies = {...draft.companyPolicies};
     if (!roles.remove(role)) {
       roles.add(role);
       balances.putIfAbsent(role, () => OpeningBalanceDraft(role: role));
+      if (role == 'Customer' || role == 'Supplier') {
+        policies.putIfAbsent(role, () => CompanyPartyPolicy(role: role));
+      }
     } else {
       balances.remove(role);
+      policies.remove(role);
     }
     if (roles.isEmpty) return;
     emit(state.copyWith(
-      draft: draft.copyWith(roles: roles, openingBalances: balances),
+      draft: draft.copyWith(
+        roles: roles,
+        openingBalances: balances,
+        companyPolicies: policies,
+      ),
     ));
     await _refreshCodes();
+  }
+
+  void updateCompanyPolicy(String role, CompanyPartyPolicy policy) {
+    final draft = state.draft;
+    if (draft == null || !draft.roles.contains(role)) return;
+    emit(state.copyWith(
+      draft: draft.copyWith(
+        companyPolicies: {...draft.companyPolicies, role: policy},
+      ),
+    ));
   }
 
   void updateOpening(

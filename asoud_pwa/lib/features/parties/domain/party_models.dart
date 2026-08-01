@@ -89,6 +89,7 @@ class PartySnapshot extends Equatable {
   const PartySnapshot({
     this.items = const [],
     this.nextCodes = const {},
+    this.policyOptions = const PartyPolicyOptions(),
   });
 
   factory PartySnapshot.fromJson(Map<String, dynamic> json) => PartySnapshot(
@@ -98,13 +99,59 @@ class PartySnapshot extends Equatable {
             .toList(growable: false),
         nextCodes: ((json['series'] as Map<String, dynamic>?) ?? const {})
             .map((key, value) => MapEntry(key, value.toString())),
+        policyOptions: PartyPolicyOptions.fromJson(
+          (json['policy_options'] as Map<String, dynamic>?) ?? const {},
+        ),
       );
 
   final List<PartySummary> items;
   final Map<String, String> nextCodes;
+  final PartyPolicyOptions policyOptions;
 
   @override
-  List<Object?> get props => [items, nextCodes];
+  List<Object?> get props => [items, nextCodes, policyOptions];
+}
+
+class PartyPolicyOptions extends Equatable {
+  const PartyPolicyOptions({
+    this.branches = const [],
+    this.paymentTerms = const [],
+    this.sellingPriceLists = const [],
+    this.buyingPriceLists = const [],
+    this.receivableAccounts = const [],
+    this.payableAccounts = const [],
+  });
+
+  factory PartyPolicyOptions.fromJson(Map<String, dynamic> json) {
+    List<String> list(String key) => ((json[key] as List<dynamic>?) ?? const [])
+        .map((value) => value.toString())
+        .toList(growable: false);
+    return PartyPolicyOptions(
+      branches: list('branches'),
+      paymentTerms: list('payment_terms'),
+      sellingPriceLists: list('selling_price_lists'),
+      buyingPriceLists: list('buying_price_lists'),
+      receivableAccounts: list('receivable_accounts'),
+      payableAccounts: list('payable_accounts'),
+    );
+  }
+
+  final List<String> branches;
+  final List<String> paymentTerms;
+  final List<String> sellingPriceLists;
+  final List<String> buyingPriceLists;
+  final List<String> receivableAccounts;
+  final List<String> payableAccounts;
+
+  @override
+  List<Object?> get props => [
+        branches,
+        paymentTerms,
+        sellingPriceLists,
+        buyingPriceLists,
+        receivableAccounts,
+        payableAccounts,
+      ];
 }
 
 class PartyProfile extends Equatable {
@@ -114,20 +161,24 @@ class PartyProfile extends Equatable {
     this.references = const {},
   });
 
-  factory PartyProfile.fromJson(Map<String, dynamic> json) => PartyProfile(
-        draft: PartyDraft.fromJson(
-          (json['party'] as Map<String, dynamic>?) ?? const {},
+  factory PartyProfile.fromJson(Map<String, dynamic> json) {
+    final party = Map<String, dynamic>.from(
+      (json['party'] as Map<String, dynamic>?) ?? const {},
+    );
+    party['company_policies'] = json['company_policies'] ?? const [];
+    return PartyProfile(
+      draft: PartyDraft.fromJson(party),
+      codes: ((json['codes'] as Map<String, dynamic>?) ?? const {})
+          .map((key, value) => MapEntry(key, value.toString())),
+      references:
+          ((json['references'] as Map<String, dynamic>?) ?? const {}).map(
+        (key, value) => MapEntry(
+          key,
+          value is Map<String, dynamic> ? value : const <String, dynamic>{},
         ),
-        codes: ((json['codes'] as Map<String, dynamic>?) ?? const {})
-            .map((key, value) => MapEntry(key, value.toString())),
-        references:
-            ((json['references'] as Map<String, dynamic>?) ?? const {}).map(
-          (key, value) => MapEntry(
-            key,
-            value is Map<String, dynamic> ? value : const <String, dynamic>{},
-          ),
-        ),
-      );
+      ),
+    );
+  }
 
   final PartyDraft draft;
   final Map<String, String> codes;
@@ -184,6 +235,77 @@ class OpeningBalanceDraft extends Equatable {
       [role, balanceState, amount, currency, account, offsetAccount];
 }
 
+class CompanyPartyPolicy extends Equatable {
+  const CompanyPartyPolicy({
+    required this.role,
+    this.enabled = true,
+    this.defaultBranch = '',
+    this.creditLimit = 0,
+    this.paymentTermsTemplate = '',
+    this.priceList = '',
+    this.defaultAccount = '',
+  });
+
+  factory CompanyPartyPolicy.fromJson(Map<String, dynamic> json) =>
+      CompanyPartyPolicy(
+        role: json['role']?.toString() ?? '',
+        enabled: json['enabled'] != 0 && json['enabled'] != false,
+        defaultBranch: json['default_branch']?.toString() ?? '',
+        creditLimit: (json['credit_limit'] as num?)?.toDouble() ?? 0,
+        paymentTermsTemplate: json['payment_terms_template']?.toString() ?? '',
+        priceList: json['price_list']?.toString() ?? '',
+        defaultAccount: json['default_account']?.toString() ?? '',
+      );
+
+  final String role;
+  final bool enabled;
+  final String defaultBranch;
+  final double creditLimit;
+  final String paymentTermsTemplate;
+  final String priceList;
+  final String defaultAccount;
+
+  CompanyPartyPolicy copyWith({
+    bool? enabled,
+    String? defaultBranch,
+    double? creditLimit,
+    String? paymentTermsTemplate,
+    String? priceList,
+    String? defaultAccount,
+  }) =>
+      CompanyPartyPolicy(
+        role: role,
+        enabled: enabled ?? this.enabled,
+        defaultBranch: defaultBranch ?? this.defaultBranch,
+        creditLimit: creditLimit ?? this.creditLimit,
+        paymentTermsTemplate: paymentTermsTemplate ?? this.paymentTermsTemplate,
+        priceList: priceList ?? this.priceList,
+        defaultAccount: defaultAccount ?? this.defaultAccount,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'role': role,
+        'enabled': enabled,
+        if (defaultBranch.isNotEmpty) 'default_branch': defaultBranch,
+        if (role == 'Customer') 'credit_limit': creditLimit,
+        if (paymentTermsTemplate.isNotEmpty)
+          'payment_terms_template': paymentTermsTemplate,
+        if (priceList.isNotEmpty) 'price_list': priceList,
+        if (defaultAccount.isNotEmpty) 'default_account': defaultAccount,
+      };
+
+  @override
+  List<Object?> get props => [
+        role,
+        enabled,
+        defaultBranch,
+        creditLimit,
+        paymentTermsTemplate,
+        priceList,
+        defaultAccount,
+      ];
+}
+
 class PartyDraft extends Equatable {
   const PartyDraft({
     this.name,
@@ -210,6 +332,9 @@ class PartyDraft extends Equatable {
     this.description = '',
     this.roles = const {'Customer'},
     this.openingBalances = const {},
+    this.companyPolicies = const {
+      'Customer': CompanyPartyPolicy(role: 'Customer'),
+    },
     this.enabled = true,
   });
 
@@ -237,6 +362,7 @@ class PartyDraft extends Equatable {
   final String description;
   final Set<String> roles;
   final Map<String, OpeningBalanceDraft> openingBalances;
+  final Map<String, CompanyPartyPolicy> companyPolicies;
   final bool enabled;
 
   String get displayName => personType == 'Natural'
@@ -249,6 +375,9 @@ class PartyDraft extends Equatable {
         .toList(growable: false);
     final balanceRows =
         ((json['opening_balances'] as List<dynamic>?) ?? const [])
+            .whereType<Map<String, dynamic>>();
+    final policyRows =
+        ((json['company_policies'] as List<dynamic>?) ?? const [])
             .whereType<Map<String, dynamic>>();
     return PartyDraft(
       name: json['name']?.toString(),
@@ -286,6 +415,10 @@ class PartyDraft extends Equatable {
             offsetAccount: row['offset_account']?.toString() ?? '',
           ),
       },
+      companyPolicies: {
+        for (final row in policyRows)
+          row['role'].toString(): CompanyPartyPolicy.fromJson(row),
+      },
       enabled: json['enabled'] != 0 && json['enabled'] != false,
     );
   }
@@ -314,6 +447,7 @@ class PartyDraft extends Equatable {
     String? description,
     Set<String>? roles,
     Map<String, OpeningBalanceDraft>? openingBalances,
+    Map<String, CompanyPartyPolicy>? companyPolicies,
     bool? enabled,
   }) =>
       PartyDraft(
@@ -342,6 +476,7 @@ class PartyDraft extends Equatable {
         description: description ?? this.description,
         roles: roles ?? this.roles,
         openingBalances: openingBalances ?? this.openingBalances,
+        companyPolicies: companyPolicies ?? this.companyPolicies,
         enabled: enabled ?? this.enabled,
       );
 
@@ -371,6 +506,8 @@ class PartyDraft extends Equatable {
         'roles': roles.toList(growable: false),
         'opening_balances':
             openingBalances.values.map((row) => row.toJson()).toList(),
+        'company_policies':
+            companyPolicies.values.map((row) => row.toJson()).toList(),
         'enabled': enabled,
       };
 
@@ -400,6 +537,7 @@ class PartyDraft extends Equatable {
         description,
         roles,
         openingBalances,
+        companyPolicies,
         enabled,
       ];
 }
