@@ -189,6 +189,13 @@ class ApprovalPolicySummary extends Equatable {
     required this.parallelMode,
     required this.minimumAmount,
     required this.maximumAmount,
+    this.enabled = true,
+    this.priority = 0,
+    this.version = 1,
+    this.allowSelfApproval = false,
+    this.effectiveFrom = '',
+    this.effectiveTo = '',
+    this.stages = const [],
     this.company,
     this.branch,
   });
@@ -203,6 +210,17 @@ class ApprovalPolicySummary extends Equatable {
         parallelMode: json['parallel_mode']?.toString() ?? 'All',
         minimumAmount: (json['minimum_amount'] as num?)?.toDouble() ?? 0,
         maximumAmount: (json['maximum_amount'] as num?)?.toDouble() ?? 0,
+        enabled: json['enabled'] == true || json['enabled'] == 1,
+        priority: (json['priority'] as num?)?.toInt() ?? 0,
+        version: (json['policy_version'] as num?)?.toInt() ?? 1,
+        allowSelfApproval: json['allow_self_approval'] == true ||
+            json['allow_self_approval'] == 1,
+        effectiveFrom: json['effective_from']?.toString() ?? '',
+        effectiveTo: json['effective_to']?.toString() ?? '',
+        stages: (json['stages'] as List<dynamic>? ?? const [])
+            .whereType<Map<String, dynamic>>()
+            .map(ApprovalPolicyStage.fromJson)
+            .toList(growable: false),
       );
 
   final String name;
@@ -213,6 +231,13 @@ class ApprovalPolicySummary extends Equatable {
   final String parallelMode;
   final double minimumAmount;
   final double maximumAmount;
+  final bool enabled;
+  final int priority;
+  final int version;
+  final bool allowSelfApproval;
+  final String effectiveFrom;
+  final String effectiveTo;
+  final List<ApprovalPolicyStage> stages;
 
   @override
   List<Object?> get props => [
@@ -224,6 +249,179 @@ class ApprovalPolicySummary extends Equatable {
         parallelMode,
         minimumAmount,
         maximumAmount,
+        enabled,
+        priority,
+        version,
+        allowSelfApproval,
+        effectiveFrom,
+        effectiveTo,
+        stages,
+      ];
+}
+
+class ApprovalPolicyStage extends Equatable {
+  const ApprovalPolicyStage({
+    required this.sequence,
+    required this.title,
+    required this.approverType,
+    this.user = '',
+    this.role = '',
+    this.dueHours = 0,
+  });
+
+  factory ApprovalPolicyStage.fromJson(Map<String, dynamic> json) =>
+      ApprovalPolicyStage(
+        sequence: (json['sequence'] as num?)?.toInt() ?? 1,
+        title: json['stage_title']?.toString() ?? '',
+        approverType: json['approver_type']?.toString() ?? 'Role',
+        user: json['user']?.toString() ?? '',
+        role: json['role']?.toString() ?? '',
+        dueHours: (json['due_hours'] as num?)?.toInt() ?? 0,
+      );
+
+  final int sequence;
+  final String title;
+  final String approverType;
+  final String user;
+  final String role;
+  final int dueHours;
+
+  Map<String, dynamic> toJson() => {
+        'sequence': sequence,
+        'stage_title': title,
+        'approver_type': approverType,
+        'user': user.isEmpty ? null : user,
+        'role': role.isEmpty ? null : role,
+        'due_hours': dueHours,
+      };
+
+  @override
+  List<Object?> get props =>
+      [sequence, title, approverType, user, role, dueHours];
+}
+
+class ApprovalPolicyWorkspace extends Equatable {
+  const ApprovalPolicyWorkspace({
+    this.policies = const [],
+    this.documentTypes = const [],
+    this.branches = const {},
+    this.users = const {},
+    this.roles = const [],
+  });
+
+  factory ApprovalPolicyWorkspace.fromJson(Map<String, dynamic> json) {
+    Map<String, String> options(String key, String labelKey) => {
+          for (final row
+              in (json[key] as List<dynamic>? ?? const []).whereType<Map>())
+            row['name']?.toString() ?? '':
+                row[labelKey]?.toString() ?? row['name']?.toString() ?? '',
+        }..remove('');
+
+    return ApprovalPolicyWorkspace(
+      policies: (json['policies'] as List<dynamic>? ?? const [])
+          .whereType<Map<String, dynamic>>()
+          .map(ApprovalPolicySummary.fromJson)
+          .toList(growable: false),
+      documentTypes: (json['document_types'] as List<dynamic>? ?? const [])
+          .map((value) => value.toString())
+          .toList(growable: false),
+      branches: options('branches', 'branch_name'),
+      users: options('users', 'full_name'),
+      roles: (json['roles'] as List<dynamic>? ?? const [])
+          .map((value) => value.toString())
+          .toList(growable: false),
+    );
+  }
+
+  final List<ApprovalPolicySummary> policies;
+  final List<String> documentTypes;
+  final Map<String, String> branches;
+  final Map<String, String> users;
+  final List<String> roles;
+
+  @override
+  List<Object?> get props => [policies, documentTypes, branches, users, roles];
+}
+
+class ApprovalPolicyDraft extends Equatable {
+  const ApprovalPolicyDraft({
+    this.name = '',
+    this.title = '',
+    this.documentType = '',
+    this.branch = '',
+    this.effectiveFrom = '',
+    this.effectiveTo = '',
+    this.minimumAmount = 0,
+    this.maximumAmount = 0,
+    this.priority = 0,
+    this.enabled = true,
+    this.allowSelfApproval = false,
+    this.parallelMode = 'All',
+    this.stages = const [],
+  });
+
+  factory ApprovalPolicyDraft.fromPolicy(ApprovalPolicySummary value) =>
+      ApprovalPolicyDraft(
+        name: value.name,
+        title: value.title,
+        documentType: value.documentType,
+        branch: value.branch ?? '',
+        effectiveFrom: value.effectiveFrom,
+        effectiveTo: value.effectiveTo,
+        minimumAmount: value.minimumAmount,
+        maximumAmount: value.maximumAmount,
+        priority: value.priority,
+        enabled: value.enabled,
+        allowSelfApproval: value.allowSelfApproval,
+        parallelMode: value.parallelMode,
+        stages: value.stages,
+      );
+
+  final String name;
+  final String title;
+  final String documentType;
+  final String branch;
+  final String effectiveFrom;
+  final String effectiveTo;
+  final double minimumAmount;
+  final double maximumAmount;
+  final int priority;
+  final bool enabled;
+  final bool allowSelfApproval;
+  final String parallelMode;
+  final List<ApprovalPolicyStage> stages;
+
+  Map<String, dynamic> toJson() => {
+        if (name.isNotEmpty) 'name': name,
+        'policy_title': title,
+        'document_type': documentType,
+        'branch': branch.isEmpty ? null : branch,
+        'effective_from': effectiveFrom.isEmpty ? null : effectiveFrom,
+        'effective_to': effectiveTo.isEmpty ? null : effectiveTo,
+        'minimum_amount': minimumAmount,
+        'maximum_amount': maximumAmount,
+        'priority': priority,
+        'enabled': enabled,
+        'allow_self_approval': allowSelfApproval,
+        'parallel_mode': parallelMode,
+        'stages': stages.map((row) => row.toJson()).toList(growable: false),
+      };
+
+  @override
+  List<Object?> get props => [
+        name,
+        title,
+        documentType,
+        branch,
+        effectiveFrom,
+        effectiveTo,
+        minimumAmount,
+        maximumAmount,
+        priority,
+        enabled,
+        allowSelfApproval,
+        parallelMode,
+        stages,
       ];
 }
 

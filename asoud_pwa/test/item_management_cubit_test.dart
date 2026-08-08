@@ -1,6 +1,8 @@
 import 'package:asoud_pwa/features/items/domain/item_gateway.dart';
 import 'package:asoud_pwa/features/items/domain/item_models.dart';
+import 'package:asoud_pwa/features/items/domain/inventory_models.dart';
 import 'package:asoud_pwa/features/items/presentation/bloc/item_management_cubit.dart';
+import 'package:asoud_pwa/features/items/presentation/bloc/inventory_cubit.dart';
 import 'package:asoud_pwa/features/session/domain/work_context.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -38,10 +40,29 @@ void main() {
     expect(draft.toJson()['item_kind'], 'Service');
     expect(draft.toJson()['enabled'], isFalse);
   });
+
+  test('loads dashboard and saves a warehouse setting', () async {
+    final gateway = _FakeItemGateway();
+    final cubit = InventoryCubit(gateway, context);
+
+    await cubit.load();
+    expect(cubit.state.workspace.dashboard.warehouseCount, 2);
+
+    final saved = await cubit.save(const InventorySettingDraft(
+      settingType: 'Warehouse',
+      label: 'مواد اولیه',
+      branch: 'HQ',
+    ));
+
+    expect(saved, isTrue);
+    expect(gateway.savedSettings.single.label, 'مواد اولیه');
+    await cubit.close();
+  });
 }
 
 class _FakeItemGateway implements ItemGateway {
   final saved = <ItemDraft>[];
+  final savedSettings = <InventorySettingDraft>[];
   @override
   Future<ItemSnapshot> load(WorkContext context, {String search = ''}) async =>
       const ItemSnapshot(
@@ -57,4 +78,18 @@ class _FakeItemGateway implements ItemGateway {
   @override
   Future<void> save(WorkContext context, ItemDraft draft) async =>
       saved.add(draft);
+
+  @override
+  Future<InventoryWorkspace> loadInventory(WorkContext context) async =>
+      const InventoryWorkspace(
+        canManage: true,
+        dashboard: InventoryDashboard(warehouseCount: 2),
+      );
+
+  @override
+  Future<void> saveInventorySetting(
+    WorkContext context,
+    InventorySettingDraft draft,
+  ) async =>
+      savedSettings.add(draft);
 }

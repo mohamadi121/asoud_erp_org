@@ -162,9 +162,17 @@ def _source_amount(doc: Any) -> float:
 
 def _find_policy(doc: Any):
     import frappe
+    from frappe.utils import getdate, today
 
     company, branch = _source_company_branch(doc)
     amount = _source_amount(doc)
+    get = doc.get if hasattr(doc, "get") else lambda key, default=None: getattr(doc, key, default)
+    policy_date = getdate(
+        get("posting_date")
+        or get("transaction_date")
+        or get("date")
+        or today()
+    )
     rows = frappe.get_all(
         "ASOUD Approval Policy",
         filters={"enabled": 1, "document_type": doc.doctype},
@@ -177,6 +185,8 @@ def _find_policy(doc: Any):
             "priority",
             "allow_self_approval",
             "parallel_mode",
+            "effective_from",
+            "effective_to",
         ],
         order_by="priority desc, modified desc",
         limit_page_length=0,
@@ -191,12 +201,17 @@ def _find_policy(doc: Any):
         if row.maximum_amount not in (None, "") and float(row.maximum_amount) > 0:
             if amount > float(row.maximum_amount):
                 continue
+        if row.effective_from and policy_date < getdate(row.effective_from):
+            continue
+        if row.effective_to and policy_date > getdate(row.effective_to):
+            continue
         return frappe.get_doc("ASOUD Approval Policy", row.name)
     return None
 
 
 def validate_policy(doc, method: str | None = None) -> None:
     import frappe
+    from frappe.utils import getdate
 
     if doc.document_type not in SUPPORTED_SOURCE_DOCTYPES:
         frappe.throw("This document type is not supported by ASOUD approval")
@@ -208,6 +223,9 @@ def validate_policy(doc, method: str | None = None) -> None:
         doc.minimum_amount or 0
     ):
         frappe.throw("Maximum amount cannot be less than minimum amount")
+    if doc.effective_from and doc.effective_to:
+        if getdate(doc.effective_from) > getdate(doc.effective_to):
+            frappe.throw("Effective from cannot be after effective to")
     try:
         normalize_stages(doc.stages)
     except ValueError as exc:

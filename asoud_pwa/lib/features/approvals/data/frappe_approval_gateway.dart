@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:asoud_pwa/core/api/asoud_api_client.dart';
 import 'package:asoud_pwa/features/approvals/domain/approval_gateway.dart';
 import 'package:asoud_pwa/features/approvals/domain/approval_models.dart';
@@ -94,6 +96,36 @@ class FrappeApprovalGateway implements ApprovalGateway {
         .whereType<Map<String, dynamic>>()
         .map(ApprovalPolicySummary.fromJson)
         .toList(growable: false);
+  }
+
+  @override
+  Future<ApprovalPolicyWorkspace> loadPolicyWorkspace(
+    WorkContext context,
+  ) async {
+    final response = await _client.getQuery(
+      '/api/method/asoud_core.api.approval_settings_workspace',
+      {
+        'company': context.company,
+        if (context.branch != null) 'branch': context.branch!,
+      },
+    );
+    return ApprovalPolicyWorkspace.fromJson(_messageMap(response));
+  }
+
+  @override
+  Future<ApprovalPolicySummary> savePolicy(
+    WorkContext context,
+    ApprovalPolicyDraft draft,
+  ) async {
+    final response = await _client.postForm(
+      '/api/method/asoud_core.api.save_approval_policy',
+      {
+        'company': context.company,
+        'payload': jsonEncode(draft.toJson()),
+        'idempotency_key': _requestKey('approval-policy'),
+      },
+    );
+    return ApprovalPolicySummary.fromJson(_messageMap(response));
   }
 
   @override

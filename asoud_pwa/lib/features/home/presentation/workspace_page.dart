@@ -11,6 +11,7 @@ import 'package:asoud_pwa/features/hr/presentation/hr_page.dart';
 import 'package:asoud_pwa/features/iran_accounting/domain/iran_accounting_gateway.dart';
 import 'package:asoud_pwa/features/iran_accounting/presentation/bloc/iran_accounting_cubit.dart';
 import 'package:asoud_pwa/features/items/domain/item_gateway.dart';
+import 'package:asoud_pwa/features/items/presentation/inventory_page.dart';
 import 'package:asoud_pwa/features/items/presentation/item_management_page.dart';
 import 'package:asoud_pwa/features/iran_accounting/presentation/page/iran_accounting_page.dart';
 import 'package:asoud_pwa/features/operations/domain/operations_gateway.dart';
@@ -74,6 +75,7 @@ class _WorkspacePageState extends State<WorkspacePage> {
   IranAccountingSection iranAccountingSection = IranAccountingSection.dashboard;
   String? partyRoleFilter;
   bool itemManagementMode = false;
+  InventorySection inventorySection = InventorySection.dashboard;
   bool masterDataMode = false;
   late final DashboardController dashboardController = DashboardController();
 
@@ -252,15 +254,32 @@ class _WorkspacePageState extends State<WorkspacePage> {
         _selectModule(4);
         return;
       case 'stock_entry':
+        setState(() => inventorySection = InventorySection.movements);
+        _selectModule(5);
+        return;
       case 'warehouses':
+        setState(() => inventorySection = InventorySection.warehouses);
+        _selectModule(5);
+        return;
+      case 'inventory_dashboard':
+        setState(() => inventorySection = InventorySection.dashboard);
+        _selectModule(5);
+        return;
+      case 'item_groups':
+        setState(() => inventorySection = InventorySection.itemGroups);
+        _selectModule(5);
+        return;
+      case 'uoms':
+        setState(() => inventorySection = InventorySection.units);
         _selectModule(5);
         return;
       case 'items':
         setState(() {
           index = 5;
+          inventorySection = InventorySection.items;
           approvalMode = false;
           partyRoleFilter = null;
-          itemManagementMode = true;
+          itemManagementMode = false;
           masterDataMode = false;
         });
         return;
@@ -461,14 +480,18 @@ class _WorkspacePageState extends State<WorkspacePage> {
           context: widget.context,
           gateway: widget.treasuryGateway,
         ),
-      3 || 4 || 5 => OperationsPage(
+      3 || 4 => OperationsPage(
           context: widget.context,
           gateway: widget.operationsGateway,
-          documentTypes: index == 3
-              ? const {'Sales Invoice'}
-              : index == 4
-                  ? const {'Purchase Invoice'}
-                  : const {'Stock Entry'},
+          documentTypes:
+              index == 3 ? const {'Sales Invoice'} : const {'Purchase Invoice'},
+        ),
+      5 => InventoryPage(
+          key: ValueKey('${widget.context.company}|$inventorySection'),
+          context: widget.context,
+          itemGateway: widget.itemGateway,
+          operationsGateway: widget.operationsGateway,
+          initialSection: inventorySection,
         ),
       6 => HrPage(
           context: widget.context,
@@ -1080,6 +1103,12 @@ const _ribbonGroups = <int, List<_CommandGroup>>{
       _Command('stock_entry', 'رسید و حواله', Icons.swap_horiz),
       _Command('warehouses', 'انبارها', Icons.warehouse_outlined),
       _Command('items', 'کالا و خدمات', Icons.inventory_2_outlined),
+    ]),
+    _CommandGroup('تنظیمات و نمای انبار', [
+      _Command(
+          'inventory_dashboard', 'داشبورد انبار', Icons.dashboard_outlined),
+      _Command('item_groups', 'گروه و نوع کالا', Icons.account_tree_outlined),
+      _Command('uoms', 'واحدهای اندازه‌گیری', Icons.straighten_outlined),
     ]),
   ],
   6: [

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 
 def _whitelist(*args, **kwargs):
     import frappe
@@ -451,6 +453,42 @@ def save_item_master(
 
 
 @_whitelist(methods=["GET"])
+def inventory_management_workspace(
+    company: str,
+    branch: str | None = None,
+) -> dict:
+    from asoud_core.services.inventory_management import workspace
+
+    return workspace(company, branch or None)
+
+
+@_whitelist(methods=["POST"])
+def save_inventory_setting(
+    company: str,
+    setting_type: str,
+    payload: str,
+    idempotency_key: str,
+    branch: str | None = None,
+) -> dict:
+    from asoud_core.services.idempotency import execute_once
+    from asoud_core.services.inventory_management import save_setting
+
+    values = json.loads(payload)
+    request = {
+        "company": company,
+        "branch": branch or None,
+        "setting_type": setting_type,
+        "payload": values,
+    }
+    return execute_once(
+        idempotency_key,
+        "inventory.setting.save",
+        request,
+        lambda: save_setting(company, setting_type, values, branch or None),
+    )
+
+
+@_whitelist(methods=["GET"])
 def operational_workbench(
     company: str,
     branch: str | None = None,
@@ -867,6 +905,34 @@ def approval_policy_catalog(
     from asoud_core.services.approval import policy_catalog
 
     return policy_catalog(company, branch or None)
+
+
+@_whitelist(methods=["GET"])
+def approval_settings_workspace(
+    company: str,
+    branch: str | None = None,
+) -> dict:
+    from asoud_core.services.approval_settings import workspace
+
+    return workspace(company, branch or None)
+
+
+@_whitelist(methods=["POST"])
+def save_approval_policy(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+) -> dict:
+    from asoud_core.services.approval_settings import save
+    from asoud_core.services.idempotency import execute_once
+
+    values = json.loads(payload)
+    return execute_once(
+        idempotency_key,
+        "approval.policy.save",
+        {"company": company, "payload": values},
+        lambda: save(company, values),
+    )
 
 
 @_whitelist(methods=["GET"])

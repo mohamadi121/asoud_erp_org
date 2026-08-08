@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:asoud_pwa/core/api/asoud_api_client.dart';
 import 'package:asoud_pwa/features/items/domain/item_gateway.dart';
 import 'package:asoud_pwa/features/items/domain/item_models.dart';
+import 'package:asoud_pwa/features/items/domain/inventory_models.dart';
 import 'package:asoud_pwa/features/session/domain/work_context.dart';
 
 class FrappeItemGateway implements ItemGateway {
@@ -34,5 +35,33 @@ class FrappeItemGateway implements ItemGateway {
       'payload': jsonEncode(draft.toJson()),
       'idempotency_key': 'item-${DateTime.now().microsecondsSinceEpoch}'
     });
+  }
+
+  @override
+  Future<InventoryWorkspace> loadInventory(WorkContext context) async =>
+      InventoryWorkspace.fromJson(_message(await client.getQuery(
+        '/api/method/asoud_core.api.inventory_management_workspace',
+        {
+          'company': context.company,
+          if (context.branch != null) 'branch': context.branch!,
+        },
+      )));
+
+  @override
+  Future<void> saveInventorySetting(
+    WorkContext context,
+    InventorySettingDraft draft,
+  ) async {
+    await client.postForm(
+      '/api/method/asoud_core.api.save_inventory_setting',
+      {
+        'company': context.company,
+        if (context.branch != null) 'branch': context.branch!,
+        'setting_type': draft.settingType,
+        'payload': jsonEncode(draft.toJson()),
+        'idempotency_key':
+            'inventory-setting-${DateTime.now().microsecondsSinceEpoch}',
+      },
+    );
   }
 }

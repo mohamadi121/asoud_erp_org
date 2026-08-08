@@ -4,6 +4,14 @@ import json
 from typing import Any
 
 
+def _as_bool(value: Any, default: bool = False) -> bool:
+    if value is None:
+        return default
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "on"}
+    return bool(value)
+
+
 def normalize_item_payload(payload: str | dict[str, Any]) -> dict[str, Any]:
     values = json.loads(payload) if isinstance(payload, str) else dict(payload)
     kind = str(values.get("item_kind") or "Goods").strip()
@@ -19,8 +27,8 @@ def normalize_item_payload(payload: str | dict[str, Any]) -> dict[str, Any]:
         "item_group": str(values.get("item_group") or "").strip() or None,
         "stock_uom": str(values.get("stock_uom") or "").strip() or None,
         "description": str(values.get("description") or "").strip(),
-        "disabled": bool(values.get("disabled", False)),
-        "enabled": bool(values.get("enabled", True)),
+        "disabled": _as_bool(values.get("disabled")),
+        "enabled": _as_bool(values.get("enabled"), True),
         "default_branch": str(values.get("default_branch") or "").strip() or None,
         "default_warehouse": str(values.get("default_warehouse") or "").strip() or None,
         "income_account": str(values.get("income_account") or "").strip() or None,
@@ -31,7 +39,7 @@ def normalize_item_payload(payload: str | dict[str, Any]) -> dict[str, Any]:
 def _assert_manage(company: str, branch: str | None) -> None:
     import frappe
 
-    if not {"System Manager", "Stock Manager"}.intersection(
+    if not {"System Manager", "Stock Manager", "Item Manager"}.intersection(
         frappe.get_roles(frappe.session.user)
     ):
         frappe.throw("Not permitted", frappe.PermissionError)
@@ -122,14 +130,15 @@ def item_snapshot(company: str, branch: str | None = None, search: str | None = 
     branch = branch or None
     if not can_access_context(frappe.session.user, company, branch):
         frappe.throw("Not permitted", frappe.PermissionError)
-    filters: dict[str, Any] = {"company": company}
-    if branch:
-        filters["default_branch"] = ["in", ("", branch)]
     profiles = frappe.get_all(
-        "ASOUD Item Company Profile", filters=filters,
+        "ASOUD Item Company Profile", filters={"company": company},
         fields=["item", "enabled", "default_branch", "default_warehouse", "income_account", "expense_account"],
         order_by="modified desc", limit=200,
     )
+    if branch:
+        profiles = [
+            row for row in profiles if not row.default_branch or row.default_branch == branch
+        ]
     item_names = [row.item for row in profiles]
     item_filters: dict[str, Any] = {"name": ["in", item_names]}
     if search and search.strip():

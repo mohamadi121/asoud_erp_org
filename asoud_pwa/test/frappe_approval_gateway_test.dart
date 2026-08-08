@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:asoud_pwa/core/api/asoud_api_client.dart';
 import 'package:asoud_pwa/features/approvals/data/frappe_approval_gateway.dart';
+import 'package:asoud_pwa/features/approvals/domain/approval_models.dart';
 import 'package:asoud_pwa/features/session/domain/work_context.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -146,5 +147,95 @@ void main() {
     expect(captured.url.queryParameters['search'], 'PAY-1');
     expect(captured.url.queryParameters['status'], 'Approved');
     expect(result.historyCount, 4);
+  });
+
+  test('loads the approval policy form workspace', () async {
+    late http.Request captured;
+    final gateway = FrappeApprovalGateway(
+      AsoudApiClient(
+        baseUrl: 'https://erp.example.test',
+        client: MockClient((request) async {
+          captured = request;
+          return http.Response(
+            jsonEncode({
+              'message': {
+                'policies': [],
+                'document_types': ['Journal Entry'],
+                'branches': [
+                  {'name': 'A-HQ', 'branch_name': 'دفتر مرکزی'}
+                ],
+                'users': [
+                  {'name': 'manager@example.com', 'full_name': 'مدیر مالی'}
+                ],
+                'roles': ['Accounts Manager'],
+              }
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      ),
+    );
+
+    final workspace = await gateway.loadPolicyWorkspace(
+      const WorkContext(company: 'A', branch: 'A-HQ'),
+    );
+
+    expect(captured.url.path,
+        '/api/method/asoud_core.api.approval_settings_workspace');
+    expect(captured.url.queryParameters['company'], 'A');
+    expect(workspace.branches['A-HQ'], 'دفتر مرکزی');
+    expect(workspace.roles, contains('Accounts Manager'));
+  });
+
+  test('saves an approval policy with an idempotency key', () async {
+    late http.Request captured;
+    final gateway = FrappeApprovalGateway(
+      AsoudApiClient(
+        baseUrl: 'https://erp.example.test',
+        client: MockClient((request) async {
+          captured = request;
+          return http.Response(
+            jsonEncode({
+              'message': {
+                'name': 'POL-1',
+                'policy_title': 'تأیید سند',
+                'document_type': 'Journal Entry',
+                'parallel_mode': 'All',
+                'minimum_amount': 0,
+                'maximum_amount': 0,
+                'policy_version': 1,
+                'stages': [],
+              }
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      ),
+    );
+
+    final result = await gateway.savePolicy(
+      const WorkContext(company: 'A'),
+      const ApprovalPolicyDraft(
+        title: 'تأیید سند',
+        documentType: 'Journal Entry',
+        stages: [
+          ApprovalPolicyStage(
+            sequence: 1,
+            title: 'مدیر',
+            approverType: 'Manager',
+          ),
+        ],
+      ),
+    );
+
+    expect(
+        captured.url.path, '/api/method/asoud_core.api.save_approval_policy');
+    expect(captured.bodyFields['company'], 'A');
+    expect(captured.bodyFields['idempotency_key'], isNotEmpty);
+    final payload = jsonDecode(captured.bodyFields['payload']!);
+    expect(payload['stages'][0]['approver_type'], 'Manager');
+    expect(result.version, 1);
   });
 }

@@ -954,5 +954,55 @@ ERPNext Submit (only after valid approval)</pre>
     <div class="future"><b>مرز UAT:</b> Gate فنی روی داده مصنوعی Site توسعه موفق است. شماره‌گذاری و ادغام اسناد واقعی سازمان، سطح دسترسی کاربران واقعی و سیاست بستن دوره باید در UAT مالی سازمان مقصد تأیید شوند.</div>
     <p class="footer-note">ASOUD ERP Architecture &amp; Execution Baseline v3.8 — Financial Numbering &amp; Daily Consolidation Technical Gate</p>
   </section>
+  <section class="page">
+    <h1>۳۹. الحاقیه — فرم عملیاتی گردش تأیید</h1>
+    <p>مدیریت مسیرهای تأیید از حالت فهرست فقط‌خواندنی خارج شد و به فرم عملیاتی RTL در Flutter Web PWA متصل گردید. فرم از پوسته ثابت دسکتاپ، Company و Branch فعال استفاده می‌کند و هیچ منبع داده موازی با ERPNext/Frappe v15 ایجاد نمی‌کند.</p>
+
+    <h2>قرارداد فرم و موتور</h2>
+    <table>
+      <tr><th>بخش</th><th>کنترل فنی</th></tr>
+      <tr><td>دامنه</td><td>Company الزامی، Branch اختیاری و فقط متعلق به Company فعال؛ فهرست کاربران نیز از دسترسی‌های معتبر همان محدوده ساخته می‌شود.</td></tr>
+      <tr><td>شرایط</td><td>نوع سند Allow-list، حداقل/حداکثر مبلغ، اولویت و بازه شروع/پایان اعتبار در انتخاب Policy اعمال می‌شوند.</td></tr>
+      <tr><td>مراحل</td><td>Sequence از یک و بدون فاصله است؛ تکرار Sequence مرحله موازی می‌سازد و حالت All/Any رفتار عبور را تعیین می‌کند.</td></tr>
+      <tr><td>تأییدکننده</td><td>User، Role یا Manager پشتیبانی می‌شود؛ وجود User/Role و مجوز مدیر تنظیم‌کننده در Backend کنترل می‌شود.</td></tr>
+      <tr><td>تغییر سیاست</td><td>Policy Version افزایش می‌یابد و درخواست‌های در جریان Snapshot قبلی خود را حفظ می‌کنند.</td></tr>
+      <tr><td>امنیت</td><td>Mutation دارای Idempotency Key، کنترل Context و رویداد Audit است؛ Self-approval به‌صورت پیش‌فرض غیرفعال می‌ماند.</td></tr>
+    </table>
+
+    <h2>API و کلاینت</h2>
+    <ul>
+      <li><code>approval_settings_workspace</code>: قرارداد GET برای Policyها و گزینه‌های مجاز فرم.</li>
+      <li><code>save_approval_policy</code>: قرارداد POST idempotent برای ایجاد یا ویرایش.</li>
+      <li><code>ApprovalCubit</code>: بارگذاری Workspace، وضعیت ذخیره، refresh پس از Mutation و خطا.</li>
+      <li><code>approval_policy_form.dart</code>: اعتبارسنجی RTL مبلغ، تاریخ، ترتیب مراحل و انتخاب User/Role.</li>
+      <li>مرجع بصری: <code>asoud_docs/ui/asoud-approval-policy-form-v1.svg</code> و PNG متناظر.</li>
+    </ul>
+
+    <div class="future"><b>مرز UAT:</b> صحت فنی فرم، API، Migration و تست خودکار بررسی می‌شود؛ نام نقش‌ها، سقف‌های واقعی، SLA مراحل و تفکیک وظایف کاربران سازمان مقصد باید در UAT کسب‌وکار تصویب شوند.</div>
+    <p class="footer-note">ASOUD ERP Architecture &amp; Execution Baseline v3.9 — Approval Policy Forms Technical Gate</p>
+  </section>
+  <section class="page">
+    <h1>۴۰. الحاقیه — داشبورد و تنظیمات پایه انبار</h1>
+    <p>ماژول انبار از صفحه عمومی عملیات جدا و به Workspace مستقل روی پوسته قفل‌شده Flutter Web PWA تبدیل شد. تصویر مرجع کاربر برای محتوا استفاده شده و ساختار بصری همچنان از ناوبری اصلی و Ribbon ثابت محصول پیروی می‌کند.</p>
+    <h2>منبع حقیقت و فرم‌ها</h2>
+    <table>
+      <tr><th>قابلیت</th><th>مدل و کنترل</th></tr>
+      <tr><td>داشبورد</td><td>تجمیع Bin و Stock Entry فقط برای Warehouseهای Company/Branch فعال؛ نمایش تعداد کالا/خدمت، ارزش، موجودی و مغایرت منفی.</td></tr>
+      <tr><td>انبار</td><td>Warehouse و Warehouse Type استاندارد؛ والد متعلق به همان Company، Branch معتبر و حساب دارایی.</td></tr>
+      <tr><td>نوع کالا</td><td>Item Group استاندارد و سلسله‌مراتبی؛ قابل استفاده برای مواد اولیه، در جریان تولید، محصول، تجهیزات و طبقات عمومی.</td></tr>
+      <tr><td>واحدها</td><td>UOM، UOM Category و UOM Conversion Factor استاندارد؛ ضریب مثبت و مبدأ/مقصد متفاوت.</td></tr>
+      <tr><td>کالا/خدمت</td><td>Item مشترک در Holding و ASOUD Item Company Profile مستقل برای Company؛ کد GDS/SRV خودکار.</td></tr>
+      <tr><td>امنیت</td><td>System/Stock/Item Manager، Context فعال، Idempotency و Audit برای Mutationها.</td></tr>
+    </table>
+    <h2>قرارداد اجرا</h2>
+    <ul>
+      <li><code>inventory_management_workspace</code> داده داشبورد و گزینه‌های فرم را در یک پاسخ محدودشده برمی‌گرداند.</li>
+      <li><code>save_inventory_setting</code> ایجاد/ویرایش تنظیمات استاندارد را به‌صورت idempotent انجام می‌دهد.</li>
+      <li><code>InventoryCubit</code> بارگذاری، ذخیره، refresh و خطا را مدیریت می‌کند.</li>
+      <li>مرجع بصری: <code>asoud_docs/ui/asoud-inventory-dashboard-settings-v1.svg</code>.</li>
+    </ul>
+    <div class="future"><b>مرز Gate:</b> Flutter Analyze، ۵۸ تست Flutter، Web Release Build و تست‌های Backend با موفقیت اجرا شدند. Docker Migration و Site Smoke به‌دلیل خاموش‌بودن Docker Engine در زمان انتشار باز مانده‌اند؛ تا عبور این Gate محیطی وضعیت Production Ready اعلام نمی‌شود.</div>
+    <p class="footer-note">ASOUD ERP Architecture &amp; Execution Baseline v4.0 — Inventory Dashboard &amp; Settings</p>
+  </section>
 </body>
 </html>

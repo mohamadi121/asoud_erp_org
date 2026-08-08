@@ -26,6 +26,8 @@ class ApprovalState extends Equatable {
     this.status = '',
     this.inbox,
     this.policies = const [],
+    this.policyWorkspace = const ApprovalPolicyWorkspace(),
+    this.policySaving = false,
     this.access,
     this.detail,
     this.detailLoading = false,
@@ -39,6 +41,8 @@ class ApprovalState extends Equatable {
   final String status;
   final ApprovalInbox? inbox;
   final List<ApprovalPolicySummary> policies;
+  final ApprovalPolicyWorkspace policyWorkspace;
+  final bool policySaving;
   final AccessOverview? access;
   final ApprovalDetail? detail;
   final bool detailLoading;
@@ -52,6 +56,8 @@ class ApprovalState extends Equatable {
     String? status,
     ApprovalInbox? inbox,
     List<ApprovalPolicySummary>? policies,
+    ApprovalPolicyWorkspace? policyWorkspace,
+    bool? policySaving,
     AccessOverview? access,
     ApprovalDetail? detail,
     bool? detailLoading,
@@ -67,6 +73,8 @@ class ApprovalState extends Equatable {
         status: status ?? this.status,
         inbox: inbox ?? this.inbox,
         policies: policies ?? this.policies,
+        policyWorkspace: policyWorkspace ?? this.policyWorkspace,
+        policySaving: policySaving ?? this.policySaving,
         access: access ?? this.access,
         detail: clearDetail ? null : detail ?? this.detail,
         detailLoading: detailLoading ?? this.detailLoading,
@@ -82,6 +90,8 @@ class ApprovalState extends Equatable {
         status,
         inbox,
         policies,
+        policyWorkspace,
+        policySaving,
         access,
         detail,
         detailLoading,
@@ -111,10 +121,11 @@ class ApprovalCubit extends Cubit<ApprovalState> {
     try {
       switch (state.view) {
         case ApprovalView.policies:
-          final policies = await _gateway.loadPolicies(_context);
+          final workspace = await _gateway.loadPolicyWorkspace(_context);
           emit(state.copyWith(
             phase: ApprovalPhase.ready,
-            policies: policies,
+            policies: workspace.policies,
+            policyWorkspace: workspace,
             clearError: true,
           ));
         case ApprovalView.access:
@@ -239,6 +250,26 @@ class ApprovalCubit extends Cubit<ApprovalState> {
       return true;
     } on Object catch (error) {
       emit(state.copyWith(acting: false, error: error.toString()));
+      return false;
+    }
+  }
+
+  Future<bool> savePolicy(ApprovalPolicyDraft draft) async {
+    if (state.policySaving) return false;
+    emit(state.copyWith(policySaving: true, clearError: true));
+    try {
+      await _gateway.savePolicy(_context, draft);
+      final workspace = await _gateway.loadPolicyWorkspace(_context);
+      emit(state.copyWith(
+        phase: ApprovalPhase.ready,
+        policySaving: false,
+        policies: workspace.policies,
+        policyWorkspace: workspace,
+        clearError: true,
+      ));
+      return true;
+    } on Object catch (error) {
+      emit(state.copyWith(policySaving: false, error: error.toString()));
       return false;
     }
   }

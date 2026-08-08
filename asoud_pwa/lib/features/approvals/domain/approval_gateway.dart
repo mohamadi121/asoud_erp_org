@@ -26,6 +26,13 @@ abstract interface class ApprovalGateway {
 
   Future<List<ApprovalPolicySummary>> loadPolicies(WorkContext context);
 
+  Future<ApprovalPolicyWorkspace> loadPolicyWorkspace(WorkContext context);
+
+  Future<ApprovalPolicySummary> savePolicy(
+    WorkContext context,
+    ApprovalPolicyDraft draft,
+  );
+
   Future<AccessOverview> loadAccess(WorkContext context);
 
   Future<void> setAccess({
