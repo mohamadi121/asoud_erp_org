@@ -73,6 +73,10 @@ def test_custom_contract_fields_match_the_v15_doctype_contracts():
         "source_intercompany_account"
         in CONTRACTS["ASOUD Intercompany Transfer"].fields
     )
+    assert (
+        "asoud_floating_detail"
+        in CONTRACTS["Journal Entry"].child_fields
+    )
 
 
 def test_contract_payload_exposes_typed_form_schema_and_child_requirement():

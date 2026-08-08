@@ -46,6 +46,36 @@ void main() {
     expect(cubit.state.detail?.summary.status, 'Approved');
     await cubit.close();
   });
+
+  test('loads and saves approval policy workspace', () async {
+    final gateway = _FakeApprovalGateway();
+    final cubit = ApprovalCubit(
+      gateway: gateway,
+      context: const WorkContext(company: 'A'),
+      initialView: ApprovalView.policies,
+    );
+
+    await cubit.load();
+    expect(
+        cubit.state.policyWorkspace.documentTypes, contains('Journal Entry'));
+
+    final saved = await cubit.savePolicy(const ApprovalPolicyDraft(
+      title: 'تأیید اسناد',
+      documentType: 'Journal Entry',
+      stages: [
+        ApprovalPolicyStage(
+          sequence: 1,
+          title: 'مدیر مالی',
+          approverType: 'Manager',
+        ),
+      ],
+    ));
+
+    expect(saved, isTrue);
+    expect(gateway.savedDraft?.title, 'تأیید اسناد');
+    expect(cubit.state.policySaving, isFalse);
+    await cubit.close();
+  });
 }
 
 class _FakeApprovalGateway implements ApprovalGateway {
@@ -54,6 +84,7 @@ class _FakeApprovalGateway implements ApprovalGateway {
   String lastStatus = '';
   String lastAction = '';
   String lastExpectedVersion = '';
+  ApprovalPolicyDraft? savedDraft;
 
   @override
   Future<ApprovalInbox> loadInbox(
@@ -102,6 +133,28 @@ class _FakeApprovalGateway implements ApprovalGateway {
     WorkContext context,
   ) async =>
       const [];
+
+  @override
+  Future<ApprovalPolicyWorkspace> loadPolicyWorkspace(
+    WorkContext context,
+  ) async =>
+      const ApprovalPolicyWorkspace(documentTypes: ['Journal Entry']);
+
+  @override
+  Future<ApprovalPolicySummary> savePolicy(
+    WorkContext context,
+    ApprovalPolicyDraft draft,
+  ) async {
+    savedDraft = draft;
+    return const ApprovalPolicySummary(
+      name: 'POL-1',
+      title: 'تأیید اسناد',
+      documentType: 'Journal Entry',
+      parallelMode: 'All',
+      minimumAmount: 0,
+      maximumAmount: 0,
+    );
+  }
 
   @override
   Future<AccessOverview> loadAccess(WorkContext context) async =>

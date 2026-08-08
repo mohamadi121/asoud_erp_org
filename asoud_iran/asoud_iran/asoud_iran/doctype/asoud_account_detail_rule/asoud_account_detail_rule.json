@@ -4,12 +4,16 @@
   "module": "ASOUD Iran",
   "autoname": "ASOUD-ADR-.#####",
   "track_changes": 1,
-  "field_order": ["company", "account", "detail_type", "required", "enabled"],
+  "field_order": ["company", "account", "detail_group", "detail_type", "required", "default_floating_detail", "valid_from", "valid_to", "enabled"],
   "fields": [
     {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1},
     {"fieldname": "account", "label": "Account", "fieldtype": "Link", "options": "Account", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "detail_group", "label": "Allowed Detail Group", "fieldtype": "Link", "options": "ASOUD Floating Detail Group", "in_list_view": 1},
     {"fieldname": "detail_type", "label": "Allowed Detail Type", "fieldtype": "Select", "options": "Customer\nSupplier\nEmployee\nBank\nCashbox\nProject\nCost Center\nBranch\nOther", "reqd": 1, "in_list_view": 1},
     {"fieldname": "required", "label": "Required", "fieldtype": "Check", "default": "0"},
+    {"fieldname": "default_floating_detail", "label": "Default Floating Detail", "fieldtype": "Link", "options": "ASOUD Floating Detail"},
+    {"fieldname": "valid_from", "label": "Valid From", "fieldtype": "Date"},
+    {"fieldname": "valid_to", "label": "Valid To", "fieldtype": "Date"},
     {"fieldname": "enabled", "label": "Enabled", "fieldtype": "Check", "default": "1", "in_list_view": 1}
   ],
   "permissions": [
@@ -18,4 +22,3 @@
     {"role": "Accounts User", "read": 1}
   ]
 }
-

@@ -5,15 +5,20 @@
   "autoname": "ASOUD-LOCK-.YYYY.-.#####",
   "is_submittable": 1,
   "track_changes": 1,
-  "field_order": ["company", "fiscal_year", "from_date", "to_date"],
+  "field_order": ["company", "fiscal_year", "fiscal_period", "from_date", "to_date", "lock_reason", "unlocked_by", "unlocked_on", "unlock_reason"],
   "fields": [
     {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1},
     {"fieldname": "fiscal_year", "label": "Fiscal Year", "fieldtype": "Link", "options": "Fiscal Year", "reqd": 1},
+    {"fieldname": "fiscal_period", "label": "Fiscal Period", "fieldtype": "Link", "options": "ASOUD Fiscal Period"},
     {"fieldname": "from_date", "label": "From Date", "fieldtype": "Date", "reqd": 1},
-    {"fieldname": "to_date", "label": "To Date", "fieldtype": "Date", "reqd": 1}
+    {"fieldname": "to_date", "label": "To Date", "fieldtype": "Date", "reqd": 1},
+    {"fieldname": "lock_reason", "label": "Lock Reason", "fieldtype": "Small Text", "reqd": 1},
+    {"fieldname": "unlocked_by", "label": "Unlocked By", "fieldtype": "Link", "options": "User", "read_only": 1, "no_copy": 1},
+    {"fieldname": "unlocked_on", "label": "Unlocked On", "fieldtype": "Datetime", "read_only": 1, "no_copy": 1},
+    {"fieldname": "unlock_reason", "label": "Unlock Reason", "fieldtype": "Small Text", "read_only": 1, "no_copy": 1}
   ],
   "permissions": [
     {"role": "System Manager", "read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1},
-    {"role": "Accounts Manager", "read": 1, "write": 1, "create": 1, "submit": 1}
+    {"role": "Accounts Manager", "read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1}
   ]
 }

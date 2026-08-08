@@ -1,6 +1,7 @@
 import 'package:asoud_pwa/features/approvals/domain/approval_gateway.dart';
 import 'package:asoud_pwa/features/approvals/domain/approval_models.dart';
 import 'package:asoud_pwa/features/approvals/presentation/bloc/approval_cubit.dart';
+import 'package:asoud_pwa/features/approvals/presentation/approval_policy_form.dart';
 import 'package:asoud_pwa/features/session/domain/work_context.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -332,7 +333,30 @@ class _ApprovalContent extends StatelessWidget {
       );
     }
     if (state.view == ApprovalView.policies) {
-      return _PolicyTable(policies: state.policies);
+      Future<void> openForm([ApprovalPolicySummary? policy]) async {
+        final draft = await showApprovalPolicyForm(
+          context,
+          workspace: state.policyWorkspace,
+          policy: policy,
+        );
+        if (draft == null || !context.mounted) return;
+        final saved = await context.read<ApprovalCubit>().savePolicy(draft);
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(saved
+                ? 'مسیر تأیید با موفقیت ذخیره شد.'
+                : 'ذخیره مسیر تأیید انجام نشد.'),
+          ),
+        );
+      }
+
+      return _PolicyTable(
+        workspace: state.policyWorkspace,
+        saving: state.policySaving,
+        onCreate: openForm,
+        onEdit: openForm,
+      );
     }
     if (state.view == ApprovalView.access) {
       return _AccessTable(
@@ -793,23 +817,48 @@ class _StageTile extends StatelessWidget {
 }
 
 class _PolicyTable extends StatelessWidget {
-  const _PolicyTable({required this.policies});
+  const _PolicyTable({
+    required this.workspace,
+    required this.saving,
+    required this.onCreate,
+    required this.onEdit,
+  });
 
-  final List<ApprovalPolicySummary> policies;
+  final ApprovalPolicyWorkspace workspace;
+  final bool saving;
+  final Future<void> Function() onCreate;
+  final Future<void> Function(ApprovalPolicySummary policy) onEdit;
 
   @override
   Widget build(BuildContext context) => ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Card(
+          Card(
             child: ListTile(
-              leading: Icon(Icons.info_outline),
-              title: Text(
-                '\u0645\u0633\u06cc\u0631\u0647\u0627 \u062f\u0631 ERPNext \u0645\u062f\u06cc\u0631\u06cc\u062a \u0648 \u062f\u0631 PWA \u0628\u0631\u0627\u0633\u0627\u0633 \u0634\u0631\u06a9\u062a \u0648 \u0634\u0639\u0628\u0647 \u0646\u0645\u0627\u06cc\u0634 \u062f\u0627\u062f\u0647 \u0645\u06cc\u200c\u0634\u0648\u0646\u062f.',
+              leading: const Icon(
+                Icons.account_tree_outlined,
+                color: Color(0xff246bfd),
+              ),
+              title: const Text(
+                'مدیریت مسیرهای تأیید',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
+              subtitle: const Text(
+                'تعریف سیاست و مراحل در محدوده شرکت و شعبه فعال',
+              ),
+              trailing: FilledButton.icon(
+                onPressed: saving ? null : onCreate,
+                icon: saving
+                    ? const SizedBox.square(
+                        dimension: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.add),
+                label: const Text('مسیر تأیید جدید'),
               ),
             ),
           ),
-          if (policies.isEmpty)
+          if (workspace.policies.isEmpty)
             const Card(
               child: ListTile(
                 title: Text(
@@ -817,16 +866,49 @@ class _PolicyTable extends StatelessWidget {
                 ),
               ),
             ),
-          for (final policy in policies)
+          for (final policy in workspace.policies)
             Card(
               child: ListTile(
-                leading: const Icon(Icons.account_tree_outlined),
-                title: Text(policy.title),
+                onTap: saving ? null : () => onEdit(policy),
+                leading: CircleAvatar(
+                  backgroundColor: policy.enabled
+                      ? const Color(0xffeaf7ef)
+                      : const Color(0xfff0f2f5),
+                  child: Icon(
+                    Icons.route_outlined,
+                    color: policy.enabled
+                        ? const Color(0xff15803d)
+                        : const Color(0xff68758a),
+                  ),
+                ),
+                title: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        policy.title,
+                        style: const TextStyle(fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                    Chip(
+                      visualDensity: VisualDensity.compact,
+                      label: Text(policy.enabled ? 'فعال' : 'غیرفعال'),
+                    ),
+                    const SizedBox(width: 6),
+                    Chip(
+                      visualDensity: VisualDensity.compact,
+                      label: Text('نسخه ${policy.version}'),
+                    ),
+                  ],
+                ),
                 subtitle: Text(
                   '${_doctypeLabel(policy.documentType)}'
                   ' — ${policy.parallelMode == 'All' ? '\u062a\u0623\u06cc\u06cc\u062f \u0647\u0645\u0647' : '\u062a\u0623\u06cc\u06cc\u062f \u06cc\u06a9 \u0646\u0641\u0631'}',
                 ),
-                trailing: Text(policy.name),
+                trailing: IconButton(
+                  tooltip: 'ویرایش مسیر',
+                  onPressed: saving ? null : () => onEdit(policy),
+                  icon: const Icon(Icons.edit_outlined),
+                ),
               ),
             ),
         ],

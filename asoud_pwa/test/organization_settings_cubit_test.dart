@@ -33,6 +33,105 @@ void main() {
     await cubit.close();
   });
 
+  test('loads and saves company financial settings', () async {
+    final gateway = _FakeGateway();
+    final cubit = OrganizationSettingsCubit(
+      gateway,
+      context,
+      initialView: SettingsView.financial,
+    );
+    await cubit.load();
+    expect(cubit.state.financial?.baseCurrency, 'IRR');
+    cubit.updateFinancial(
+      coaTemplate: 'GENERAL-V1',
+      amountInputUnit: 'TOMAN',
+      defaultReceivableAccount: '112001 - ASOUD',
+      defaultBankAccount: '111002 - ASOUD',
+    );
+    expect(await cubit.saveFinancial(), isTrue);
+    expect(gateway.savedFinancial.single.amountInputUnit, 'TOMAN');
+    expect(
+      gateway.savedFinancial.single.defaultReceivableAccount,
+      '112001 - ASOUD',
+    );
+    expect(gateway.savedFinancial.single.defaultBankAccount, '111002 - ASOUD');
+    await cubit.close();
+  });
+
+  test('creates a postable account with selected detail groups', () async {
+    final gateway = _FakeGateway();
+    final cubit = OrganizationSettingsCubit(
+      gateway,
+      context,
+      initialView: SettingsView.financial,
+    );
+    await cubit.load();
+    cubit.startAccount();
+    cubit.updateAccount(
+      accountName: 'حساب‌های دریافتنی',
+      accountNumber: '120101',
+      parentAccount: 'Current Assets - ASOUD',
+      accountType: 'Receivable',
+    );
+    cubit.toggleAccountDetailGroup(
+      const FloatingDetailGroup(
+        name: 'Customers - ASOUD',
+        title: 'مشتریان',
+        code: 'CUS',
+        detailType: 'Customer',
+      ),
+      true,
+    );
+    expect(await cubit.saveChartAccount(), isTrue);
+    expect(gateway.savedAccounts.single.accountLevel, 'Subsidiary');
+    expect(gateway.savedAccounts.single.isGroup, isFalse);
+    expect(gateway.savedAccounts.single.rules.single.detailType, 'Customer');
+    expect(
+      gateway.savedAccounts.single.rules.single.detailGroup,
+      'Customers - ASOUD',
+    );
+    expect(cubit.state.accountDraft, isNull);
+    await cubit.close();
+  });
+
+  test('prefills child and sibling account levels from the tree', () async {
+    final gateway = _FakeGateway();
+    final cubit = OrganizationSettingsCubit(
+      gateway,
+      context,
+      initialView: SettingsView.financial,
+    );
+    await cubit.load();
+    final group = cubit.state.accountRules!.accounts.single;
+
+    cubit.startChildAccount(group);
+    expect(cubit.state.accountDraft!.parentAccount, group.name);
+    expect(cubit.state.accountDraft!.accountLevel, 'Ledger');
+    expect(cubit.state.accountDraft!.isGroup, isTrue);
+
+    const ledger = ChartAccount(
+      name: 'Current Assets Ledger - ASOUD',
+      accountName: 'دارایی‌های جاری کل',
+      accountNumber: '1201',
+      accountLevel: 'Ledger',
+      parentAccount: 'Current Assets - ASOUD',
+      rootType: 'Asset',
+      reportType: 'Balance Sheet',
+      accountType: '',
+      accountCurrency: 'IRR',
+      isGroup: true,
+      disabled: false,
+    );
+    cubit.startChildAccount(ledger);
+    expect(cubit.state.accountDraft!.accountLevel, 'Subsidiary');
+    expect(cubit.state.accountDraft!.isGroup, isFalse);
+
+    cubit.startSiblingAccount(ledger);
+    expect(cubit.state.accountDraft!.parentAccount, ledger.parentAccount);
+    expect(cubit.state.accountDraft!.accountLevel, 'Ledger');
+    await cubit.close();
+  });
+
   testWidgets('renders settings dashboard and opens unit selector',
       (tester) async {
     await tester.pumpWidget(
@@ -57,6 +156,8 @@ void main() {
 
 class _FakeGateway implements OrganizationGateway {
   final saved = <OrganizationDraft>[];
+  final savedFinancial = <FinancialSettingsDraft>[];
+  final savedAccounts = <ChartAccountDraft>[];
 
   @override
   Future<OrganizationSnapshot> load(WorkContext context) async =>
@@ -72,4 +173,136 @@ class _FakeGateway implements OrganizationGateway {
 
   @override
   Future<void> save(OrganizationDraft draft) async => saved.add(draft);
+
+  @override
+  Future<FinancialSettingsSnapshot> loadFinancial(
+    WorkContext context,
+  ) async =>
+      const FinancialSettingsSnapshot(
+        company: 'ASOUD',
+        companyName: 'شرکت آسود',
+        baseCurrency: 'IRR',
+        coaTemplate: 'GENERAL-V1',
+        amountInputUnit: 'IRR',
+        calendarDisplay: 'Jalali',
+        timezone: 'Asia/Tehran',
+        setupStatus: 'Completed',
+        templates: [
+          {
+            'name': 'GENERAL-V1',
+            'template_title': 'استاندارد عمومی',
+            'version': '1',
+          },
+        ],
+      );
+
+  @override
+  Future<FinancialSettingsSnapshot> saveFinancial(
+    WorkContext context,
+    FinancialSettingsDraft draft,
+  ) async {
+    savedFinancial.add(draft);
+    return FinancialSettingsSnapshot(
+      company: context.company,
+      companyName: 'شرکت آسود',
+      baseCurrency: 'IRR',
+      coaTemplate: draft.coaTemplate,
+      amountInputUnit: draft.amountInputUnit,
+      calendarDisplay: draft.calendarDisplay,
+      timezone: 'Asia/Tehran',
+      setupStatus: 'Completed',
+    );
+  }
+
+  @override
+  Future<FinancialSettingsSnapshot> saveFiscalYear(
+    WorkContext context,
+    FiscalYearDraft draft,
+  ) =>
+      loadFinancial(context);
+
+  @override
+  Future<FinancialSettingsSnapshot> saveFiscalPeriod(
+    WorkContext context,
+    FiscalPeriodDraft draft,
+  ) =>
+      loadFinancial(context);
+
+  @override
+  Future<FinancialSettingsSnapshot> lockFinancialPeriod(
+    WorkContext context,
+    PeriodLockDraft draft,
+  ) =>
+      loadFinancial(context);
+
+  @override
+  Future<FinancialSettingsSnapshot> unlockFinancialPeriod(
+    WorkContext context,
+    String lockName,
+    String reason,
+  ) =>
+      loadFinancial(context);
+
+  @override
+  Future<AccountRulesSnapshot> loadAccountRules(WorkContext context) async =>
+      const AccountRulesSnapshot(
+        company: 'ASOUD',
+        detailTypes: ['Customer', 'Supplier', 'Employee'],
+        detailGroups: [
+          FloatingDetailGroup(
+            name: 'Customers - ASOUD',
+            title: 'مشتریان',
+            code: 'CUS',
+            detailType: 'Customer',
+          ),
+        ],
+        accounts: [
+          ChartAccount(
+            name: 'Current Assets - ASOUD',
+            accountName: 'دارایی‌های جاری',
+            accountNumber: '12',
+            accountLevel: 'Group',
+            parentAccount: 'Assets - ASOUD',
+            rootType: 'Asset',
+            reportType: 'Balance Sheet',
+            accountType: '',
+            accountCurrency: 'IRR',
+            isGroup: true,
+            disabled: false,
+          ),
+        ],
+      );
+
+  @override
+  Future<AccountRulesSnapshot> saveChartAccount(
+    WorkContext context,
+    ChartAccountDraft draft,
+  ) async {
+    savedAccounts.add(draft);
+    return loadAccountRules(context);
+  }
+
+  @override
+  Future<FloatingDetailManagementSnapshot> loadFloatingDetails(
+    WorkContext context,
+  ) async =>
+      FloatingDetailManagementSnapshot(
+        company: context.company,
+        holding: 'ASOUD Holding',
+        detailTypes: const ['Customer', 'Supplier', 'Employee'],
+      );
+
+  @override
+  Future<FloatingDetailManagementSnapshot> saveFloatingDetailGroup(
+    WorkContext context,
+    FloatingDetailGroupDraft draft,
+  ) =>
+      loadFloatingDetails(context);
+
+  @override
+  Future<FloatingDetailManagementSnapshot> saveFloatingDetail(
+    WorkContext context,
+    FloatingDetailDraft draft,
+  ) =>
+      loadFloatingDetails(context);
 }

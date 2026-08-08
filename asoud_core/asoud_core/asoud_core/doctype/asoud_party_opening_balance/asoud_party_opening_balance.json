@@ -1,0 +1,19 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Party Opening Balance",
+  "module": "ASOUD Core",
+  "istable": 1,
+  "field_order": ["company", "role", "balance_state", "amount", "currency", "account", "offset_account", "opening_date", "status", "journal_entry"],
+  "fields": [
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "role", "label": "Role", "fieldtype": "Select", "options": "Customer\nSupplier\nEmployee\nSalesperson\nMarketer\nCash Custodian", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "balance_state", "label": "Opening Balance State", "fieldtype": "Select", "options": "None\nDebit\nCredit", "default": "None", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "amount", "label": "Amount", "fieldtype": "Currency", "non_negative": 1, "in_list_view": 1},
+    {"fieldname": "currency", "label": "Currency", "fieldtype": "Link", "options": "Currency", "fetch_from": "company.default_currency"},
+    {"fieldname": "account", "label": "Party Account", "fieldtype": "Link", "options": "Account"},
+    {"fieldname": "offset_account", "label": "Opening Offset Account", "fieldtype": "Link", "options": "Account"},
+    {"fieldname": "opening_date", "label": "Opening Date", "fieldtype": "Date"},
+    {"fieldname": "status", "label": "Status", "fieldtype": "Select", "options": "Draft\nPosted", "default": "Draft", "read_only": 1},
+    {"fieldname": "journal_entry", "label": "Journal Entry", "fieldtype": "Link", "options": "Journal Entry", "read_only": 1}
+  ]
+}

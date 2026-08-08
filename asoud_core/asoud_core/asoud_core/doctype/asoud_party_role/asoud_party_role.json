@@ -1,0 +1,16 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Party Role",
+  "module": "ASOUD Core",
+  "istable": 1,
+  "field_order": ["company", "role", "role_code", "code_key", "reference_doctype", "reference_name", "enabled"],
+  "fields": [
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "role", "label": "Role", "fieldtype": "Select", "options": "Customer\nSupplier\nEmployee\nSalesperson\nMarketer\nCash Custodian", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "role_code", "label": "Automatic Code", "fieldtype": "Data", "read_only": 1, "in_list_view": 1},
+    {"fieldname": "code_key", "label": "Code Key", "fieldtype": "Data", "hidden": 1, "unique": 1, "no_copy": 1},
+    {"fieldname": "reference_doctype", "label": "Reference DocType", "fieldtype": "Link", "options": "DocType", "read_only": 1},
+    {"fieldname": "reference_name", "label": "Reference", "fieldtype": "Dynamic Link", "options": "reference_doctype", "read_only": 1},
+    {"fieldname": "enabled", "label": "Enabled", "fieldtype": "Check", "default": "1", "in_list_view": 1}
+  ]
+}

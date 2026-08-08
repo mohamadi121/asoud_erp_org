@@ -109,6 +109,111 @@ def company_accounting_settings(company: str) -> dict:
 
 
 @_whitelist(methods=["GET"])
+def financial_settings_snapshot(company: str) -> dict:
+    from asoud_iran.services.financial_settings import snapshot
+
+    return snapshot(company)
+
+
+@_whitelist(methods=["POST"])
+def save_financial_settings(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+) -> dict:
+    import json
+
+    from asoud_core.services.idempotency import execute_once
+    from asoud_iran.services.financial_settings import save
+
+    parsed = json.loads(payload)
+    return execute_once(
+        idempotency_key,
+        "financial_settings.save",
+        {"company": company, **parsed},
+        lambda: save(company, parsed),
+    )
+
+
+@_whitelist(methods=["POST"])
+def save_fiscal_year(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+) -> dict:
+    import json
+
+    from asoud_core.services.idempotency import execute_once
+    from asoud_iran.services.fiscal_period_management import save_fiscal_year as save
+
+    parsed = json.loads(payload)
+    return execute_once(
+        idempotency_key,
+        "fiscal_year.save",
+        {"company": company, **parsed},
+        lambda: save(company, parsed),
+    )
+
+
+@_whitelist(methods=["POST"])
+def save_fiscal_period(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+) -> dict:
+    import json
+
+    from asoud_core.services.idempotency import execute_once
+    from asoud_iran.services.fiscal_period_management import save_fiscal_period as save
+
+    parsed = json.loads(payload)
+    return execute_once(
+        idempotency_key,
+        "fiscal_period.save",
+        {"company": company, **parsed},
+        lambda: save(company, parsed),
+    )
+
+
+@_whitelist(methods=["POST"])
+def lock_financial_period(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+) -> dict:
+    import json
+
+    from asoud_core.services.idempotency import execute_once
+    from asoud_iran.services.fiscal_period_management import lock_financial_period
+
+    parsed = json.loads(payload)
+    return execute_once(
+        idempotency_key,
+        "fiscal_period.lock",
+        {"company": company, **parsed},
+        lambda: lock_financial_period(company, parsed),
+    )
+
+
+@_whitelist(methods=["POST"])
+def unlock_financial_period(
+    company: str,
+    lock_name: str,
+    reason: str,
+    idempotency_key: str,
+) -> dict:
+    from asoud_core.services.idempotency import execute_once
+    from asoud_iran.services.fiscal_period_management import unlock_financial_period
+
+    return execute_once(
+        idempotency_key,
+        "fiscal_period.unlock",
+        {"company": company, "lock_name": lock_name, "reason": reason},
+        lambda: unlock_financial_period(company, lock_name, reason),
+    )
+
+
+@_whitelist(methods=["GET"])
 def company_chart_of_accounts(company: str) -> list[dict]:
     import frappe
 
@@ -144,6 +249,114 @@ def company_chart_of_accounts(company: str) -> list[dict]:
             "is_group",
         ],
         order_by="account_number asc",
+    )
+
+
+@_whitelist(methods=["GET"])
+def account_detail_rules_snapshot(company: str) -> dict:
+    from asoud_iran.services.account_detail_rules import snapshot
+
+    return snapshot(company)
+
+
+@_whitelist(methods=["POST"])
+def save_chart_account(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+) -> dict:
+    import json
+
+    from asoud_core.services.idempotency import execute_once
+    from asoud_iran.services.account_detail_rules import save_account
+
+    parsed = json.loads(payload)
+    return execute_once(
+        idempotency_key,
+        "chart_account.save",
+        {"company": company, **parsed},
+        lambda: save_account(company, parsed),
+    )
+
+
+@_whitelist(methods=["POST"])
+def save_account_detail_rules(
+    company: str,
+    account: str,
+    payload: str,
+    idempotency_key: str,
+) -> dict:
+    import json
+
+    from asoud_core.services.idempotency import execute_once
+    from asoud_iran.services.account_detail_rules import save_rules
+
+    parsed = json.loads(payload)
+    return execute_once(
+        idempotency_key,
+        "account_detail_rules.save",
+        {"company": company, "account": account, "rules": parsed},
+        lambda: save_rules(company, account, parsed),
+    )
+
+
+@_whitelist(methods=["GET"])
+def eligible_floating_details(
+    company: str,
+    account: str,
+    query: str = "",
+    limit: int = 20,
+) -> list[dict]:
+    from asoud_iran.services.account_detail_rules import eligible_details
+
+    _assert_company_read(company)
+    return eligible_details(company, account, query=query, limit=limit)
+
+
+@_whitelist(methods=["GET"])
+def floating_detail_management_snapshot(company: str) -> dict:
+    from asoud_iran.services.floating_detail_management import snapshot
+
+    return snapshot(company)
+
+
+@_whitelist(methods=["POST"])
+def save_floating_detail_group(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+) -> dict:
+    import json
+
+    from asoud_core.services.idempotency import execute_once
+    from asoud_iran.services.floating_detail_management import save_group
+
+    parsed = json.loads(payload)
+    return execute_once(
+        idempotency_key,
+        "floating_detail_group.save",
+        {"company": company, **parsed},
+        lambda: save_group(company, parsed),
+    )
+
+
+@_whitelist(methods=["POST"])
+def save_floating_detail(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+) -> dict:
+    import json
+
+    from asoud_core.services.idempotency import execute_once
+    from asoud_iran.services.floating_detail_management import save_detail
+
+    parsed = json.loads(payload)
+    return execute_once(
+        idempotency_key,
+        "floating_detail.save",
+        {"company": company, **parsed},
+        lambda: save_detail(company, parsed),
     )
 
 

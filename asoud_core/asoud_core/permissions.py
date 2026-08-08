@@ -308,6 +308,22 @@ def item_profile_query(user: str | None = None) -> str:
     return company_profile_query("ASOUD Item Company Profile", user)
 
 
+def fiscal_period_query(user: str | None = None) -> str:
+    return company_profile_query("ASOUD Fiscal Period", user)
+
+
+def period_lock_query(user: str | None = None) -> str:
+    return company_profile_query("ASOUD Period Lock", user)
+
+
+def party_identity_query(user: str | None = None) -> str:
+    return company_profile_query("ASOUD Party Identity", user)
+
+
+def party_code_series_query(user: str | None = None) -> str:
+    return company_profile_query("ASOUD Party Code Series", user)
+
+
 def company_profile_query(doctype: str, user: str | None = None) -> str:
     import frappe
 

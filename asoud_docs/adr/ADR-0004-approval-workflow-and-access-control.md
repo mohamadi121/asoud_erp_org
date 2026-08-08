@@ -39,3 +39,17 @@ target.
 - Native mobile, SMS/messenger delivery and external identity providers remain
   outside this technical gate.
 
+## Configurable policy forms
+
+- The Flutter Web PWA provides a company/branch-scoped create/edit form; it does
+  not write DocTypes through the generic Frappe resource API.
+- The workspace API returns only valid document types, branches, users and
+  roles for the active context. The save API repeats all authorization and
+  referential checks and records the mutation in the hash-chained audit ledger.
+- A policy has an explicit version and optional effective date range. Existing
+  approval requests retain their immutable policy snapshot when a policy is
+  edited.
+- Repeated sequence numbers represent parallel approvers. `All` requires every
+  approver in that sequence; `Any` advances after the first valid approval.
+- Self approval is disabled by default and remains subject to backend
+  segregation-of-duties checks when explicitly enabled.

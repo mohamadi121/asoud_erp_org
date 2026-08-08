@@ -102,3 +102,101 @@ class AccountSummary extends Equatable {
   @override
   List<Object?> get props => [name, number, title, rootType, isGroup];
 }
+
+class NumberingCandidate extends Equatable {
+  const NumberingCandidate({
+    required this.name,
+    required this.postingDate,
+    required this.sourceType,
+    required this.sourceName,
+    required this.temporaryNumber,
+  });
+
+  factory NumberingCandidate.fromJson(Map<String, dynamic> json) =>
+      NumberingCandidate(
+        name: json['name']?.toString() ?? '',
+        postingDate: json['posting_date']?.toString() ?? '',
+        sourceType: json['source_doctype']?.toString() ?? '',
+        sourceName: json['source_name']?.toString() ?? '',
+        temporaryNumber: json['temporary_number']?.toString() ?? '',
+      );
+
+  final String name;
+  final String postingDate;
+  final String sourceType;
+  final String sourceName;
+  final String temporaryNumber;
+
+  @override
+  List<Object?> get props =>
+      [name, postingDate, sourceType, sourceName, temporaryNumber];
+}
+
+class FiscalYearOption extends Equatable {
+  const FiscalYearOption({
+    required this.name,
+    required this.fromDate,
+    required this.toDate,
+  });
+
+  factory FiscalYearOption.fromJson(Map<String, dynamic> json) =>
+      FiscalYearOption(
+        name: json['name']?.toString() ?? '',
+        fromDate: json['year_start_date']?.toString() ?? '',
+        toDate: json['year_end_date']?.toString() ?? '',
+      );
+
+  final String name;
+  final String fromDate;
+  final String toDate;
+
+  @override
+  List<Object?> get props => [name, fromDate, toDate];
+}
+
+class NumberingWorkspace extends Equatable {
+  const NumberingWorkspace({
+    this.company = '',
+    this.postingDate = '',
+    this.candidates = const [],
+    this.availableDates = const [],
+    this.fiscalYears = const [],
+    this.recentConsolidations = const [],
+  });
+
+  factory NumberingWorkspace.fromJson(Map<String, dynamic> json) {
+    List<Map<String, dynamic>> rows(String key) =>
+        (json[key] as List? ?? const [])
+            .whereType<Map>()
+            .map((row) => Map<String, dynamic>.from(row))
+            .toList(growable: false);
+
+    return NumberingWorkspace(
+      company: json['company']?.toString() ?? '',
+      postingDate: json['posting_date']?.toString() ?? '',
+      candidates: rows('candidates').map(NumberingCandidate.fromJson).toList(),
+      availableDates: (json['available_dates'] as List? ?? const [])
+          .map((value) => value.toString())
+          .toList(growable: false),
+      fiscalYears: rows('fiscal_years').map(FiscalYearOption.fromJson).toList(),
+      recentConsolidations: rows('recent_consolidations'),
+    );
+  }
+
+  final String company;
+  final String postingDate;
+  final List<NumberingCandidate> candidates;
+  final List<String> availableDates;
+  final List<FiscalYearOption> fiscalYears;
+  final List<Map<String, dynamic>> recentConsolidations;
+
+  @override
+  List<Object?> get props => [
+        company,
+        postingDate,
+        candidates,
+        availableDates,
+        fiscalYears,
+        recentConsolidations,
+      ];
+}

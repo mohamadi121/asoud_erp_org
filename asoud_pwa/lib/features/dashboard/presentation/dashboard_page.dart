@@ -1011,6 +1011,7 @@ class _QuickCreateDrawerState extends State<_QuickCreateDrawer> {
       context,
       contract: selected!,
       gateway: widget.gateway,
+      workContext: widget.context,
     );
     if (payload == null || !mounted) return;
     setState(() => saving = true);

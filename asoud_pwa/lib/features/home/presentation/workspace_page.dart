@@ -9,12 +9,18 @@ import 'package:asoud_pwa/features/dashboard/presentation/dashboard_page.dart';
 import 'package:asoud_pwa/features/hr/domain/hr_gateway.dart';
 import 'package:asoud_pwa/features/hr/presentation/hr_page.dart';
 import 'package:asoud_pwa/features/iran_accounting/domain/iran_accounting_gateway.dart';
+import 'package:asoud_pwa/features/iran_accounting/presentation/bloc/iran_accounting_cubit.dart';
+import 'package:asoud_pwa/features/items/domain/item_gateway.dart';
+import 'package:asoud_pwa/features/items/presentation/inventory_page.dart';
+import 'package:asoud_pwa/features/items/presentation/item_management_page.dart';
 import 'package:asoud_pwa/features/iran_accounting/presentation/page/iran_accounting_page.dart';
 import 'package:asoud_pwa/features/operations/domain/operations_gateway.dart';
 import 'package:asoud_pwa/features/operations/presentation/operations_page.dart';
 import 'package:asoud_pwa/features/organization_settings/domain/organization_gateway.dart';
 import 'package:asoud_pwa/features/organization_settings/presentation/organization_settings_page.dart';
 import 'package:asoud_pwa/features/organization_settings/presentation/bloc/organization_settings_cubit.dart';
+import 'package:asoud_pwa/features/parties/domain/party_gateway.dart';
+import 'package:asoud_pwa/features/parties/presentation/party_management_page.dart';
 import 'package:asoud_pwa/features/reports/domain/reports_gateway.dart';
 import 'package:asoud_pwa/features/reports/presentation/reports_page.dart';
 import 'package:asoud_pwa/features/session/domain/work_context.dart';
@@ -34,6 +40,8 @@ class WorkspacePage extends StatefulWidget {
     required this.approvalGateway,
     required this.hrGateway,
     required this.organizationGateway,
+    required this.partyGateway,
+    required this.itemGateway,
     required this.contexts,
     required this.switchContext,
     super.key,
@@ -49,6 +57,8 @@ class WorkspacePage extends StatefulWidget {
   final ApprovalGateway approvalGateway;
   final HrGateway hrGateway;
   final OrganizationGateway organizationGateway;
+  final PartyGateway partyGateway;
+  final ItemGateway itemGateway;
   final List<WorkContext> contexts;
   final ValueChanged<WorkContext> switchContext;
 
@@ -61,6 +71,12 @@ class _WorkspacePageState extends State<WorkspacePage> {
   bool approvalMode = false;
   ApprovalView approvalView = ApprovalView.incoming;
   SettingsView settingsView = SettingsView.dashboard;
+  FinancialSection settingsFinancialSection = FinancialSection.general;
+  IranAccountingSection iranAccountingSection = IranAccountingSection.dashboard;
+  String? partyRoleFilter;
+  bool itemManagementMode = false;
+  InventorySection inventorySection = InventorySection.dashboard;
+  bool masterDataMode = false;
   late final DashboardController dashboardController = DashboardController();
 
   @override
@@ -74,6 +90,9 @@ class _WorkspacePageState extends State<WorkspacePage> {
     setState(() {
       index = value;
       approvalMode = false;
+      partyRoleFilter = null;
+      itemManagementMode = false;
+      masterDataMode = false;
     });
   }
 
@@ -82,6 +101,9 @@ class _WorkspacePageState extends State<WorkspacePage> {
       setState(() {
         index = 0;
         approvalMode = false;
+        partyRoleFilter = null;
+        itemManagementMode = false;
+        masterDataMode = false;
       });
     }
     action();
@@ -94,6 +116,9 @@ class _WorkspacePageState extends State<WorkspacePage> {
     setState(() {
       approvalMode = true;
       approvalView = view;
+      partyRoleFilter = null;
+      itemManagementMode = false;
+      masterDataMode = false;
     });
   }
 
@@ -181,11 +206,16 @@ class _WorkspacePageState extends State<WorkspacePage> {
         return;
       case 'journal':
       case 'ledger':
-      case 'numbering':
       case 'period':
       case 'lock':
       case 'closing':
       case 'opening':
+        setState(() => iranAccountingSection = IranAccountingSection.dashboard);
+        _selectModule(1);
+        return;
+      case 'numbering':
+      case 'document_sequences':
+        setState(() => iranAccountingSection = IranAccountingSection.numbering);
         _selectModule(1);
         return;
       case 'bank':
@@ -197,20 +227,71 @@ class _WorkspacePageState extends State<WorkspacePage> {
         _selectModule(2);
         return;
       case 'customer':
+        setState(() {
+          index = 3;
+          approvalMode = false;
+          partyRoleFilter = 'Customer';
+          itemManagementMode = false;
+          masterDataMode = false;
+        });
+        return;
       case 'sales_order':
         _selectModule(3);
         return;
       case 'purchase_invoice':
+        _selectModule(4);
+        return;
       case 'supplier':
+        setState(() {
+          index = 4;
+          approvalMode = false;
+          partyRoleFilter = 'Supplier';
+          itemManagementMode = false;
+          masterDataMode = false;
+        });
+        return;
       case 'purchase_order':
         _selectModule(4);
         return;
       case 'stock_entry':
-      case 'warehouses':
-      case 'items':
+        setState(() => inventorySection = InventorySection.movements);
         _selectModule(5);
         return;
+      case 'warehouses':
+        setState(() => inventorySection = InventorySection.warehouses);
+        _selectModule(5);
+        return;
+      case 'inventory_dashboard':
+        setState(() => inventorySection = InventorySection.dashboard);
+        _selectModule(5);
+        return;
+      case 'item_groups':
+        setState(() => inventorySection = InventorySection.itemGroups);
+        _selectModule(5);
+        return;
+      case 'uoms':
+        setState(() => inventorySection = InventorySection.units);
+        _selectModule(5);
+        return;
+      case 'items':
+        setState(() {
+          index = 5;
+          inventorySection = InventorySection.items;
+          approvalMode = false;
+          partyRoleFilter = null;
+          itemManagementMode = false;
+          masterDataMode = false;
+        });
+        return;
       case 'employees':
+        setState(() {
+          index = 6;
+          approvalMode = false;
+          partyRoleFilter = 'Employee';
+          itemManagementMode = false;
+          masterDataMode = false;
+        });
+        return;
       case 'organization':
       case 'positions':
       case 'work_report':
@@ -233,15 +314,38 @@ class _WorkspacePageState extends State<WorkspacePage> {
         _selectModule(8);
         return;
       case 'financial_settings':
-        setState(() => settingsView = SettingsView.financial);
+        setState(() {
+          settingsView = SettingsView.financial;
+          settingsFinancialSection = FinancialSection.general;
+        });
         _selectModule(8);
         return;
-      case 'document_sequences':
       case 'organization_access':
+        _openApprovalInbox(ApprovalView.access);
+        return;
       case 'approval_settings':
+        _openApprovalInbox(ApprovalView.policies);
+        return;
       case 'iran_settings':
+        setState(() => iranAccountingSection = IranAccountingSection.dashboard);
+        _selectModule(1);
+        return;
       case 'master_data':
+        setState(() {
+          index = 8;
+          approvalMode = false;
+          partyRoleFilter = null;
+          itemManagementMode = false;
+          masterDataMode = true;
+        });
+        return;
       case 'control_locks':
+        setState(() {
+          settingsView = SettingsView.financial;
+          settingsFinancialSection = FinancialSection.periodsControls;
+        });
+        _selectModule(8);
+        return;
       case 'access':
       case 'compliance':
         _selectModule(8);
@@ -329,6 +433,34 @@ class _WorkspacePageState extends State<WorkspacePage> {
         initialView: approvalView,
       );
     }
+    if (partyRoleFilter != null) {
+      return PartyManagementPage(
+        key: ValueKey('${widget.context.company}|$partyRoleFilter'),
+        context: widget.context,
+        gateway: widget.partyGateway,
+        initialRole: partyRoleFilter,
+      );
+    }
+    if (itemManagementMode) {
+      return ItemManagementPage(
+        key: ValueKey('${widget.context.company}|items'),
+        context: widget.context,
+        gateway: widget.itemGateway,
+      );
+    }
+    if (masterDataMode) {
+      return _MasterDataHub(
+        openParties: () => setState(() {
+          masterDataMode = false;
+          partyRoleFilter = 'Customer';
+        }),
+        openItems: () => setState(() {
+          masterDataMode = false;
+          itemManagementMode = true;
+          index = 5;
+        }),
+      );
+    }
     return switch (index) {
       0 => DashboardPage(
           context: widget.context,
@@ -339,21 +471,27 @@ class _WorkspacePageState extends State<WorkspacePage> {
           openApprovals: _openApprovalInbox,
         ),
       1 => IranAccountingPage(
+          key: ValueKey(iranAccountingSection),
           context: widget.context,
           gateway: widget.accountingGateway,
+          initialSection: iranAccountingSection,
         ),
       2 => TreasuryPage(
           context: widget.context,
           gateway: widget.treasuryGateway,
         ),
-      3 || 4 || 5 => OperationsPage(
+      3 || 4 => OperationsPage(
           context: widget.context,
           gateway: widget.operationsGateway,
-          documentTypes: index == 3
-              ? const {'Sales Invoice'}
-              : index == 4
-                  ? const {'Purchase Invoice'}
-                  : const {'Stock Entry'},
+          documentTypes:
+              index == 3 ? const {'Sales Invoice'} : const {'Purchase Invoice'},
+        ),
+      5 => InventoryPage(
+          key: ValueKey('${widget.context.company}|$inventorySection'),
+          context: widget.context,
+          itemGateway: widget.itemGateway,
+          operationsGateway: widget.operationsGateway,
+          initialSection: inventorySection,
         ),
       6 => HrPage(
           context: widget.context,
@@ -364,10 +502,12 @@ class _WorkspacePageState extends State<WorkspacePage> {
           gateway: widget.reportsGateway,
         ),
       8 => OrganizationSettingsPage(
-          key: ValueKey(settingsView),
+          key: ValueKey('$settingsView|$settingsFinancialSection'),
           context: widget.context,
           gateway: widget.organizationGateway,
           initialView: settingsView,
+          initialFinancialSection: settingsFinancialSection,
+          onOpenDestination: _handleCommand,
         ),
       _ => CompliancePage(
           context: widget.context,
@@ -375,6 +515,110 @@ class _WorkspacePageState extends State<WorkspacePage> {
         ),
     };
   }
+}
+
+class _MasterDataHub extends StatelessWidget {
+  const _MasterDataHub({required this.openParties, required this.openItems});
+
+  final VoidCallback openParties;
+  final VoidCallback openItems;
+
+  @override
+  Widget build(BuildContext context) => ColoredBox(
+        color: AsoudColors.canvas,
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            Text(
+              'اطلاعات پایه',
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.w900),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'مدیریت هویت‌های مشترک هلدینگ و سیاست مستقل شرکت فعال',
+              style: TextStyle(color: AsoudColors.muted),
+            ),
+            const SizedBox(height: 18),
+            Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              children: [
+                _MasterDataCard(
+                  title: 'اشخاص و طرف‌حساب‌ها',
+                  subtitle: 'مشتری، تأمین‌کننده، پرسنل و سایر نقش‌ها',
+                  icon: Icons.people_outline,
+                  open: openParties,
+                ),
+                _MasterDataCard(
+                  title: 'کالا و خدمات',
+                  subtitle: 'کالا، خدمت و سیاست عملیاتی هر شرکت',
+                  icon: Icons.inventory_2_outlined,
+                  open: openItems,
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+}
+
+class _MasterDataCard extends StatelessWidget {
+  const _MasterDataCard({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.open,
+  });
+
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final VoidCallback open;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+        width: 360,
+        height: 150,
+        child: Card(
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: open,
+            child: Padding(
+              padding: const EdgeInsets.all(18),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(child: Icon(icon)),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(title,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.w800)),
+                        const SizedBox(height: 4),
+                        Text(subtitle,
+                            style: const TextStyle(
+                                fontSize: 12, color: AsoudColors.muted)),
+                        const Spacer(),
+                        const Text('باز کردن مدیریت',
+                            style: TextStyle(
+                                fontSize: 11, color: AsoudColors.primary)),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_left,
+                      size: 18, color: AsoudColors.muted),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
 }
 
 class _TopNavigation extends StatelessWidget {
@@ -859,6 +1103,12 @@ const _ribbonGroups = <int, List<_CommandGroup>>{
       _Command('stock_entry', 'رسید و حواله', Icons.swap_horiz),
       _Command('warehouses', 'انبارها', Icons.warehouse_outlined),
       _Command('items', 'کالا و خدمات', Icons.inventory_2_outlined),
+    ]),
+    _CommandGroup('تنظیمات و نمای انبار', [
+      _Command(
+          'inventory_dashboard', 'داشبورد انبار', Icons.dashboard_outlined),
+      _Command('item_groups', 'گروه و نوع کالا', Icons.account_tree_outlined),
+      _Command('uoms', 'واحدهای اندازه‌گیری', Icons.straighten_outlined),
     ]),
   ],
   6: [

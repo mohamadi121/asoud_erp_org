@@ -10,10 +10,14 @@ import 'package:asoud_pwa/features/hr/data/frappe_hr_gateway.dart';
 import 'package:asoud_pwa/features/hr/domain/hr_gateway.dart';
 import 'package:asoud_pwa/features/iran_accounting/data/frappe_iran_accounting_gateway.dart';
 import 'package:asoud_pwa/features/iran_accounting/domain/iran_accounting_gateway.dart';
+import 'package:asoud_pwa/features/items/data/frappe_item_gateway.dart';
+import 'package:asoud_pwa/features/items/domain/item_gateway.dart';
 import 'package:asoud_pwa/features/operations/data/frappe_operations_gateway.dart';
 import 'package:asoud_pwa/features/operations/domain/operations_gateway.dart';
 import 'package:asoud_pwa/features/organization_settings/data/frappe_organization_gateway.dart';
 import 'package:asoud_pwa/features/organization_settings/domain/organization_gateway.dart';
+import 'package:asoud_pwa/features/parties/data/frappe_party_gateway.dart';
+import 'package:asoud_pwa/features/parties/domain/party_gateway.dart';
 import 'package:asoud_pwa/features/reports/data/frappe_reports_gateway.dart';
 import 'package:asoud_pwa/features/reports/domain/reports_gateway.dart';
 import 'package:asoud_pwa/features/session/data/frappe_session_gateway.dart';
@@ -40,6 +44,8 @@ class AsoudApp extends StatelessWidget {
     HrGateway? hrGateway,
     DashboardGateway? dashboardGateway,
     OrganizationGateway? organizationGateway,
+    PartyGateway? partyGateway,
+    ItemGateway? itemGateway,
   }) {
     final client = AsoudApiClient(baseUrl: _apiBaseUrl());
     return AsoudApp._(
@@ -56,6 +62,8 @@ class AsoudApp extends StatelessWidget {
       dashboardGateway: dashboardGateway ?? FrappeDashboardGateway(client),
       organizationGateway:
           organizationGateway ?? FrappeOrganizationGateway(client),
+      partyGateway: partyGateway ?? FrappePartyGateway(client),
+      itemGateway: itemGateway ?? FrappeItemGateway(client),
     );
   }
 
@@ -70,6 +78,8 @@ class AsoudApp extends StatelessWidget {
     required this.hrGateway,
     required this.dashboardGateway,
     required this.organizationGateway,
+    required this.partyGateway,
+    required this.itemGateway,
     super.key,
   });
 
@@ -83,6 +93,8 @@ class AsoudApp extends StatelessWidget {
   final HrGateway hrGateway;
   final DashboardGateway dashboardGateway;
   final OrganizationGateway organizationGateway;
+  final PartyGateway partyGateway;
+  final ItemGateway itemGateway;
 
   @override
   Widget build(BuildContext context) => MaterialApp(
@@ -105,6 +117,8 @@ class AsoudApp extends StatelessWidget {
           hrGateway: hrGateway,
           dashboardGateway: dashboardGateway,
           organizationGateway: organizationGateway,
+          partyGateway: partyGateway,
+          itemGateway: itemGateway,
         ),
       );
 }

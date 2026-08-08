@@ -11,6 +11,12 @@ and reads the base trial balance. Setup is exposed only when the backend reports
 that the selected Company is pending; backend roles and Company permission remain
 authoritative.
 
+Iranian accounting presentation state is owned by an independent
+`IranAccountingCubit`. Its numbering workspace loads Company-scoped fiscal years
+and temporary documents, performs legal final numbering for an explicit date
+range, and creates idempotent same-day `ASOUD Document Consolidation` records.
+Temporary numbers are retained by the backend as the permanent audit reference.
+
 The phase-eight workspace adds a dedicated Persian reports area for the journal,
 general ledger, floating-detail ledger, six-column trial balance, balance sheet
 and profit-and-loss statement. It displays the canonical checksum and downloads

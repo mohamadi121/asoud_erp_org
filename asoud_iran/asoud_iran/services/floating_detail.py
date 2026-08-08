@@ -27,14 +27,35 @@ def validate_journal_entry_details(doc, method: str | None = None) -> None:
             "account": ["in", sorted(account_names)],
             "enabled": 1,
         },
-        fields=["account", "detail_type", "required"],
+        fields=[
+            "account",
+            "detail_type",
+            "required",
+            "default_floating_detail",
+            "valid_from",
+            "valid_to",
+        ],
     )
+    posting_date = frappe.utils.getdate(doc.posting_date)
     rules: dict[str, list] = {}
     for rule in rule_rows:
+        if rule.valid_from and posting_date < frappe.utils.getdate(rule.valid_from):
+            continue
+        if rule.valid_to and posting_date > frappe.utils.getdate(rule.valid_to):
+            continue
         rules.setdefault(rule.account, []).append(rule)
     for row in doc.accounts:
         account_rules = rules.get(row.account, [])
         detail_name = row.get("asoud_floating_detail")
+        if not detail_name:
+            defaults = {
+                rule.default_floating_detail
+                for rule in account_rules
+                if rule.default_floating_detail
+            }
+            if len(defaults) == 1:
+                detail_name = defaults.pop()
+                row.asoud_floating_detail = detail_name
         if (
             any(rule.required for rule in account_rules)
             and not detail_name

@@ -41,7 +41,20 @@ POST /api/method/asoud_core.api.act_on_approval
 GET  /api/method/asoud_core.api.approval_policy_catalog
 GET  /api/method/asoud_core.api.access_overview
 POST /api/method/asoud_core.api.set_user_access
+GET  /api/method/asoud_core.api.approval_settings_workspace
+POST /api/method/asoud_core.api.save_approval_policy
 ```
+
+## فرم عملیاتی مسیر تأیید
+
+- ایجاد و ویرایش سیاست از داخل Flutter Web PWA انجام می‌شود.
+- نوع سند، شرکت/شعبه، بازه مبلغ، اولویت، بازه اعتبار، وضعیت فعال، خودتأییدی و
+  قاعده مراحل هم‌ردیف قابل تنظیم هستند.
+- هر مرحله دارای ترتیب، عنوان، نوع تأییدکننده (مدیر، نقش یا کاربر مشخص) و مهلت
+  ساعتی است. شماره ترتیب تکراری، تأییدکنندگان موازی را تعریف می‌کند.
+- گزینه‌های فرم از Backend و فقط در محدوده Company/Branch فعال دریافت می‌شوند؛
+  کنترل مجوز، تعلق شعبه، وجود Role/User و Audit در Backend تکرار می‌شود.
+- مرجع تصویری فرم در `asoud-approval-policy-form-v1.svg` و PNG متناظر ثبت شده است.
 
 Backend مجوز Company/Branch، مالک درخواست، تأییدکننده مرحله، نقش مدیریتی،
 برنامه زمانی دسترسی، منع Self-approval، Digest سند، Version خوش‌بینانه و

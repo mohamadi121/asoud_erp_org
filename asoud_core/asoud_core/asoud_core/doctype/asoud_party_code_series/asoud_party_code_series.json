@@ -1,0 +1,21 @@
+{
+  "doctype": "DocType",
+  "name": "ASOUD Party Code Series",
+  "module": "ASOUD Core",
+  "autoname": "field:series_key",
+  "title_field": "series_key",
+  "track_changes": 1,
+  "field_order": ["series_key", "company", "role", "start_number", "current_number", "enabled"],
+  "fields": [
+    {"fieldname": "series_key", "label": "Series Key", "fieldtype": "Data", "hidden": 1, "unique": 1, "no_copy": 1},
+    {"fieldname": "company", "label": "Company", "fieldtype": "Link", "options": "Company", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "role", "label": "Role", "fieldtype": "Select", "options": "Customer\nSupplier\nEmployee\nSalesperson\nMarketer\nCash Custodian", "reqd": 1, "in_list_view": 1},
+    {"fieldname": "start_number", "label": "Start Number", "fieldtype": "Int", "reqd": 1},
+    {"fieldname": "current_number", "label": "Current Number", "fieldtype": "Int", "reqd": 1},
+    {"fieldname": "enabled", "label": "Enabled", "fieldtype": "Check", "default": "1"}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1},
+    {"role": "Accounts Manager", "read": 1, "write": 1, "create": 1}
+  ]
+}

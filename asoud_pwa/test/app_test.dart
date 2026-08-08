@@ -32,6 +32,25 @@ class FakeSessionGateway implements SessionGateway {
 
 class FakeAccountingGateway implements IranAccountingGateway {
   @override
+  Future<String> consolidateDocuments({
+    required String company,
+    required String postingDate,
+    required List<String> documents,
+    required String reason,
+  }) async =>
+      'ASOUD-MERGE-0001';
+
+  @override
+  Future<String> finalizeNumbering({
+    required String company,
+    required String fiscalYear,
+    required String fromDate,
+    required String toDate,
+    required String reason,
+  }) async =>
+      'ASOUD-NUM-0001';
+
+  @override
   Future<List<Map<String, dynamic>>> loadClosingRuns(String company) async =>
       const [];
 
@@ -44,6 +63,13 @@ class FakeAccountingGateway implements IranAccountingGateway {
           'Cancelled': 0,
         }
       };
+
+  @override
+  Future<NumberingWorkspace> loadNumberingWorkspace(
+    String company, {
+    String? postingDate,
+  }) async =>
+      NumberingWorkspace(company: company, postingDate: postingDate ?? '');
   @override
   Future<AccountingSettings> applySetup(String company) =>
       loadSettings(company);
@@ -93,6 +119,14 @@ class FakeAccountingGateway implements IranAccountingGateway {
 }
 
 class FakeOperationsGateway implements OperationsGateway {
+  @override
+  Future<List<String>> eligibleFloatingDetails({
+    required WorkContext context,
+    required String account,
+    String search = '',
+  }) async =>
+      const [];
+
   @override
   Future<List<String>> linkOptions({
     required String documentType,

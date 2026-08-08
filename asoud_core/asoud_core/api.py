@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 
 def _whitelist(*args, **kwargs):
     import frappe
@@ -164,7 +166,14 @@ def final_number(company: str, fiscal_year: str, from_date: str, to_date: str, r
 
 
 @_whitelist(methods=["POST"])
-def lock_period(company: str, fiscal_year: str, from_date: str, to_date: str) -> str:
+def lock_period(
+    company: str,
+    fiscal_year: str,
+    from_date: str,
+    to_date: str,
+    reason: str = "Manual period lock",
+    fiscal_period: str | None = None,
+) -> str:
     import frappe
 
     frappe.only_for(("Accounts Manager", "System Manager"))
@@ -175,7 +184,19 @@ def lock_period(company: str, fiscal_year: str, from_date: str, to_date: str) ->
         fiscal_year=fiscal_year,
         from_date=from_date,
         to_date=to_date,
+        reason=reason,
+        fiscal_period=fiscal_period,
     )
+
+
+@_whitelist(methods=["POST"])
+def unlock_period(lock_name: str, reason: str) -> str:
+    import frappe
+
+    frappe.only_for(("Accounts Manager", "System Manager"))
+    from asoud_core.services.journal_numbering import unlock_period as reopen
+
+    return reopen(lock_name=lock_name, reason=reason)
 
 
 @_whitelist(methods=["GET"])
@@ -199,6 +220,41 @@ def numbering_overview(company: str) -> dict:
         limit=1,
     )
     return {"company": company, "counts": counts, "latest_batch": latest[0] if latest else None}
+
+
+@_whitelist(methods=["GET"])
+def document_consolidation_workspace(
+    company: str,
+    posting_date: str | None = None,
+) -> dict:
+    from asoud_core.services.document_consolidation import workspace
+
+    return workspace(company, posting_date or None)
+
+
+@_whitelist(methods=["POST"])
+def consolidate_accounting_documents(
+    company: str,
+    posting_date: str,
+    documents: str,
+    reason: str,
+    idempotency_key: str,
+) -> dict:
+    from asoud_core.services.document_consolidation import create
+    from asoud_core.services.idempotency import execute_once
+
+    request = {
+        "company": company,
+        "posting_date": posting_date,
+        "documents": documents,
+        "reason": reason,
+    }
+    return execute_once(
+        idempotency_key,
+        "accounting.documents.consolidate",
+        request,
+        lambda: create(company, posting_date, documents, reason),
+    )
 
 
 @_whitelist(methods=["GET"])
@@ -311,6 +367,125 @@ def operational_catalog(company: str, branch: str | None = None) -> dict:
             order_by="item",
         ),
     }
+
+
+@_whitelist(methods=["GET"])
+def party_management_snapshot(
+    company: str,
+    branch: str | None = None,
+    search: str | None = None,
+) -> dict:
+    from asoud_core.services.party_management import party_snapshot
+
+    return party_snapshot(company, branch or None, search)
+
+
+@_whitelist(methods=["GET"])
+def party_code_preview(company: str, roles: str) -> dict:
+    from asoud_core.services.party_management import preview_codes
+
+    return preview_codes(company, roles)
+
+
+@_whitelist(methods=["GET"])
+def party_management_detail(name: str, company: str) -> dict:
+    from asoud_core.services.party_management import party_detail
+
+    return party_detail(name, company)
+
+
+@_whitelist(methods=["POST"])
+def save_party_identity(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+    branch: str | None = None,
+) -> dict:
+    from asoud_core.services.idempotency import execute_once
+    from asoud_core.services.party_management import normalize_party_payload, save_party
+
+    values = normalize_party_payload(payload)
+    request = {"company": company, "branch": branch or None, "payload": values}
+    return execute_once(
+        idempotency_key,
+        "party.identity.save",
+        request,
+        lambda: save_party(company, values, branch or None),
+    )
+
+
+@_whitelist(methods=["GET"])
+def item_management_snapshot(
+    company: str,
+    branch: str | None = None,
+    search: str | None = None,
+) -> dict:
+    from asoud_core.services.item_management import item_snapshot
+
+    return item_snapshot(company, branch or None, search)
+
+
+@_whitelist(methods=["GET"])
+def item_management_detail(item_code: str, company: str) -> dict:
+    from asoud_core.services.item_management import item_detail
+
+    return item_detail(item_code, company)
+
+
+@_whitelist(methods=["POST"])
+def save_item_master(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+    branch: str | None = None,
+) -> dict:
+    from asoud_core.services.idempotency import execute_once
+    from asoud_core.services.item_management import normalize_item_payload, save_item
+
+    values = normalize_item_payload(payload)
+    request = {"company": company, "branch": branch or None, "payload": values}
+    return execute_once(
+        idempotency_key,
+        "item.master.save",
+        request,
+        lambda: save_item(company, values, branch or None),
+    )
+
+
+@_whitelist(methods=["GET"])
+def inventory_management_workspace(
+    company: str,
+    branch: str | None = None,
+) -> dict:
+    from asoud_core.services.inventory_management import workspace
+
+    return workspace(company, branch or None)
+
+
+@_whitelist(methods=["POST"])
+def save_inventory_setting(
+    company: str,
+    setting_type: str,
+    payload: str,
+    idempotency_key: str,
+    branch: str | None = None,
+) -> dict:
+    from asoud_core.services.idempotency import execute_once
+    from asoud_core.services.inventory_management import save_setting
+
+    values = json.loads(payload)
+    request = {
+        "company": company,
+        "branch": branch or None,
+        "setting_type": setting_type,
+        "payload": values,
+    }
+    return execute_once(
+        idempotency_key,
+        "inventory.setting.save",
+        request,
+        lambda: save_setting(company, setting_type, values, branch or None),
+    )
 
 
 @_whitelist(methods=["GET"])
@@ -730,6 +905,34 @@ def approval_policy_catalog(
     from asoud_core.services.approval import policy_catalog
 
     return policy_catalog(company, branch or None)
+
+
+@_whitelist(methods=["GET"])
+def approval_settings_workspace(
+    company: str,
+    branch: str | None = None,
+) -> dict:
+    from asoud_core.services.approval_settings import workspace
+
+    return workspace(company, branch or None)
+
+
+@_whitelist(methods=["POST"])
+def save_approval_policy(
+    company: str,
+    payload: str,
+    idempotency_key: str,
+) -> dict:
+    from asoud_core.services.approval_settings import save
+    from asoud_core.services.idempotency import execute_once
+
+    values = json.loads(payload)
+    return execute_once(
+        idempotency_key,
+        "approval.policy.save",
+        {"company": company, "payload": values},
+        lambda: save(company, values),
+    )
 
 
 @_whitelist(methods=["GET"])

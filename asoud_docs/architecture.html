@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="utf-8">
-  <title>معماری نهایی ASOUD ERP — نسخه ۳.۵</title>
+  <title>معماری نهایی ASOUD ERP — نسخه ۳.۸</title>
   <style>
     @page { size: A4; margin: 18mm 16mm 18mm 16mm; }
     * { box-sizing: border-box; }
@@ -38,7 +38,7 @@
     <div class="brand">ASOUD</div><div class="fa">آسود</div>
     <div class="sub">معماری مصوب، مدل داده، حسابداری ایرانی و نقشه راه اجرای سامانه ERP</div>
     <table class="meta">
-      <tr><th>نسخه سند</th><td>۳.۴ — منابع انسانی، گزارش کار و مکاتبات سازمانی</td></tr>
+      <tr><th>نسخه سند</th><td>۳.۸ — تنظیمات مالی، شماره‌گذاری و ادغام روزانه عملیاتی</td></tr>
       <tr><th>هسته</th><td>ERPNext / Frappe v15</td></tr>
       <tr><th>رابط کاربری</th><td>Flutter Web PWA + BLoC</td></tr>
       <tr><th>تاریخ</th><td>۴ مرداد ۱۴۰۵ / 26 July 2026</td></tr>
@@ -925,6 +925,84 @@ ERPNext Submit (only after valid approval)</pre>
 
     <div class="future"><b>مرز UAT:</b> Site توسعه درخواست تأیید واقعی نداشت، بنابراین Gate عملی خواندن Viewها و فیلترها را روی داده خالی اجرا کرد و Detail/Action با تست‌های خودکار پوشش داده شدند. اجرای سناریوی چندکاربره با داده و Role واقعی بخشی از UAT سازمان مقصد است.</div>
     <p class="footer-note">ASOUD ERP Architecture &amp; Execution Baseline v3.7 — BLoC Approval Cartable Technical Gate</p>
+  </section>
+  <section class="page">
+    <h1>۳۷. الحاقیه — تنظیمات مالی، شماره‌گذاری و ادغام روزانه</h1>
+    <p>Workspace حسابداری ایران بر پوسته ثابت RTL به Cubit مستقل منتقل شد و صفحه شماره‌گذاری از حالت نمایشی به قرارداد عملیاتی Company-scoped متصل گردید. سال مالی از Backend دریافت می‌شود، بازه معتبر آن پیشنهاد می‌گردد و شماره موقت پس از تخصیص شماره قطعی حذف نمی‌شود.</p>
+
+    <h2>قراردادهای اجرایی</h2>
+    <table>
+      <tr><th>بخش</th><th>رفتار و کنترل</th></tr>
+      <tr><td><code>IranAccountingCubit</code></td><td>تنظیمات، نمودار حساب، شماره‌گذاری، اختتامیه، تبدیل مبلغ/تاریخ، تراز آزمایشی، انتخاب اسناد و وضعیت خطا/ذخیره را در State واحد نگه می‌دارد.</td></tr>
+      <tr><td><code>document_consolidation_workspace</code></td><td>GET؛ سال‌های مالی مجاز، تاریخ‌های دارای سند موقت، اسناد قابل ادغام و ادغام‌های اخیر را فقط برای Company مجاز برمی‌گرداند.</td></tr>
+      <tr><td><code>consolidate_accounting_documents</code></td><td>POST idempotent؛ حداقل دو سند موقت هم‌روز و هم‌Company را در DocType واقعی <code>ASOUD Document Consolidation</code> ثبت و Submit می‌کند.</td></tr>
+      <tr><td><code>final_number</code></td><td>POST؛ سال مالی، ابتدا/انتهای بازه و دلیل اجباری؛ مرتب‌سازی قانونی و تخصیص شماره قطعی بدون حذف شماره موقت.</td></tr>
+    </table>
+
+    <h2>اصلاح کشف‌شده در Migration واقعی</h2>
+    <p>بازسازی Image روی ERPNext v15 یک نقص قدیمی را آشکار کرد: سه Child DocType اشخاص Controller پایتون نداشتند. Controllerهای <code>ASOUD Party Role</code>، <code>ASOUD Party Code Series</code> و <code>ASOUD Party Opening Balance</code> افزوده و یک تست ساختاری برای جلوگیری از تکرار این نقص ثبت شد. اسکریپت Bootstrap و Smoke نیز Fail-fast شد تا Exit Code خطای Compose/Migration پنهان نماند.</p>
+
+    <h2>شواهد فنی این Gate</h2>
+    <ul>
+      <li>۷۴ تست مستقل <code>asoud_core</code> و ۴۹ تست Flutter موفق.</li>
+      <li>Dart Analyze بدون Issue و Flutter Web Release Build موفق.</li>
+      <li>Image اختصاصی ERPNext 15.117.0 بازسازی و Site <code>asoud.localhost</code> با Core 0.19.0، Iran 0.10.0 و HR 0.1.0 migrate شد.</li>
+      <li>Smoke Test واقعی پاسخ <code>pong</code> دریافت کرد و Endpoint Workspace ادغام روی Company نمونه، سال‌های مالی ۱۴۰۵/۱۴۰۶ و اسناد موقت واقعی را برگرداند.</li>
+      <li>مرجع طراحی: <code>asoud_docs/ui/asoud-document-numbering-workspace-v1.svg</code> و PNG متناظر.</li>
+    </ul>
+
+    <div class="future"><b>مرز UAT:</b> Gate فنی روی داده مصنوعی Site توسعه موفق است. شماره‌گذاری و ادغام اسناد واقعی سازمان، سطح دسترسی کاربران واقعی و سیاست بستن دوره باید در UAT مالی سازمان مقصد تأیید شوند.</div>
+    <p class="footer-note">ASOUD ERP Architecture &amp; Execution Baseline v3.8 — Financial Numbering &amp; Daily Consolidation Technical Gate</p>
+  </section>
+  <section class="page">
+    <h1>۳۹. الحاقیه — فرم عملیاتی گردش تأیید</h1>
+    <p>مدیریت مسیرهای تأیید از حالت فهرست فقط‌خواندنی خارج شد و به فرم عملیاتی RTL در Flutter Web PWA متصل گردید. فرم از پوسته ثابت دسکتاپ، Company و Branch فعال استفاده می‌کند و هیچ منبع داده موازی با ERPNext/Frappe v15 ایجاد نمی‌کند.</p>
+
+    <h2>قرارداد فرم و موتور</h2>
+    <table>
+      <tr><th>بخش</th><th>کنترل فنی</th></tr>
+      <tr><td>دامنه</td><td>Company الزامی، Branch اختیاری و فقط متعلق به Company فعال؛ فهرست کاربران نیز از دسترسی‌های معتبر همان محدوده ساخته می‌شود.</td></tr>
+      <tr><td>شرایط</td><td>نوع سند Allow-list، حداقل/حداکثر مبلغ، اولویت و بازه شروع/پایان اعتبار در انتخاب Policy اعمال می‌شوند.</td></tr>
+      <tr><td>مراحل</td><td>Sequence از یک و بدون فاصله است؛ تکرار Sequence مرحله موازی می‌سازد و حالت All/Any رفتار عبور را تعیین می‌کند.</td></tr>
+      <tr><td>تأییدکننده</td><td>User، Role یا Manager پشتیبانی می‌شود؛ وجود User/Role و مجوز مدیر تنظیم‌کننده در Backend کنترل می‌شود.</td></tr>
+      <tr><td>تغییر سیاست</td><td>Policy Version افزایش می‌یابد و درخواست‌های در جریان Snapshot قبلی خود را حفظ می‌کنند.</td></tr>
+      <tr><td>امنیت</td><td>Mutation دارای Idempotency Key، کنترل Context و رویداد Audit است؛ Self-approval به‌صورت پیش‌فرض غیرفعال می‌ماند.</td></tr>
+    </table>
+
+    <h2>API و کلاینت</h2>
+    <ul>
+      <li><code>approval_settings_workspace</code>: قرارداد GET برای Policyها و گزینه‌های مجاز فرم.</li>
+      <li><code>save_approval_policy</code>: قرارداد POST idempotent برای ایجاد یا ویرایش.</li>
+      <li><code>ApprovalCubit</code>: بارگذاری Workspace، وضعیت ذخیره، refresh پس از Mutation و خطا.</li>
+      <li><code>approval_policy_form.dart</code>: اعتبارسنجی RTL مبلغ، تاریخ، ترتیب مراحل و انتخاب User/Role.</li>
+      <li>مرجع بصری: <code>asoud_docs/ui/asoud-approval-policy-form-v1.svg</code> و PNG متناظر.</li>
+    </ul>
+
+    <div class="future"><b>مرز UAT:</b> صحت فنی فرم، API، Migration و تست خودکار بررسی می‌شود؛ نام نقش‌ها، سقف‌های واقعی، SLA مراحل و تفکیک وظایف کاربران سازمان مقصد باید در UAT کسب‌وکار تصویب شوند.</div>
+    <p class="footer-note">ASOUD ERP Architecture &amp; Execution Baseline v3.9 — Approval Policy Forms Technical Gate</p>
+  </section>
+  <section class="page">
+    <h1>۴۰. الحاقیه — داشبورد و تنظیمات پایه انبار</h1>
+    <p>ماژول انبار از صفحه عمومی عملیات جدا و به Workspace مستقل روی پوسته قفل‌شده Flutter Web PWA تبدیل شد. تصویر مرجع کاربر برای محتوا استفاده شده و ساختار بصری همچنان از ناوبری اصلی و Ribbon ثابت محصول پیروی می‌کند.</p>
+    <h2>منبع حقیقت و فرم‌ها</h2>
+    <table>
+      <tr><th>قابلیت</th><th>مدل و کنترل</th></tr>
+      <tr><td>داشبورد</td><td>تجمیع Bin و Stock Entry فقط برای Warehouseهای Company/Branch فعال؛ نمایش تعداد کالا/خدمت، ارزش، موجودی و مغایرت منفی.</td></tr>
+      <tr><td>انبار</td><td>Warehouse و Warehouse Type استاندارد؛ والد متعلق به همان Company، Branch معتبر و حساب دارایی.</td></tr>
+      <tr><td>نوع کالا</td><td>Item Group استاندارد و سلسله‌مراتبی؛ قابل استفاده برای مواد اولیه، در جریان تولید، محصول، تجهیزات و طبقات عمومی.</td></tr>
+      <tr><td>واحدها</td><td>UOM، UOM Category و UOM Conversion Factor استاندارد؛ ضریب مثبت و مبدأ/مقصد متفاوت.</td></tr>
+      <tr><td>کالا/خدمت</td><td>Item مشترک در Holding و ASOUD Item Company Profile مستقل برای Company؛ کد GDS/SRV خودکار.</td></tr>
+      <tr><td>امنیت</td><td>System/Stock/Item Manager، Context فعال، Idempotency و Audit برای Mutationها.</td></tr>
+    </table>
+    <h2>قرارداد اجرا</h2>
+    <ul>
+      <li><code>inventory_management_workspace</code> داده داشبورد و گزینه‌های فرم را در یک پاسخ محدودشده برمی‌گرداند.</li>
+      <li><code>save_inventory_setting</code> ایجاد/ویرایش تنظیمات استاندارد را به‌صورت idempotent انجام می‌دهد.</li>
+      <li><code>InventoryCubit</code> بارگذاری، ذخیره، refresh و خطا را مدیریت می‌کند.</li>
+      <li>مرجع بصری: <code>asoud_docs/ui/asoud-inventory-dashboard-settings-v1.svg</code>.</li>
+    </ul>
+    <div class="future"><b>مرز Gate:</b> Flutter Analyze، ۵۸ تست Flutter، Web Release Build و تست‌های Backend با موفقیت اجرا شدند. Docker Migration و Site Smoke به‌دلیل خاموش‌بودن Docker Engine در زمان انتشار باز مانده‌اند؛ تا عبور این Gate محیطی وضعیت Production Ready اعلام نمی‌شود.</div>
+    <p class="footer-note">ASOUD ERP Architecture &amp; Execution Baseline v4.0 — Inventory Dashboard &amp; Settings</p>
   </section>
 </body>
 </html>

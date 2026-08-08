@@ -221,6 +221,7 @@ class _Documents extends StatelessWidget {
       context,
       contract: contract,
       gateway: gateway,
+      workContext: workContext,
     );
     if (payload == null || !context.mounted) return;
     try {

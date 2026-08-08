@@ -20,6 +20,24 @@ class ASOUDPeriodLock(Document):
             <= fiscal_year.year_end_date
         ):
             frappe.throw("The lock range must be inside the selected fiscal year")
+        if not (self.lock_reason or "").strip():
+            frappe.throw("Lock reason is required")
+        if self.fiscal_period:
+            period = frappe.db.get_value(
+                "ASOUD Fiscal Period",
+                self.fiscal_period,
+                ["company", "fiscal_year", "from_date", "to_date", "enabled"],
+                as_dict=True,
+            )
+            if (
+                not period
+                or not period.enabled
+                or period.company != self.company
+                or period.fiscal_year != self.fiscal_year
+                or period.from_date != self.from_date
+                or period.to_date != self.to_date
+            ):
+                frappe.throw("Fiscal period does not match the lock range")
         overlap = frappe.db.exists(
             "ASOUD Period Lock",
             {

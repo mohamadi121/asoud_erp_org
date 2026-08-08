@@ -1,6 +1,7 @@
 import 'package:asoud_pwa/features/approvals/domain/approval_gateway.dart';
 import 'package:asoud_pwa/features/approvals/domain/approval_models.dart';
 import 'package:asoud_pwa/features/approvals/presentation/approval_page.dart';
+import 'package:asoud_pwa/features/approvals/presentation/bloc/approval_cubit.dart';
 import 'package:asoud_pwa/features/session/domain/work_context.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -39,10 +40,47 @@ void main() {
     expect(gateway.lastView, 'history');
     expect(find.text('سوابق نهایی‌شده و قابل مشاهده'), findsOneWidget);
   });
+
+  testWidgets('creates an approval route from the policy form', (tester) async {
+    final gateway = _PageGateway();
+    await tester.binding.setSurfaceSize(const Size(1400, 950));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('fa'),
+        home: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Scaffold(
+            body: ApprovalPage(
+              context: const WorkContext(company: 'A'),
+              gateway: gateway,
+              initialView: ApprovalView.policies,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('مسیر تأیید جدید'));
+    await tester.pumpAndSettle();
+    expect(find.text('ایجاد مسیر تأیید'), findsOneWidget);
+
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'عنوان مسیر *'),
+      'تأیید سند حسابداری',
+    );
+    await tester.tap(find.text('ذخیره مسیر تأیید'));
+    await tester.pumpAndSettle();
+
+    expect(gateway.savedDraft?.title, 'تأیید سند حسابداری');
+    expect(find.text('مسیر تأیید با موفقیت ذخیره شد.'), findsOneWidget);
+  });
 }
 
 class _PageGateway implements ApprovalGateway {
   String lastView = '';
+  ApprovalPolicyDraft? savedDraft;
 
   @override
   Future<ApprovalInbox> loadInbox(
@@ -84,6 +122,28 @@ class _PageGateway implements ApprovalGateway {
   @override
   Future<List<ApprovalPolicySummary>> loadPolicies(WorkContext context) async =>
       const [];
+
+  @override
+  Future<ApprovalPolicyWorkspace> loadPolicyWorkspace(
+    WorkContext context,
+  ) async =>
+      const ApprovalPolicyWorkspace(documentTypes: ['Journal Entry']);
+
+  @override
+  Future<ApprovalPolicySummary> savePolicy(
+    WorkContext context,
+    ApprovalPolicyDraft draft,
+  ) async {
+    savedDraft = draft;
+    return const ApprovalPolicySummary(
+      name: 'POL-1',
+      title: 'مسیر نمونه',
+      documentType: 'Journal Entry',
+      parallelMode: 'All',
+      minimumAmount: 0,
+      maximumAmount: 0,
+    );
+  }
 
   @override
   Future<AccessOverview> loadAccess(WorkContext context) async =>

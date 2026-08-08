@@ -313,13 +313,24 @@ def run_final_numbering(
     return batch.name
 
 
-def lock_period(*, company: str, fiscal_year: str, from_date: str, to_date: str) -> str:
+def lock_period(
+    *,
+    company: str,
+    fiscal_year: str,
+    from_date: str,
+    to_date: str,
+    reason: str = "Manual period lock",
+    fiscal_period: str | None = None,
+) -> str:
     import frappe
     from frappe.utils import getdate
 
     start, end = getdate(from_date), getdate(to_date)
+    reason = reason.strip()
     if start > end:
         raise FrappeNumberingError("from_date must not be after to_date")
+    if not reason:
+        raise FrappeNumberingError("Lock reason is required")
     _assert_period_open(company, start, end)
     if frappe.db.exists(
         "ASOUD Accounting Document",
@@ -338,8 +349,10 @@ def lock_period(*, company: str, fiscal_year: str, from_date: str, to_date: str)
             "doctype": "ASOUD Period Lock",
             "company": company,
             "fiscal_year": fiscal_year,
+            "fiscal_period": fiscal_period,
             "from_date": start,
             "to_date": end,
+            "lock_reason": reason,
         }
     ).insert()
     lock.submit()
@@ -364,4 +377,85 @@ def lock_period(*, company: str, fiscal_year: str, from_date: str, to_date: str)
             "Locked",
             update_modified=False,
         )
+    from asoud_core.services.audit import append_event
+
+    append_event(
+        "period.locked",
+        resource_doctype=lock.doctype,
+        resource_name=lock.name,
+        company=company,
+        reason=reason,
+        after={
+            "fiscal_year": fiscal_year,
+            "fiscal_period": fiscal_period,
+            "from_date": start,
+            "to_date": end,
+            "document_count": len(rows),
+        },
+    )
+    return lock.name
+
+
+def unlock_period(*, lock_name: str, reason: str) -> str:
+    import frappe
+    from frappe.utils import now_datetime
+
+    reason = reason.strip()
+    if not reason:
+        raise FrappeNumberingError("Unlock reason is required")
+    lock = frappe.get_doc("ASOUD Period Lock", lock_name)
+    if lock.docstatus != 1:
+        raise FrappeNumberingError("Only a submitted period lock can be reopened")
+    before = {
+        "company": lock.company,
+        "fiscal_year": lock.fiscal_year,
+        "from_date": lock.from_date,
+        "to_date": lock.to_date,
+        "docstatus": lock.docstatus,
+    }
+    rows = frappe.get_all(
+        "ASOUD Accounting Document",
+        filters={
+            "company": lock.company,
+            "fiscal_year": lock.fiscal_year,
+            "posting_date": ["between", [lock.from_date, lock.to_date]],
+            "numbering_status": "Locked",
+        },
+        fields=["name", "source_doctype", "source_name"],
+    )
+    lock.db_set(
+        {
+            "unlocked_by": frappe.session.user,
+            "unlocked_on": now_datetime(),
+            "unlock_reason": reason,
+        },
+        update_modified=False,
+    )
+    lock.cancel()
+    for row in rows:
+        frappe.db.set_value(
+            "ASOUD Accounting Document",
+            row.name,
+            "numbering_status",
+            "Final",
+            update_modified=False,
+        )
+        frappe.db.set_value(
+            row.source_doctype,
+            row.source_name,
+            "asoud_numbering_status",
+            "Final",
+            update_modified=False,
+        )
+    from asoud_core.services.audit import append_event
+
+    append_event(
+        "period.unlocked",
+        resource_doctype=lock.doctype,
+        resource_name=lock.name,
+        company=lock.company,
+        reason=reason,
+        before=before,
+        after={"docstatus": 2, "document_count": len(rows)},
+    )
     return lock.name

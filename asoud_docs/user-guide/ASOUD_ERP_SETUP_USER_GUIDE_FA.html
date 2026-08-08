@@ -1,0 +1,1014 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>راهنمای کاربری راه‌اندازی آسود ERP</title>
+  <style>
+    @page { size: A4 landscape; margin: 10mm; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #e9eef6;
+      color: #17233a;
+      font-family: Tahoma, "Segoe UI", Arial, sans-serif;
+      line-height: 1.75;
+      counter-reset: page;
+    }
+    .page {
+      position: relative;
+      width: 277mm;
+      min-height: 190mm;
+      margin: 12mm auto;
+      padding: 14mm 15mm 13mm;
+      overflow: hidden;
+      background: #fff;
+      border-radius: 7mm;
+      box-shadow: 0 12px 34px rgba(24, 45, 78, .12);
+      break-after: page;
+      page-break-after: always;
+      counter-increment: page;
+    }
+    .page::after {
+      content: "آسود ERP  •  راهنمای تنظیمات پایه  •  صفحه " counter(page);
+      position: absolute;
+      right: 15mm;
+      bottom: 5mm;
+      color: #7b879a;
+      font-size: 9pt;
+    }
+    .cover {
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: #fff;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(62, 223, 188, .25), transparent 28%),
+        radial-gradient(circle at 90% 80%, rgba(71, 125, 255, .28), transparent 34%),
+        linear-gradient(135deg, #0d2448, #102d5c 55%, #163f78);
+    }
+    .cover::after { color: rgba(255,255,255,.72); }
+    .cover h1 { margin: 0 0 7mm; color: #fff; font-size: 31pt; }
+    .cover h2 { margin: 0 0 12mm; font-size: 18pt; font-weight: 500; color: #d9e8ff; }
+    .cover .badge {
+      display: inline-block;
+      padding: 3mm 8mm;
+      border: 1px solid rgba(255,255,255,.34);
+      border-radius: 99px;
+      background: rgba(255,255,255,.1);
+      font-size: 12pt;
+    }
+    h1, h2, h3 { margin-top: 0; color: #102a56; }
+    h1 { font-size: 24pt; margin-bottom: 5mm; }
+    h2 { font-size: 18pt; margin-bottom: 3mm; }
+    h3 { font-size: 12pt; margin: 4mm 0 2mm; }
+    p { margin: 1.5mm 0 3mm; font-size: 10.5pt; }
+    ul, ol { margin: 1mm 0 3mm; padding-right: 7mm; }
+    li { margin: 1mm 0; font-size: 10pt; }
+    .eyebrow { color: #1769e0; font-size: 9.5pt; font-weight: 800; letter-spacing: .2px; }
+    .lead { color: #53627a; font-size: 11pt; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; align-items: start; }
+    .grid-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 7mm; align-items: start; }
+    .image {
+      width: 100%;
+      height: auto;
+      max-height: none;
+      object-fit: contain;
+      object-position: top center;
+      border: 1px solid #dce3ee;
+      border-radius: 4mm;
+      background: #f5f7fb;
+      padding: 2mm;
+    }
+    .image.short, .image.tall { height: auto; max-height: none; }
+    .caption { margin-top: 1.5mm; color: #738097; font-size: 8.5pt; text-align: center; }
+    .card {
+      margin-bottom: 4mm;
+      padding: 4mm 5mm;
+      border: 1px solid #dfe5ef;
+      border-radius: 4mm;
+      background: #f8fafd;
+    }
+    .page-intro {
+      margin: -1mm 0 4mm;
+      padding: 3.2mm 4mm;
+      border-radius: 3mm;
+      color: #3f5069;
+      background: #f3f7fd;
+      font-size: 9.5pt;
+    }
+    .page-intro b { color: #15345f; }
+    .parts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5mm;
+      margin-top: 2mm;
+    }
+    .parts span {
+      padding: .7mm 2.2mm;
+      border: 1px solid #d7e1ef;
+      border-radius: 99px;
+      color: #31547c;
+      background: #fff;
+      font-size: 8.2pt;
+      font-weight: 700;
+    }
+    .tip { border-right: 4px solid #1d72e8; background: #eef5ff; }
+    .ok { border-right: 4px solid #20a66a; background: #edf9f3; }
+    .warn { border-right: 4px solid #e2a114; background: #fff8e8; }
+    .future { border-right: 4px solid #8a67d5; background: #f5f0ff; }
+    .step {
+      display: grid;
+      grid-template-columns: 10mm 1fr;
+      gap: 3mm;
+      align-items: start;
+      margin: 2.5mm 0;
+    }
+    .step b:first-child {
+      display: grid;
+      place-items: center;
+      width: 8mm;
+      height: 8mm;
+      color: #fff;
+      border-radius: 50%;
+      background: #1769e0;
+      font-size: 9pt;
+    }
+    table { width: 100%; border-collapse: collapse; margin-top: 3mm; font-size: 9.5pt; }
+    th, td { padding: 2.3mm 3mm; border: 1px solid #dfe5ee; vertical-align: top; text-align: right; }
+    th { background: #edf3fb; color: #15345f; }
+    .status {
+      display: inline-block;
+      padding: .6mm 2.2mm;
+      border-radius: 99px;
+      font-size: 8.5pt;
+      font-weight: 700;
+    }
+    .status.live { color: #087747; background: #ddf7e9; }
+    .status.design { color: #6a44ae; background: #eee5ff; }
+    .status.route { color: #9a6000; background: #fff0c9; }
+    kbd, code {
+      direction: ltr;
+      display: inline-block;
+      padding: .3mm 1.4mm;
+      border: 1px solid #d9e0ea;
+      border-radius: 1.5mm;
+      color: #1f3c68;
+      background: #f4f6f9;
+      font-family: Consolas, monospace;
+      font-size: 9pt;
+    }
+    .toc { columns: 2; column-gap: 14mm; }
+    .toc div { break-inside: avoid; padding: 2.2mm 0; border-bottom: 1px dashed #d5dce8; font-size: 10pt; }
+    .toc span { float: left; color: #1769e0; font-weight: 700; }
+    .mini-images { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+    .mini-images .image { height: auto; max-height: none; }
+    .checklist { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm 7mm; }
+    .checklist div { padding: 2.5mm 3mm; border-radius: 3mm; background: #f6f8fc; font-size: 9.5pt; }
+    .checklist div::before { content: "✓"; color: #15935d; font-weight: 900; margin-left: 2mm; }
+    @media screen {
+      body:has(.page:target) .page:not(:target) { display: none; }
+    }
+    @media print {
+      body { background: #fff; }
+      .page {
+        width: 326mm;
+        height: 220mm;
+        min-height: 220mm;
+        margin: 0;
+        border-radius: 0;
+        box-shadow: none;
+        zoom: .85;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<section class="page cover">
+  <div>
+    <div class="badge">راهنمای کاربری تصویری و مرحله‌به‌مرحله</div>
+    <h1>راه‌اندازی و تنظیمات پایه آسود ERP</h1>
+    <h2>از ورود و داشبورد تا کارتابل، ساخت سازمان، دوره‌های مالی، نمودار حساب‌ها و تفصیلی شناور</h2>
+    <p>نسخه مستند: ۱۴۰۵/۰۵ • مناسب مدیر سیستم و مدیر حسابداری</p>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">راهنمای مطالعه</div>
+  <h1>فهرست صفحات</h1>
+  <p class="lead">ترتیب این سند مطابق مسیر واقعی کاربر در سامانه تنظیم شده است.</p>
+  <div class="toc">
+    <div>ورود و انتخاب زمینه فعال <span>۳</span></div>
+    <div>داشبورد اصلی و ریبون <span>۴</span></div>
+    <div>کارتابل و گردش تأیید <span>۵–۱۰</span></div>
+    <div>ورود به تنظیمات پایه <span>۱۱</span></div>
+    <div>داشبورد تنظیمات <span>۱۲</span></div>
+    <div>انتخاب نوع واحد سازمانی <span>۱۳</span></div>
+    <div>ایجاد هلدینگ <span>۱۴</span></div>
+    <div>ایجاد شرکت حقوقی <span>۱۵–۱۶</span></div>
+    <div>ایجاد شخص حقیقی <span>۱۷</span></div>
+    <div>ایجاد شعبه <span>۱۸–۱۹</span></div>
+    <div>مشاهده ساختار سازمانی <span>۲۰</span></div>
+    <div>تنظیمات عمومی مالی <span>۲۱</span></div>
+    <div>سال مالی و دوره مالی <span>۲۲–۲۳</span></div>
+    <div>قفل و بازگشایی دوره <span>۲۴</span></div>
+    <div>نمودار و فرم حساب <span>۲۵–۲۶</span></div>
+    <div>تفصیلی شناور <span>۲۷–۲۹</span></div>
+    <div>وضعیت صفحات بعدی <span>۳۰</span></div>
+    <div>چک‌لیست استفاده روزانه <span>۳۱</span></div>
+  </div>
+  <div class="card tip" style="margin-top:8mm">
+    <b>نشانه وضعیت:</b>
+    <span class="status live">عملیاتی</span>
+    صفحه به API متصل است.
+    <span class="status design">طراحی بعدی</span>
+    تصویر آماده است ولی اجرای کامل در برش بعدی است.
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">مرحله ۱</div>
+  <h1>ورود و انتخاب زمینه فعال</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> نقطه شروع سامانه برای احراز هویت و تعیین محدوده داده‌های قابل مشاهده و ثبت.
+    <div class="parts"><span>نام کاربری و رمز</span><span>شرکت فعال</span><span>شعبه فعال</span><span>پروفایل و مجوز</span></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <img class="image tall" src="../ui/asoud-dashboard-complete-v1.1-preview.png" alt="داشبورد اصلی آسود">
+      <div class="caption">نمای داشبورد پس از احراز هویت و انتخاب زمینه</div>
+    </div>
+    <div>
+      <div class="card ok"><b>وضعیت:</b> <span class="status live">عملیاتی</span> احراز هویت توسط Frappe/ERPNext انجام می‌شود.</div>
+      <div class="step"><b>۱</b><div>نشانی سامانه را باز کنید و نام کاربری و رمز عبور سازمانی را وارد کنید.</div></div>
+      <div class="step"><b>۲</b><div>پس از ورود، از نوار بالای سامانه <b>شرکت فعال</b> را انتخاب کنید.</div></div>
+      <div class="step"><b>۳</b><div>اگر دسترسی شعبه دارید، <b>شعبه فعال</b> را نیز تعیین کنید. تمام اطلاعات بعدی در همین زمینه ذخیره می‌شوند.</div></div>
+      <div class="step"><b>۴</b><div>با ورود موفق، داشبورد اصلی به‌صورت خودکار بارگذاری می‌شود.</div></div>
+      <div class="card warn">
+        <b>مهم:</b> قبل از ایجاد سال مالی، حساب یا تفصیلی، نام شرکت فعال در بالای صفحه را کنترل کنید.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">مرحله ۲</div>
+  <h1>داشبورد اصلی و ریبون فرمان‌ها</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> داشبورد، میزکار روزانه کاربر و نقطه ورود به همه ماژول‌هاست.
+    <div class="parts"><span>منوی اصلی</span><span>زمینه شرکت/شعبه</span><span>ریبون فرمان‌ها</span><span>کارت‌های آماری</span><span>اعلان و کارتابل</span></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <img class="image tall" src="../ui/asoud-dashboard-ribbon-v1-preview.png" alt="ریبون داشبورد">
+      <div class="caption">ریبون زمینه‌ای، کارت‌های آماری و ابزارهای سریع</div>
+    </div>
+    <div>
+      <table>
+        <tr><th>دکمه یا بخش</th><th>کاربرد</th></tr>
+        <tr><td>منوی اصلی بالا</td><td>انتخاب حوزه کاری مانند مالی، خزانه، فروش، خرید، انبار، منابع انسانی و تنظیمات.</td></tr>
+        <tr><td>شرکت / شعبه</td><td>تغییر زمینه فعال؛ داده‌های صفحه دوباره با مجوز همان زمینه بارگذاری می‌شوند.</td></tr>
+        <tr><td>جست‌وجو</td><td>جست‌وجوی ماژول یا فرمان و انتقال مستقیم به مقصد.</td></tr>
+        <tr><td>دسترسی سریع</td><td>بازکردن نماهای پرکاربرد و ذخیره‌شده.</td></tr>
+        <tr><td>علامت +</td><td>ایجاد سریع سند از قراردادهای مجاز.</td></tr>
+        <tr><td>زنگ اعلان</td><td>نمایش اعلان‌ها و انتقال به سند مرتبط.</td></tr>
+        <tr><td>کارتابل</td><td>مشاهده موارد در انتظار تأیید.</td></tr>
+        <tr><td>راهنما / پروفایل</td><td>راهنمای میزکار، اطلاعات کاربر و دسترسی به تنظیمات.</td></tr>
+      </table>
+      <div class="card tip"><b>مسیر این راهنما:</b> منوی اصلی ← <b>تنظیمات</b> ← <b>داشبورد تنظیمات</b>.</div>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="cartable-main">
+  <div class="eyebrow">صفحه نهایی کارتابل</div>
+  <h1>نمای اصلی کارتابل و گردش تأیید</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> این صفحه مرکز مشاهده و اقدام روی درخواست‌های تأیید است و پنج نمای مستقل را در یک محیط نشان می‌دهد.
+    <div class="parts"><span>کارتابل من</span><span>ارسالی‌ها</span><span>تاریخچه</span><span>مسیرهای تأیید</span><span>کاربران و دسترسی</span></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <img class="image tall" src="../ui/asoud-main-style-cartable-proposal-v1-preview.png" alt="نمای اصلی کارتابل">
+      <div class="caption">پوسته نهایی کارتابل هماهنگ با داشبورد اصلی</div>
+    </div>
+    <div>
+      <h3>قسمت‌های صفحه</h3>
+      <ul>
+        <li><b>نوار نماها:</b> جابه‌جایی مستقیم میان پنج بخش کارتابل.</li>
+        <li><b>جست‌وجو:</b> شماره سند، درخواست‌کننده یا مسیر تأیید.</li>
+        <li><b>فیلتر وضعیت:</b> در انتظار، تأییدشده، ردشده، بازگشتی یا باطل‌شده.</li>
+        <li><b>شمارنده‌ها:</b> تعداد ورودی، درخواست باز و سابقه نهایی.</li>
+        <li><b>جدول:</b> فهرست درخواست‌ها با مبلغ، مرحله و وضعیت.</li>
+      </ul>
+      <h3>راهنمای استفاده</h3>
+      <ol>
+        <li>از منوی اصلی <b>کارتابل</b> را انتخاب کنید.</li>
+        <li>نمای موردنظر را از نوار بالای صفحه بزنید.</li>
+        <li>با جست‌وجو و فیلتر، ردیف موردنظر را پیدا کنید.</li>
+        <li>روی ردیف کلیک کنید تا جزئیات باز شود.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">کارتابل من</div>
+  <h1>درخواست‌های در انتظار اقدام من</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> فقط درخواست‌هایی نمایش داده می‌شوند که کاربر جاری در مرحله فعلی اجازه اقدام روی آن‌ها دارد.
+    <div class="parts"><span>شمارنده‌ها</span><span>جست‌وجو</span><span>جدول ورودی</span><span>پنل جزئیات</span><span>عملیات تصمیم</span></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <img class="image tall" src="../ui/asoud-approval-inbox-v1-preview.png" alt="کارتابل ورودی">
+    </div>
+    <div>
+      <h3>قسمت‌های جدول</h3>
+      <p>نوع و شماره سند، درخواست‌کننده، مبلغ، شماره مرحله و وضعیت جاری در هر ردیف دیده می‌شود.</p>
+      <h3>راهنمای استفاده</h3>
+      <div class="step"><b>۱</b><div>در نوار کارتابل، <b>کارتابل من</b> را انتخاب کنید.</div></div>
+      <div class="step"><b>۲</b><div>عبارت جست‌وجو را وارد و کلید جست‌وجو یا Enter را بزنید.</div></div>
+      <div class="step"><b>۳</b><div>روی درخواست موردنظر کلیک کنید تا پنل جزئیات باز شود.</div></div>
+      <div class="step"><b>۴</b><div>سند، مبلغ، درخواست‌کننده، سیاست و مراحل را کنترل کنید.</div></div>
+      <div class="card warn">در نمای ورودی، فهرست براساس مجوز اقدام کاربر فیلتر می‌شود و امکان Self-approval در Backend کنترل می‌شود.</div>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">جزئیات درخواست</div>
+  <h1>بررسی مسیر و ثبت تصمیم تأیید</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> پنل جزئیات برای تصمیم‌گیری نهایی استفاده می‌شود و خلاصه سند، مسیر مرحله‌ای و سابقه اقدامات را کنار هم نشان می‌دهد.
+    <div class="parts"><span>خلاصه سند</span><span>زمینه Company/Branch</span><span>مسیر تأیید</span><span>تاریخچه اقدامات</span><span>تأیید/بازگشت/رد</span></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <img class="image tall" src="../ui/asoud-approval-inbox-v1-preview.png" alt="پنل جزئیات درخواست">
+    </div>
+    <div>
+      <table>
+        <tr><th>دکمه</th><th>نتیجه و روش استفاده</th></tr>
+        <tr><td>تأیید</td><td>درخواست را به مرحله بعد می‌فرستد یا در آخرین مرحله نهایی می‌کند. قبل از اقدام، اطلاعات سند را کنترل کنید.</td></tr>
+        <tr><td>بازگشت برای اصلاح</td><td>درخواست را با توضیح اجباری به درخواست‌کننده برمی‌گرداند.</td></tr>
+        <tr><td>رد</td><td>فرآیند را رد می‌کند؛ دلیل تصمیم باید ثبت شود.</td></tr>
+        <tr><td>بستن جزئیات</td><td>پنل را می‌بندد و فهرست بدون تغییر باقی می‌ماند.</td></tr>
+      </table>
+      <h3>ترتیب پیشنهادی کنترل</h3>
+      <ol>
+        <li>نوع و شماره سند را با درخواست تطبیق دهید.</li>
+        <li>زمینه شرکت و شعبه و مبلغ را بررسی کنید.</li>
+        <li>مرحله فعال و تأییدکننده‌های قبل را کنترل کنید.</li>
+        <li>تاریخچه توضیحات را بخوانید و سپس تصمیم را ثبت کنید.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">ارسالی‌ها</div>
+  <h1>درخواست‌های ایجادشده توسط من</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> این نما وضعیت درخواست‌هایی را دنبال می‌کند که کاربر جاری آغاز کرده است.
+    <div class="parts"><span>فیلتر وضعیت</span><span>مرحله جاری</span><span>تأییدکننده فعلی</span><span>جزئیات مسیر</span></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <img class="image tall" src="../ui/asoud-cartable-sent-v1-preview.png" alt="ارسالی‌های کارتابل">
+    </div>
+    <div>
+      <h3>راهنمای استفاده</h3>
+      <div class="step"><b>۱</b><div>تب <b>ارسالی‌ها</b> را انتخاب کنید.</div></div>
+      <div class="step"><b>۲</b><div>از فیلتر وضعیت برای نمایش درخواست‌های باز، تأییدشده، ردشده یا بازگشتی استفاده کنید.</div></div>
+      <div class="step"><b>۳</b><div>روی ردیف کلیک کنید تا مرحله و شخص اقدام‌کننده فعلی مشخص شود.</div></div>
+      <div class="step"><b>۴</b><div>اگر درخواست بازگشته است، سند مبدأ را اصلاح و دوباره وارد مسیر تأیید کنید.</div></div>
+      <div class="card tip"><b>تفاوت با کارتابل من:</b> اینجا مالک درخواست هستید، نه الزاماً تأییدکننده مرحله.</div>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">تاریخچه کارتابل</div>
+  <h1>سوابق نهایی‌شده و اقدامات ثبت‌شده</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> تاریخچه برای پیگیری تصمیم‌های گذشته و مشاهده مسیر کامل درخواست‌های خاتمه‌یافته است.
+    <div class="parts"><span>جست‌وجوی سابقه</span><span>فیلتر نتیجه</span><span>زمان اقدام</span><span>عامل اقدام</span><span>توضیحات</span></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <img class="image tall" src="../ui/asoud-cartable-history-v1-preview.png" alt="تاریخچه کارتابل">
+    </div>
+    <div>
+      <h3>قسمت‌های صفحه</h3>
+      <p>فهرست اسناد نهایی‌شده، وضعیت نهایی، آخرین مرحله و اطلاعات درخواست‌کننده نمایش داده می‌شود. با بازکردن هر ردیف، تمام اقدامات مرحله‌ای قابل مشاهده است.</p>
+      <h3>راهنمای استفاده</h3>
+      <ol>
+        <li>تب <b>تاریخچه</b> را باز کنید.</li>
+        <li>نتیجه موردنظر را از فیلتر وضعیت انتخاب کنید.</li>
+        <li>شماره سند یا نام درخواست‌کننده را جست‌وجو کنید.</li>
+        <li>ردیف را باز و زمان، عامل و توضیح هر اقدام را بررسی کنید.</li>
+      </ol>
+      <div class="card ok">این صفحه فقط برای مشاهده و حسابرسی است و دکمه تصمیم‌گیری فعال ندارد.</div>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">مدیریت کارتابل</div>
+  <h1>مسیرهای تأیید و کاربران دارای دسترسی</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> مدیر سیستم از این دو نما سیاست‌های گردش و دامنه دسترسی کاربران را کنترل می‌کند.
+    <div class="parts"><span>کاتالوگ سیاست‌ها</span><span>مراحل و نقش‌ها</span><span>حد مبلغ</span><span>Company/Branch</span><span>زمان‌بندی دسترسی</span></div>
+  </div>
+  <div class="mini-images">
+    <div>
+      <img class="image" src="../ui/asoud-cartable-approval-routes-v1-preview.png" alt="مسیرهای تأیید">
+      <div class="caption">مسیرها، مراحل و نقش‌های تأیید</div>
+    </div>
+    <div>
+      <img class="image" src="../ui/asoud-cartable-user-access-v1-preview.png" alt="کاربران و دسترسی">
+      <div class="caption">دامنه دسترسی Company/Branch</div>
+    </div>
+  </div>
+  <table>
+    <tr><th>بخش</th><th>راهنمای استفاده</th></tr>
+    <tr><td>مسیرهای تأیید</td><td>سیاست را انتخاب و ترتیب مراحل، نقش تأییدکننده، محدوده مبلغ و فعال‌بودن مسیر را بررسی کنید.</td></tr>
+    <tr><td>کاربران و دسترسی</td><td>کاربر را پیدا، Company/Branch مجاز و بازه زمانی دسترسی را تعیین و ذخیره کنید.</td></tr>
+    <tr><td>جانشینی</td><td>فرمان جانشینی از ریبون کارتابل به نمای دسترسی هدایت می‌شود؛ بازه جانشینی باید محدود و قابل حسابرسی باشد.</td></tr>
+  </table>
+</section>
+
+<section class="page">
+  <div class="eyebrow">مرحله ۳</div>
+  <h1>ورود به تنظیمات پایه</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> درگاه ورود مدیر سیستم به تنظیمات سازمان، مالی، دسترسی و کنترل.
+    <div class="parts"><span>ریبون تنظیمات</span><span>تنظیمات سازمانی</span><span>تنظیمات مالی</span><span>کنترل و دسترسی</span></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <img class="image tall" src="../ui/asoud-base-settings-overview-v1-preview.png" alt="تنظیمات پایه">
+      <div class="caption">نمای کلی تنظیمات پایه و مسیرهای در دسترس</div>
+    </div>
+    <div>
+      <h3>دو مسیر ورود</h3>
+      <ol>
+        <li>از منوی اصلی، حوزه <b>تنظیمات</b> را انتخاب کنید.</li>
+        <li>در ریبون، یکی از فرمان‌های <b>داشبورد تنظیمات</b>، <b>ساختار سازمانی</b> یا <b>تنظیمات مالی</b> را بزنید.</li>
+      </ol>
+      <table>
+        <tr><th>فرمان</th><th>صفحه بعد</th></tr>
+        <tr><td>داشبورد تنظیمات</td><td>کارت‌های وضعیت و میانبرهای تنظیمات.</td></tr>
+        <tr><td>ساختار سازمانی</td><td>درخت هلدینگ ← شرکت ← شعبه.</td></tr>
+        <tr><td>تنظیمات مالی</td><td>عمومی، نمودار حساب‌ها و تفصیلی‌های شناور.</td></tr>
+        <tr><td>شماره‌گذاری</td><td><span class="status route">مسیر ماژول</span> انتقال به بخش مرتبط حسابداری ایران.</td></tr>
+        <tr><td>کاربران، گردش تأیید و کنترل</td><td><span class="status route">مسیر ماژول</span> از منوی اصلی سامانه باز می‌شوند.</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">مرحله ۴</div>
+  <h1>داشبورد تنظیمات</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> خلاصه وضعیت پیکربندی و میانبر ورود به صفحات عملیاتی تنظیمات.
+    <div class="parts"><span>شمار واحدها</span><span>کارت‌های تنظیمات</span><span>تب‌های اصلی</span><span>واحد سازمانی جدید</span></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <img class="image tall" src="../ui/asoud-dashboard-complete-v1.1-preview.png" alt="داشبورد">
+    </div>
+    <div>
+      <p>در بالای صفحه سه تب ثابت وجود دارد:</p>
+      <table>
+        <tr><th>دکمه</th><th>نتیجه</th></tr>
+        <tr><td>داشبورد تنظیمات</td><td>شمار هلدینگ‌ها، شرکت‌ها، شعب و کارت‌های میانبر را نشان می‌دهد.</td></tr>
+        <tr><td>ساختار سازمانی</td><td>ساختار درختی واحدها را باز می‌کند.</td></tr>
+        <tr><td>تنظیمات مالی</td><td>تنظیمات شرکت فعال را باز می‌کند.</td></tr>
+        <tr><td>واحد سازمانی جدید</td><td>پنجره انتخاب نوع هلدینگ، شرکت/شخص یا شعبه را باز می‌کند.</td></tr>
+      </table>
+      <div class="card tip">
+        کارت <b>ساختار سازمانی</b> و کارت <b>مالی و دوره‌ها</b> قابل کلیک هستند. کارت‌هایی که عبارت «از منوی اصلی سامانه» دارند، از ریبون اصلی باز می‌شوند.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">مرحله ۵</div>
+  <h1>انتخاب نوع واحد سازمانی</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> پنجره تعیین نوع موجودیتی که باید ایجاد شود؛ انتخاب اینجا تعداد و محتوای مراحل بعدی را مشخص می‌کند.
+    <div class="parts"><span>هلدینگ</span><span>شرکت یا شخص</span><span>شعبه</span><span>انصراف</span></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <img class="image tall" src="../ui/asoud-new-organization-unit-wizard-v1-preview.png" alt="انتخاب واحد سازمانی">
+    </div>
+    <div>
+      <div class="step"><b>۱</b><div>روی <b>واحد سازمانی جدید</b> کلیک کنید.</div></div>
+      <div class="step"><b>۲</b><div>یکی از سه نوع زیر را انتخاب کنید:</div></div>
+      <table>
+        <tr><th>انتخاب</th><th>فرم بعدی</th></tr>
+        <tr><td>هلدینگ</td><td>فرم سه‌مرحله‌ای هویت، تلفیق و بازبینی.</td></tr>
+        <tr><td>شرکت یا شخص</td><td>فرم چهارمرحله‌ای؛ نوع شخصیت حقیقی یا حقوقی در مرحله اول تعیین می‌شود.</td></tr>
+        <tr><td>شعبه</td><td>فرم چهارمرحله‌ای هویت، منابع، دسترسی و بازبینی.</td></tr>
+      </table>
+      <div class="card warn"><b>انصراف</b> پنجره را بدون ذخیره می‌بندد. دکمه <b>بعدی</b> فقط پس از تکمیل فیلدهای الزامی فعال/موفق خواهد بود.</div>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">ایجاد هلدینگ</div>
+  <h1>هلدینگ: از فهرست تا ثبت نهایی</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> فرم سه‌مرحله‌ای ایجاد بالاترین سطح سازمانی و تنظیم مبانی گزارش تلفیقی.
+    <div class="parts"><span>هویت</span><span>تنظیمات تلفیق</span><span>بازبینی</span><span>ثبت نهایی</span></div>
+  </div>
+  <div class="mini-images">
+    <div>
+      <img class="image" src="../ui/asoud-holdings-with-create-form-v1-preview.png" alt="فرم هلدینگ">
+      <div class="caption">مرحله هویت و ایجاد هلدینگ</div>
+    </div>
+    <div>
+      <img class="image" src="../ui/asoud-holding-wizard-step-2-consolidation-v1-preview.png" alt="تلفیق هلدینگ">
+      <div class="caption">مرحله تنظیمات تلفیق</div>
+    </div>
+  </div>
+  <div class="grid-equal" style="margin-top:5mm">
+    <div class="card">
+      <h3>مرحله ۱ — هویت</h3>
+      <p>نام هلدینگ، کد یکتا و اطلاعات پایه را وارد کنید و <b>بعدی</b> را بزنید.</p>
+      <h3>مرحله ۲ — تلفیق</h3>
+      <p>ارز و روش تلفیق و تنظیمات حذف معاملات درون‌گروهی را کنترل کنید.</p>
+    </div>
+    <div class="card">
+      <h3>مرحله ۳ — بازبینی</h3>
+      <p>خلاصه اطلاعات را در تصویر بازبینی بررسی کنید.</p>
+      <p><b>قبلی:</b> بازگشت بدون از دست رفتن اطلاعات.</p>
+      <p><b>ثبت/ذخیره:</b> ایجاد هلدینگ و بازگشت به داشبورد تنظیمات.</p>
+    </div>
+  </div>
+  <img class="image short" src="../ui/asoud-holding-wizard-step-3-review-v1-preview.png" alt="بازبینی هلدینگ">
+</section>
+
+<section class="page">
+  <div class="eyebrow">ایجاد شرکت حقوقی</div>
+  <h1>شرکت: مرحله هویت و ارتباط سازمانی</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> دو مرحله اول برای تعریف شخصیت شرکت و جایگاه آن در هلدینگ استفاده می‌شود.
+    <div class="parts"><span>نوع شخصیت</span><span>شناسه‌های قانونی</span><span>هلدینگ والد</span><span>رابطه سازمانی</span></div>
+  </div>
+  <div class="mini-images">
+    <div>
+      <img class="image" src="../ui/asoud-companies-with-create-form-v1-preview.png" alt="ایجاد شرکت">
+      <div class="caption">مرحله اول: مشخصات شرکت و نوع شخصیت</div>
+    </div>
+    <div>
+      <img class="image" src="../ui/asoud-company-wizard-step-2-relation-v1-preview.png" alt="ارتباط شرکت">
+      <div class="caption">مرحله دوم: ارتباط با هلدینگ و زمینه سازمانی</div>
+    </div>
+  </div>
+  <table>
+    <tr><th>مرحله</th><th>کار کاربر</th><th>دکمه بعدی</th></tr>
+    <tr><td>هویت</td><td>نوع شخصیت حقوقی، نام شرکت، کد، شناسه‌ها و اطلاعات الزامی را وارد کنید.</td><td>بازکردن مرحله ارتباط.</td></tr>
+    <tr><td>ارتباط</td><td>هلدینگ والد و رابطه سازمانی را انتخاب کنید.</td><td>بازکردن مرحله حسابداری.</td></tr>
+    <tr><td>قبلی</td><td>برای اصلاح اطلاعات مرحله قبل استفاده می‌شود.</td><td>اطلاعات واردشده حفظ می‌شوند.</td></tr>
+  </table>
+</section>
+
+<section class="page">
+  <div class="eyebrow">ایجاد شرکت حقوقی</div>
+  <h1>شرکت: حسابداری و بازبینی</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> دو مرحله پایانی برای تعیین تنظیمات اولیه حسابداری و کنترل همه داده‌ها پیش از ثبت Company است.
+    <div class="parts"><span>ارز قانونی</span><span>الگوی حساب</span><span>تنظیم مالی اولیه</span><span>خلاصه ثبت</span></div>
+  </div>
+  <div class="mini-images">
+    <div>
+      <img class="image" src="../ui/asoud-company-wizard-step-3-accounting-v1-preview.png" alt="تنظیمات حسابداری شرکت">
+      <div class="caption">مرحله سوم: تنظیمات اولیه حسابداری</div>
+    </div>
+    <div>
+      <img class="image" src="../ui/asoud-company-wizard-step-4-review-v1-preview.png" alt="بازبینی شرکت">
+      <div class="caption">مرحله چهارم: کنترل و ثبت نهایی</div>
+    </div>
+  </div>
+  <div class="grid-equal" style="margin-top:5mm">
+    <div class="card">
+      <h3>مرحله ۳ — حسابداری</h3>
+      <ul>
+        <li>ارز قانونی دفتر کل ایران روی <b>IRR</b> کنترل می‌شود.</li>
+        <li>الگوی نمودار حساب‌ها و تنظیمات مالی اولیه را انتخاب کنید.</li>
+        <li>با <b>بعدی</b> به صفحه بازبینی بروید.</li>
+      </ul>
+    </div>
+    <div class="card ok">
+      <h3>مرحله ۴ — ثبت</h3>
+      <ul>
+        <li>خلاصه همه مراحل را کنترل کنید.</li>
+        <li><b>ثبت شرکت</b> اطلاعات را به Backend ارسال می‌کند.</li>
+        <li>ثبت تکراری با کلید idempotency کنترل می‌شود.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">مسیر جایگزین شرکت</div>
+  <h1>ایجاد شخص حقیقی</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> همان جریان چهارمرحله‌ای شرکت با فیلدهای هویتی متناسب با شخص حقیقی.
+    <div class="parts"><span>مشخصات فردی</span><span>کد ملی</span><span>رابطه سازمانی</span><span>تنظیمات مالی</span></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <img class="image tall" src="../ui/asoud-natural-person-with-create-form-v1-preview.png" alt="ایجاد شخص حقیقی">
+    </div>
+    <div>
+      <p>در مرحله اول «شرکت یا شخص»، نوع شخصیت را روی <b>حقیقی</b> قرار دهید. فرم به‌صورت خودکار فیلدهای مناسب شخص را نمایش می‌دهد.</p>
+      <div class="step"><b>۱</b><div>نام، نام خانوادگی، کد ملی و اطلاعات پایه را وارد کنید.</div></div>
+      <div class="step"><b>۲</b><div>در مرحله ارتباط، هلدینگ یا رابطه سازمانی را تعیین کنید.</div></div>
+      <div class="step"><b>۳</b><div>تنظیمات مالی اولیه را بررسی کنید.</div></div>
+      <div class="step"><b>۴</b><div>در بازبینی نهایی، <b>ثبت</b> را بزنید.</div></div>
+      <div class="card tip">دکمه‌های <b>بعدی</b> و <b>قبلی</b> همان رفتار مسیر شرکت حقوقی را دارند؛ فقط فیلدهای هویتی تغییر می‌کنند.</div>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">ایجاد شعبه</div>
+  <h1>شعبه: هویت و منابع</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> دو مرحله اول برای اتصال شعبه به شرکت مادر و تعریف منابع عملیاتی اختصاصی آن.
+    <div class="parts"><span>شرکت مادر</span><span>کد شعبه</span><span>منابع عملیاتی</span><span>انبار و صندوق</span></div>
+  </div>
+  <div class="mini-images">
+    <div>
+      <img class="image" src="../ui/asoud-branch-wizard-step-1-identity-v1-preview.png" alt="هویت شعبه">
+      <div class="caption">مرحله اول: مشخصات شعبه و شرکت مادر</div>
+    </div>
+    <div>
+      <img class="image" src="../ui/asoud-branch-wizard-step-2-resources-v1-preview.png" alt="منابع شعبه">
+      <div class="caption">مرحله دوم: منابع و تنظیمات عملیاتی</div>
+    </div>
+  </div>
+  <table>
+    <tr><th>مرحله</th><th>آموزش استفاده</th></tr>
+    <tr><td>هویت</td><td>شرکت مادر، نام شعبه، کد و مشخصات پایه را تعیین کنید.</td></tr>
+    <tr><td>منابع</td><td>منابع عملیاتی مانند انبار، صندوق یا تنظیمات موردنیاز شعبه را بررسی کنید.</td></tr>
+    <tr><td>بعدی</td><td>پس از اعتبارسنجی، مرحله دسترسی را باز می‌کند.</td></tr>
+  </table>
+  <div class="card warn">حسابداری قانونی شعبه از شرکت مادر ارث‌بری می‌شود؛ برای شعبه دفتر کل مستقل جدید ایجاد نکنید.</div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">ایجاد شعبه</div>
+  <h1>شعبه: دسترسی و بازبینی</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> دو مرحله پایانی برای تعیین دامنه کاربران شعبه و ثبت نهایی آن.
+    <div class="parts"><span>کاربران</span><span>نقش‌ها</span><span>دامنه Branch</span><span>بازبینی و ثبت</span></div>
+  </div>
+  <div class="mini-images">
+    <div>
+      <img class="image" src="../ui/asoud-branch-wizard-step-3-access-v1-preview.png" alt="دسترسی شعبه">
+      <div class="caption">مرحله سوم: کنترل دسترسی‌ها</div>
+    </div>
+    <div>
+      <img class="image" src="../ui/asoud-branch-wizard-step-4-review-v1-preview.png" alt="بازبینی شعبه">
+      <div class="caption">مرحله چهارم: بازبینی و ثبت</div>
+    </div>
+  </div>
+  <div class="grid-equal" style="margin-top:5mm">
+    <div class="card">
+      <h3>دسترسی</h3>
+      <p>دامنه کاربران و نقش‌هایی را که باید به شعبه دسترسی داشته باشند کنترل کنید و <b>بعدی</b> را بزنید.</p>
+    </div>
+    <div class="card ok">
+      <h3>بازبینی</h3>
+      <p>شرکت مادر، کد شعبه، منابع و دسترسی‌ها را بررسی کرده و <b>ثبت شعبه</b> را بزنید.</p>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">مرحله ۶</div>
+  <h1>مشاهده ساختار سازمانی</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> نمای درختی ارتباط هلدینگ، شرکت و شعبه برای کنترل ساختار ثبت‌شده.
+    <div class="parts"><span>هلدینگ</span><span>شرکت</span><span>شعبه</span><span>باز و بسته‌کردن شاخه‌ها</span></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <img class="image tall" src="../ui/asoud-organizational-structure-v1-preview.png" alt="ساختار سازمانی">
+    </div>
+    <div>
+      <div class="step"><b>۱</b><div>تب <b>ساختار سازمانی</b> را از بالای تنظیمات انتخاب کنید.</div></div>
+      <div class="step"><b>۲</b><div>روی ردیف هلدینگ کلیک کنید تا شرکت‌های زیرمجموعه باز یا بسته شوند.</div></div>
+      <div class="step"><b>۳</b><div>روی شرکت کلیک کنید تا شعب زیرمجموعه آن نمایش داده شوند.</div></div>
+      <table>
+        <tr><th>نماد</th><th>معنی</th></tr>
+        <tr><td>هلدینگ</td><td>ریشه گزارش تلفیقی و مالک شرکت‌ها.</td></tr>
+        <tr><td>شرکت</td><td>Company مستقل با دفتر و تنظیمات مالی مستقل.</td></tr>
+        <tr><td>شعبه</td><td>واحد عملیاتی با ارث‌بری حسابداری از شرکت.</td></tr>
+      </table>
+      <div class="card tip">برای افزودن واحد جدید لازم نیست از این صفحه خارج شوید؛ دکمه <b>واحد سازمانی جدید</b> در سربرگ همیشه در دسترس است.</div>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">مرحله ۷</div>
+  <h1>تنظیمات عمومی مالی شرکت</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> تنظیمات پایه دفتر مالی Company فعال که مبنای نمایش و ثبت عملیات بعدی است.
+    <div class="parts"><span>شرکت و ارز</span><span>الگوی نمودار حساب</span><span>ریال/تومان</span><span>تقویم و منطقه زمانی</span></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <img class="image tall" src="../ui/asoud-financial-settings-general-v1-preview.png" alt="تنظیمات عمومی مالی">
+    </div>
+    <div>
+      <div class="step"><b>۱</b><div>تب <b>تنظیمات مالی</b> و سپس بخش <b>عمومی</b> را باز کنید.</div></div>
+      <div class="step"><b>۲</b><div>الگوی نمودار حساب‌ها را انتخاب کنید.</div></div>
+      <div class="step"><b>۳</b><div>واحد ورود مبلغ را ریال یا تومان و نمایش تقویم را شمسی یا میلادی تعیین کنید.</div></div>
+      <div class="step"><b>۴</b><div>روی <b>ذخیره تنظیمات مالی</b> کلیک کنید.</div></div>
+      <table>
+        <tr><th>فیلد</th><th>قاعده</th></tr>
+        <tr><td>شرکت فعال</td><td>فقط خواندنی؛ همان زمینه بالای سامانه است.</td></tr>
+        <tr><td>ارز دفتر کل</td><td>برای حسابداری ایران روی IRR کنترل می‌شود.</td></tr>
+        <tr><td>واحد ورود</td><td>در صورت انتخاب تومان، ذخیره دفتر کل همچنان به ریال است.</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">سال مالی</div>
+  <h1>ایجاد و ویرایش سال مالی</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> تعریف محدوده قانونی گزارش‌گیری مالی شرکت و پایه ایجاد دوره‌های مالی.
+    <div class="parts"><span>عنوان سال</span><span>تاریخ شروع</span><span>تاریخ پایان</span><span>شرکت‌های مجاز</span></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <img class="image tall" src="../ui/asoud-financial-settings-fiscal-year-form-v1-preview.png" alt="فرم سال مالی">
+    </div>
+    <div>
+      <div class="step"><b>۱</b><div>در بخش عمومی مالی، از کارت <b>سال‌های مالی</b> دکمه افزودن را بزنید.</div></div>
+      <div class="step"><b>۲</b><div>عنوان، تاریخ شروع و پایان و وضعیت سال را وارد کنید.</div></div>
+      <div class="step"><b>۳</b><div>در صورت نیاز، شرکت فعال را به سال مالی متصل نگه دارید.</div></div>
+      <div class="step"><b>۴</b><div>روی <b>ذخیره</b> کلیک کنید. ردیف جدید در کارت سال‌های مالی ظاهر می‌شود.</div></div>
+      <div class="card ok"><span class="status live">عملیاتی</span> ایجاد و ویرایش سال مالی به `Fiscal Year` متصل است.</div>
+      <div class="card warn">قبل از ایجاد دوره مالی، سال مالی مربوطه باید موجود باشد.</div>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">دوره مالی</div>
+  <h1>فهرست دوره‌ها و فرم ایجاد دوره</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> تقسیم سال مالی به بازه‌های استاندارد یا تعدیلاتی برای گزارش‌گیری و کنترل عملیات.
+    <div class="parts"><span>فهرست دوره‌ها</span><span>دوره استاندارد</span><span>دوره تعدیلاتی</span><span>ایجاد و ویرایش</span></div>
+  </div>
+  <div class="mini-images">
+    <div>
+      <img class="image" src="../ui/asoud-financial-settings-periods-v1-preview.png" alt="فهرست دوره‌های مالی">
+      <div class="caption">کارت دوره‌ها و عملیات هر ردیف</div>
+    </div>
+    <div>
+      <img class="image" src="../ui/asoud-fiscal-period-form-v1-preview.png" alt="فرم دوره مالی">
+      <div class="caption">فرم تأییدشده ایجاد/ویرایش دوره</div>
+    </div>
+  </div>
+  <table>
+    <tr><th>دکمه</th><th>نتیجه</th></tr>
+    <tr><td>+ دوره مالی</td><td>فرم ایجاد دوره را باز می‌کند.</td></tr>
+    <tr><td>ویرایش ردیف</td><td>همان فرم را با اطلاعات دوره انتخاب‌شده باز می‌کند.</td></tr>
+    <tr><td>ذخیره</td><td>دوره استاندارد یا تعدیلاتی را پس از کنترل تاریخ‌ها ثبت می‌کند.</td></tr>
+    <tr><td>انصراف</td><td>فرم را بدون ثبت تغییرات می‌بندد.</td></tr>
+  </table>
+  <div class="card warn">تاریخ دوره باید کاملاً داخل سال مالی باشد و دوره‌های فعال هم‌نوع نباید هم‌پوشانی داشته باشند.</div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">کنترل دوره</div>
+  <h1>قفل و بازگشایی کنترل‌شده دوره</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> جلوگیری از ثبت یا اصلاح سند در بازه نهایی‌شده و بازگشایی حسابرسی‌شده در شرایط مجاز.
+    <div class="parts"><span>انتخاب بازه</span><span>دلیل اجباری</span><span>قفل</span><span>بازگشایی</span><span>Audit</span></div>
+  </div>
+  <div class="mini-images">
+    <div>
+      <img class="image" src="../ui/asoud-period-lock-form-v1-preview.png" alt="قفل دوره">
+      <div class="caption">قفل دوره همراه با دلیل اجباری</div>
+    </div>
+    <div>
+      <img class="image" src="../ui/asoud-period-unlock-form-v1-preview.png" alt="بازگشایی دوره">
+      <div class="caption">بازگشایی کنترل‌شده و ثبت در زنجیره حسابرسی</div>
+    </div>
+  </div>
+  <div class="grid-equal" style="margin-top:4mm">
+    <div class="card">
+      <h3>قفل دوره</h3>
+      <p>دوره یا بازه را انتخاب، دلیل را وارد و <b>قفل</b> را بزنید. فقط وقتی مجاز است که اسناد بازه شماره قطعی داشته باشند.</p>
+    </div>
+    <div class="card">
+      <h3>بازگشایی</h3>
+      <p>روی عملیات بازگشایی ردیف قفل‌شده بزنید، دلیل جدید را وارد و <b>بازگشایی</b> را تأیید کنید.</p>
+    </div>
+  </div>
+  <div class="card warn">بازگشایی شماره قطعی اسناد را حذف نمی‌کند؛ کاربر، زمان و دلیل عملیات در Audit باقی می‌ماند.</div>
+</section>
+
+<section class="page" id="account-tree">
+  <div class="eyebrow">مرحله ۸</div>
+  <h1>نمودار درختی حساب‌ها</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> نمایش سلسله‌مراتب حساب‌های Company و نقطه ایجاد یا ویرایش حساب در هر سطح.
+    <div class="parts"><span>درخت حساب</span><span>سطح گروه/کل/معین</span><span>زیرحساب</span><span>هم‌سطح</span><span>ویرایش</span></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <img class="image tall" src="../ui/asoud-account-tree-unified-form-v3-preview.png" alt="نمودار درختی حساب‌ها">
+    </div>
+    <div>
+      <div class="step"><b>۱</b><div>در تنظیمات مالی، بخش <b>نمودار حساب‌ها</b> را انتخاب کنید.</div></div>
+      <div class="step"><b>۲</b><div>برای ویرایش، روی ردیف حساب یا آیکون مداد کلیک کنید.</div></div>
+      <table>
+        <tr><th>دکمه هر ردیف</th><th>رفتار</th></tr>
+        <tr><td>زیرحساب</td><td>فرم جدید را با والد همان ردیف باز می‌کند؛ زیر گروه، سطح کل و زیر کل، سطح معین پیشنهاد می‌شود.</td></tr>
+        <tr><td>هم‌سطح</td><td>فرم جدید را با همان والد و همان سطح باز می‌کند.</td></tr>
+        <tr><td>ویرایش</td><td>فرم یکپارچه را با اطلاعات حساب باز می‌کند.</td></tr>
+        <tr><td>حساب جدید</td><td>فرم خالی را باز می‌کند تا سطح و والد را دستی انتخاب کنید.</td></tr>
+      </table>
+      <div class="card tip">برچسب هر ردیف سطح <b>گروه</b>، <b>کل</b> یا <b>معین</b> را نشان می‌دهد.</div>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">فرم حساب</div>
+  <h1>ایجاد گروه، کل و معین در یک فرم</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> فرم واحد ثبت تمام سطوح حساب با کنترل خودکار سندپذیری و قواعد تفصیلی.
+    <div class="parts"><span>سطح حساب</span><span>والد</span><span>کد و عنوان</span><span>نوع حساب</span><span>گروه‌های تفصیلی</span></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <img class="image tall" src="../ui/asoud-account-tree-unified-form-v3-preview.png" alt="فرم یکپارچه حساب">
+    </div>
+    <div>
+      <div class="step"><b>۱</b><div>سطح حساب را از بین <b>گروه</b>، <b>کل</b> و <b>معین</b> انتخاب کنید.</div></div>
+      <div class="step"><b>۲</b><div>حساب والد، کد عددی یکتا، عنوان و در صورت نیاز نوع حساب را وارد کنید.</div></div>
+      <div class="step"><b>۳</b><div>برای حساب معین، گروه‌های تفصیلی مجاز را تیک بزنید.</div></div>
+      <div class="step"><b>۴</b><div>روی <b>ذخیره حساب</b> کلیک کنید.</div></div>
+      <table>
+        <tr><th>سطح</th><th>سندپذیری</th><th>زیرحساب</th></tr>
+        <tr><td>گروه</td><td>خیر</td><td>کل</td></tr>
+        <tr><td>کل</td><td>خیر</td><td>معین</td></tr>
+        <tr><td>معین</td><td>بله</td><td>ندارد</td></tr>
+      </table>
+      <div class="card warn">گروه تفصیلی فقط برای سطح «معین» قابل انتخاب است.</div>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="floating-details">
+  <div class="eyebrow">مرحله ۹</div>
+  <h1>مدیریت تفصیلی‌های شناور</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> مرکز مدیریت دسته‌بندی تفصیلی‌ها و رکوردهای قابل استفاده در اسناد حسابداری.
+    <div class="parts"><span>گروه‌های تفصیلی</span><span>تفصیلی‌ها</span><span>نوع تفصیلی</span><span>وضعیت Company</span></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <img class="image tall" src="../ui/asoud-financial-floating-details-v1.png" alt="مدیریت تفصیلی شناور">
+    </div>
+    <div>
+      <div class="step"><b>۱</b><div>در تنظیمات مالی، بخش <b>تفصیلی‌های شناور</b> را باز کنید.</div></div>
+      <div class="step"><b>۲</b><div>ابتدا گروه تفصیلی را ایجاد کنید؛ سپس اشخاص/موارد تفصیلی را داخل گروه ثبت کنید.</div></div>
+      <table>
+        <tr><th>دکمه</th><th>صفحه بعد</th></tr>
+        <tr><td>گروه تفصیلی جدید</td><td>فرم عنوان، کد، نوع و گروه والد را باز می‌کند.</td></tr>
+        <tr><td>تفصیلی جدید</td><td>فرم کد، عنوان، نوع، گروه و وضعیت شرکت را باز می‌کند.</td></tr>
+        <tr><td>ویرایش ردیف</td><td>فرم همان موجودیت را با اطلاعات فعلی باز می‌کند.</td></tr>
+      </table>
+      <div class="card tip">گروه‌ها ساختار دسته‌بندی هستند؛ خود تفصیلی می‌تواند مشتری، تأمین‌کننده، کارمند، بانک، صندوق، پروژه، مرکز هزینه یا شعبه باشد.</div>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">تفصیلی شناور</div>
+  <h1>ایجاد گروه و ایجاد تفصیلی</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> دو فرم مستقل؛ اولی ساختار گروه‌بندی و دومی خود رکورد تفصیلی را ایجاد می‌کند.
+    <div class="parts"><span>کد و عنوان گروه</span><span>گروه والد</span><span>کد تفصیلی</span><span>نوع و وضعیت</span></div>
+  </div>
+  <div class="mini-images">
+    <div>
+      <img class="image" src="../ui/asoud-floating-detail-group-form-v1-preview.png" alt="گروه تفصیلی">
+      <div class="caption">فرم تأییدشده گروه تفصیلی</div>
+    </div>
+    <div>
+      <img class="image" src="../ui/asoud-floating-detail-form-v1-preview.png" alt="تفصیلی شناور">
+      <div class="caption">فرم تأییدشده تفصیلی شناور</div>
+    </div>
+  </div>
+  <div class="grid-equal" style="margin-top:5mm">
+    <div class="card">
+      <h3>گروه تفصیلی</h3>
+      <ol>
+        <li>عنوان و کد یکتا را وارد کنید.</li>
+        <li>نوع تفصیلی را انتخاب کنید.</li>
+        <li>در صورت ساخت زیرگروه، گروه والد را تعیین کنید.</li>
+        <li><b>ذخیره</b> را بزنید.</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3>تفصیلی</h3>
+      <ol>
+        <li>نوع و گروه را انتخاب کنید.</li>
+        <li>کد و عنوان را وارد کنید.</li>
+        <li>وضعیت استفاده در شرکت فعال را تعیین کنید.</li>
+        <li><b>ذخیره</b> را بزنید.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">اتصال حساب و تفصیلی</div>
+  <h1>انتخاب گروه‌های تفصیلی داخل حساب معین</h1>
+  <div class="page-intro">
+    <b>معرفی صفحه:</b> تعیین می‌کند هنگام ثبت سند با یک حساب معین، تفصیلی‌های کدام گروه‌ها قابل انتخاب باشند.
+    <div class="parts"><span>حساب معین</span><span>انتخاب چندگانه گروه‌ها</span><span>اجباری/اختیاری</span><span>کنترل Backend</span></div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <img class="image tall" src="../ui/asoud-account-form-detail-groups-v2-preview.png" alt="اتصال حساب به گروه تفصیلی">
+    </div>
+    <div>
+      <p>صفحه جداگانه‌ای برای اتصال حساب به گروه تفصیلی وجود ندارد. این کار داخل همان فرم حساب معین انجام می‌شود.</p>
+      <div class="step"><b>۱</b><div>حساب معین را ایجاد یا ویرایش کنید.</div></div>
+      <div class="step"><b>۲</b><div>در بخش <b>گروه‌های تفصیلی مجاز</b> هر تعداد گروه لازم را تیک بزنید.</div></div>
+      <div class="step"><b>۳</b><div>حساب را ذخیره کنید؛ قواعد همراه همان حساب ثبت می‌شوند.</div></div>
+      <div class="step"><b>۴</b><div>در سند حسابداری، پس از انتخاب این حساب فقط تفصیلی‌های عضو گروه‌های مجاز نمایش داده می‌شوند.</div></div>
+      <div class="card ok">Backend انتخاب تفصیلی خارج از گروه‌های مجاز یا خارج از Company فعال را رد می‌کند.</div>
+    </div>
+  </div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">ادامه مسیر محصول</div>
+  <h1>صفحات بعدی و وضعیت فعلی آن‌ها</h1>
+  <p class="lead">برای جلوگیری از برداشت اشتباه، صفحات عملیاتی و طرح‌های برش بعدی جدا شده‌اند.</p>
+  <table>
+    <tr><th>صفحه</th><th>وضعیت</th><th>مسیر یا رفتار</th></tr>
+    <tr><td>تنظیمات عمومی مالی</td><td><span class="status live">عملیاتی</span></td><td>تنظیمات مالی ← عمومی</td></tr>
+    <tr><td>سال و دوره مالی</td><td><span class="status live">عملیاتی</span></td><td>کارت‌های صفحه عمومی مالی</td></tr>
+    <tr><td>قفل و بازگشایی دوره</td><td><span class="status live">عملیاتی</span></td><td>عملیات کارت قفل‌های دوره</td></tr>
+    <tr><td>نمودار و فرم یکپارچه حساب</td><td><span class="status live">عملیاتی</span></td><td>تنظیمات مالی ← نمودار حساب‌ها</td></tr>
+    <tr><td>گروه و تفصیلی شناور</td><td><span class="status live">عملیاتی</span></td><td>تنظیمات مالی ← تفصیلی‌های شناور</td></tr>
+    <tr><td>اتصال حساب معین به گروه تفصیلی</td><td><span class="status live">عملیاتی</span></td><td>داخل فرم حساب معین</td></tr>
+    <tr><td>حساب‌های پیش‌فرض</td><td><span class="status design">طراحی بعدی</span></td><td>طرح تصویری موجود؛ عملیات کامل در برش بعدی</td></tr>
+    <tr><td>شماره‌گذاری و اختتامیه/افتتاحیه</td><td><span class="status design">طراحی بعدی</span></td><td>از ماژول حسابداری ایران قابل مشاهده؛ فرم اجرایی کامل بعداً</td></tr>
+    <tr><td>ابعاد حسابداری مستقل</td><td><span class="status design">طراحی بعدی</span></td><td>اتصال گروه تفصیلی از این صفحه حذف و به فرم حساب منتقل شده است</td></tr>
+  </table>
+  <div class="card future">تصاویر طرح‌های بعدی در پروژه نگهداری شده‌اند، اما در این راهنما فقط صفحات تأییدشده و مسیرهای فعلی مبنا قرار گرفته‌اند.</div>
+</section>
+
+<section class="page">
+  <div class="eyebrow">مرور سریع</div>
+  <h1>چک‌لیست استفاده صحیح</h1>
+  <div class="checklist">
+    <div>قبل از هر عملیات، شرکت و شعبه فعال را کنترل کنید.</div>
+    <div>ابتدا هلدینگ، سپس شرکت و در پایان شعبه را بسازید.</div>
+    <div>پس از ساخت واحدها، ساختار سازمانی را بازبینی کنید.</div>
+    <div>الگوی حساب و تنظیمات عمومی مالی را ذخیره کنید.</div>
+    <div>سال مالی را قبل از دوره مالی ایجاد کنید.</div>
+    <div>از هم‌پوشانی دوره‌های هم‌نوع جلوگیری کنید.</div>
+    <div>قبل از قفل دوره، شماره قطعی اسناد را کنترل کنید.</div>
+    <div>حساب گروه و کل را غیرسندپذیر نگه دارید.</div>
+    <div>فقط حساب معین را به گروه‌های تفصیلی متصل کنید.</div>
+    <div>ابتدا گروه تفصیلی و سپس خود تفصیلی را بسازید.</div>
+    <div>برای ساخت سریع حساب، از زیرحساب یا هم‌سطح استفاده کنید.</div>
+    <div>پس از ذخیره، نتیجه را در فهرست یا نمودار کنترل کنید.</div>
+  </div>
+  <div class="card ok" style="margin-top:8mm">
+    <h2>مسیر پیشنهادی راه‌اندازی اولیه</h2>
+    <p><b>ورود ← انتخاب Company/Branch ← تنظیمات ← ساخت واحدها ← ساختار سازمانی ← تنظیمات عمومی مالی ← سال مالی ← دوره مالی ← گروه‌های تفصیلی ← نمودار حساب‌ها ← اتصال حساب‌های معین ← کنترل نهایی</b></p>
+  </div>
+  <div class="card tip">
+    نسخه HTML این سند برای مشاهده تعاملی و نسخه PDF برای چاپ و بایگانی تهیه شده است.
+  </div>
+</section>
+
+</body>
+</html>
